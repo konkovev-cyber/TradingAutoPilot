@@ -8,7 +8,7 @@ import { useTheme } from '@/lib/theme';
 const navLinks = [
   { key: 'nav.products', href: '/#products' },
   { key: 'nav.howItWorks', href: '/#how-it-works' },
-  { key: 'nav.pricing', href: '/#pricing' },
+  
   { key: 'nav.faq', href: '/#faq' },
   { key: 'nav.support', href: '/#support' },
 ];
