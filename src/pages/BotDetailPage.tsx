@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Check, AlertTriangle, Layers } from 'lucide-react';
 import { getBot, bots } from '@/data/bots';
 import Header from '@/components/Header';
-import BackToTop from '@/components/BackToTop';
+import FloatingContact from '@/components/FloatingContact';
 
 export default function BotDetailPage() {
   useEffect(() => { window.scrollTo(0, 0); }, []);
@@ -138,6 +138,7 @@ export default function BotDetailPage() {
           )}
         </div>
       </main>
+      <FloatingContact />
     </div>
   );
 }

@@ -66,9 +66,6 @@ export default function Header() {
             >
               {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
             </button>
-            <a href="/#bots" className="btn-primary hidden sm:inline-flex text-sm !py-2.5 !px-5">
-              Выбрать бота
-            </a>
             <button onClick={() => setMobileOpen(!mobileOpen)} className="md:hidden p-2 text-[var(--text-muted)] hover:text-[var(--text)] rounded-xl">
               {mobileOpen ? <X size={24} /> : <Menu size={24} />}
             </button>

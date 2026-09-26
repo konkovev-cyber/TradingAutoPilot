@@ -5,7 +5,7 @@ import HowItWorks from '@/components/HowItWorks';
 import FAQ from '@/components/FAQ';
 import CTA from '@/components/CTA';
 import Footer from '@/components/Footer';
-import BackToTop from '@/components/BackToTop';
+import FloatingContact from '@/components/FloatingContact';
 
 export default function HomePage() {
   return (
@@ -19,7 +19,7 @@ export default function HomePage() {
         <CTA />
       </main>
       <Footer />
-      <BackToTop />
+      <FloatingContact />
     </>
   );
 }

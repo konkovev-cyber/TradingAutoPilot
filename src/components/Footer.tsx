@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { bots } from '@/data/bots';
 
-const exchanges = ['BYBIT', 'Binance', 'OKX', 'BingX', 'Gate.io', 'HTX', 'Bitget', 'KuCoin'];
+const exchanges = ['BYBIT', 'Binance', 'OKX', 'BingX', 'Gate.io', 'HTX', 'Bitget', 'KuCoin', 'Bitfinex', 'Kraken', 'MEXC', 'Coinbase', 'WhiteBIT', 'Bybit'];
 
 export default function Footer() {
   return (
@@ -55,7 +55,7 @@ export default function Footer() {
           <div>
             <h4 className="font-display font-bold text-[var(--text)] mb-4 text-sm">Биржи</h4>
             <div className="flex flex-wrap gap-1.5">
-              {['BYBIT', 'Binance', 'OKX', 'BingX', 'Gate.io', 'Bitget'].map((e) => (
+              {exchanges.map((e) => (
                 <span key={e} className="text-[11px] text-[var(--text-muted)] bg-[var(--surface)] px-2 py-1 rounded-lg border border-[var(--border)]">
                   {e}
                 </span>
