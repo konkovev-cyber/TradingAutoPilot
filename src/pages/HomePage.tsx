@@ -1,16 +1,11 @@
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
-import ProblemSolution from '@/components/ProblemSolution';
-import HowItWorks from '@/components/HowItWorks';
 import Products from '@/components/Products';
-import Calculator from '@/components/Calculator';
-import Advantages from '@/components/Advantages';
-import Stats from '@/components/Stats';
-import LiveTrades from '@/components/LiveTrades';
-import Testimonials from '@/components/Testimonials';
+import HowItWorks from '@/components/HowItWorks';
 import FAQ from '@/components/FAQ';
 import CTA from '@/components/CTA';
 import Footer from '@/components/Footer';
+import BackToTop from '@/components/BackToTop';
 
 export default function HomePage() {
   return (
@@ -18,18 +13,13 @@ export default function HomePage() {
       <Header />
       <main>
         <Hero />
-        <ProblemSolution />
-        <HowItWorks />
         <Products />
-        <Calculator />
-        <Advantages />
-        <Stats />
-        <LiveTrades />
-        <Testimonials />
+        <HowItWorks />
         <FAQ />
         <CTA />
       </main>
       <Footer />
+      <BackToTop />
     </>
   );
 }

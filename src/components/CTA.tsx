@@ -1,34 +1,47 @@
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
+import { bots } from '@/data/bots';
 
 export default function CTA() {
   return (
     <section className="section-padding relative overflow-hidden">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="relative glass-strong rounded-3xl p-12 text-center overflow-hidden"
-        >
-          {/* Glow */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-[#00FFB2]/10 rounded-full blur-[100px]" />
-          <div className="absolute bottom-0 left-1/4 w-64 h-64 bg-[#7B61FF]/10 rounded-full blur-[80px]" />
+      <div
+        className="absolute inset-0 opacity-[0.08]"
+        style={{ background: 'radial-gradient(ellipse 60% 50% at 50% 50%, #00FFB2, transparent 70%)' }}
+      />
 
-          <div className="relative">
-            <h2 className="text-3xl sm:text-4xl font-display font-bold text-[#E6EDF7] mb-4">
-              Начните зарабатывать на крипте уже сегодня
-            </h2>
-            <p className="text-[#8B95A7] mb-8 max-w-xl mx-auto">
-              Без вложений. Комиссия только с прибыли. Подключение за 2 минуты — и
-              бот работает 24/7.
-            </p>
-            <button className="btn-primary px-8 py-4 rounded-xl text-base inline-flex items-center gap-2">
-              Создать бота бесплатно
-              <ArrowRight size={20} />
-            </button>
+      <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 0.55 }}
+          className="glass-strong rounded-[2rem] p-10 sm:p-14"
+        >
+          <h2 className="heading-lg text-[var(--text)] mb-5">
+            Выберите своего <span className="text-gradient">торгового робота</span>
+          </h2>
+          <p className="text-[var(--text-muted)] text-lg mb-10 max-w-xl mx-auto">
+            Без абонентской платы и комиссий с прибыли  покупаете робота один раз, он торгует для вас круглосуточно.
+          </p>
+
+          <div className="flex flex-wrap gap-3 justify-center">
+            {bots.map((b) => (
+              <Link
+                key={b.slug}
+                to={`/bots/${b.slug}`}
+                className="btn-secondary px-6 py-3.5 text-sm font-semibold"
+                style={{ borderColor: b.color, color: b.color }}
+              >
+                {b.name}
+              </Link>
+            ))}
           </div>
+
+          <p className="text-xs text-[var(--text-subtle)] mt-8">
+            API-ключи без права вывода  Средства остаются на вашей бирже
+          </p>
         </motion.div>
       </div>
     </section>

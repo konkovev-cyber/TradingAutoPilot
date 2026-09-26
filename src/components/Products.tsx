@@ -1,129 +1,92 @@
-import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Rocket } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Check, ArrowRight } from 'lucide-react';
 import { bots } from '@/data/bots';
-import GridVisual from './GridVisual';
-import DcaVisual from './DcaVisual';
-import AiSignalVisual from './AiSignalVisual';
-
-const colorClasses = {
-  primary: { text: 'text-[#00FFB2]', bg: 'bg-[#00FFB2]/10', border: 'border-[#00FFB2]/20', btn: 'btn-primary', hex: '#00FFB2' },
-  secondary: { text: 'text-[#00D4FF]', bg: 'bg-[#00D4FF]/10', border: 'border-[#00D4FF]/20', btn: 'btn-secondary', hex: '#00D4FF' },
-  accent: { text: 'text-[#7B61FF]', bg: 'bg-[#7B61FF]/10', border: 'border-[#7B61FF]/20', btn: 'btn-secondary', hex: '#7B61FF' },
-};
-
-function BotVisual({ slug, color }: { slug: string; color: 'primary' | 'secondary' | 'accent' }) {
-  if (slug === 'grid-bot') return <GridVisual color={color} />;
-  if (slug === 'dca-bot') return <DcaVisual color={color} />;
-  return <AiSignalVisual color={color} />;
-}
-
-function MiniYieldChart({ color }: { color: string }) {
-  const bars = [40, 55, 48, 62, 70, 58, 75, 82, 68, 90];
-  return (
-    <svg viewBox="0 0 200 60" className="w-full h-full" preserveAspectRatio="none">
-      {bars.map((h, i) => (
-        <rect
-          key={i}
-          x={i * 20 + 2}
-          y={60 - h * 0.5}
-          width="14"
-          height={h * 0.5}
-          fill={color}
-          opacity={i === bars.length - 1 ? 0.9 : 0.4}
-          rx="1"
-        />
-      ))}
-    </svg>
-  );
-}
 
 export default function Products() {
   return (
-    <section id="products" className="section-padding relative">
-      <div className="absolute inset-0 bg-radial-glow opacity-50" />
+    <section id="bots" className="section-padding relative overflow-hidden">
+      <div className="absolute top-1/4 left-0 w-[400px] h-[400px] rounded-full blur-[140px] opacity-[0.07]" style={{ background: '#00FFB2' }} />
+      <div className="absolute bottom-1/4 right-0 w-[360px] h-[360px] rounded-full blur-[110px] opacity-10" style={{ background: '#7B61FF' }} />
+
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-16"
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 0.55 }}
+          className="text-center mb-14"
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass mb-4">
-            <span className="text-xs text-[#8B95A7]">Наши продукты</span>
-          </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-[#E6EDF7] mb-4">
-            Три бота под любой рынок
+          <span className="inline-block px-4 py-1.5 rounded-full glass text-xs font-semibold tracking-widest text-[var(--primary)] mb-6">
+            НАШИ РОБОТЫ
+          </span>
+          <h2 className="heading-lg text-[var(--text)] mb-4">
+            Три робота  <span className="text-gradient">три стратегии</span>
           </h2>
-          <p className="text-[#8B95A7] max-w-2xl mx-auto text-lg">
-            Выберите стратегию, которая подходит вашему стилю торговли. Каждый бот
-            можно запустить за пару минут.
+          <p className="text-[var(--text-muted)] max-w-2xl mx-auto text-lg">
+            Каждый бот  самостоятельная торговая система. Купите один раз и торгуйте без абонентской платы.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {bots.map((bot, i) => {
-            const colors = colorClasses[bot.color];
-            const yield30 = bot.returns[0].value;
-            return (
-              <motion.div
-                key={bot.slug}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="glass rounded-2xl p-6 card-hover group flex flex-col"
-              >
-                {/* Visual */}
-                <div className="h-32 mb-5 rounded-xl overflow-hidden bg-[#0A0E17]/50 border border-white/5">
-                  <BotVisual slug={bot.slug} color={bot.color} />
-                </div>
+        <div className="grid md:grid-cols-3 gap-6 lg:gap-7">
+          {bots.map((bot, i) => (
+            <motion.div
+              key={bot.slug}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-60px' }}
+              transition={{ duration: 0.55, delay: i * 0.12 }}
+              className="group relative glass rounded-3xl p-7 card-hover flex flex-col overflow-hidden"
+              style={{ borderTop: `3px solid ${bot.color}` }}
+            >
+              <div
+                className="absolute -top-16 -right-16 w-44 h-44 rounded-full blur-[70px] opacity-60"
+                style={{ background: bot.colorDim }}
+              />
 
-                {/* Tag */}
-                <div className={`inline-flex items-center px-2.5 py-1 rounded-full ${colors.bg} ${colors.border} border mb-3 w-fit`}>
-                  <span className={`text-xs font-medium ${colors.text}`}>{bot.tag}</span>
-                </div>
+              <div className="relative flex-1">
+                <span
+                  className="inline-block px-3 py-1 rounded-full text-[11px] font-semibold tracking-wide mb-5"
+                  style={{ background: bot.colorDim, color: bot.color }}
+                >
+                  {bot.badge}
+                </span>
 
-                <h3 className="text-xl font-display font-bold text-[#E6EDF7] mb-2">
-                  {bot.name}
-                </h3>
-                <p className="text-sm text-[#8B95A7] mb-4 leading-relaxed">
-                  {bot.description}
+                <h3 className="text-2xl font-display font-bold text-[var(--text)] mb-2">{bot.name}</h3>
+                <p className="text-sm font-semibold mb-4 leading-snug" style={{ color: bot.color }}>
+                  {bot.slogan}
                 </p>
+                <p className="text-sm text-[var(--text-muted)] leading-relaxed mb-6">{bot.shortDesc}</p>
 
-                {/* Yield + mini chart */}
-                <div className="flex items-center justify-between mb-5 px-3 py-3 rounded-xl bg-white/[0.02] border border-white/5">
-                  <div>
-                    <div className="text-[10px] text-[#8B95A7] mb-0.5">Доходность за 30 дней</div>
-                    <div className={`text-lg font-display font-bold ${colors.text}`}>{yield30}</div>
+                <ul className="space-y-2.5 mb-7">
+                  {bot.features.slice(0, 3).map((f) => (
+                    <li key={f} className="flex items-start gap-2.5 text-sm text-[var(--text-muted)]">
+                      <Check size={15} className="shrink-0 mt-0.5" style={{ color: bot.color }} />
+                      <span>{f}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="relative grid grid-cols-3 gap-2 mb-6">
+                {bot.returns.map((r) => (
+                  <div key={r.period} className="rounded-xl px-2 py-2.5 text-center" style={{ background: bot.colorDim }}>
+                    <div className="text-[10px] text-[var(--text-subtle)] mb-0.5">{r.period}</div>
+                    <div className="text-base font-display font-bold tabular-nums" style={{ color: bot.color }}>{r.value}</div>
                   </div>
-                  <div className="w-24 h-10">
-                    <MiniYieldChart color={colors.hex} />
-                  </div>
-                </div>
+                ))}
+              </div>
 
-                <div className={`text-sm font-medium ${colors.text} mb-5`}>
-                  {bot.benefit}
-                </div>
-
-                {/* Dual buttons */}
-                <div className="mt-auto flex gap-3">
-                  <Link
-                    to={`/bots/${bot.slug}`}
-                    className={`flex-1 inline-flex items-center justify-center gap-1.5 text-sm font-medium py-2.5 rounded-xl btn-secondary group-hover:gap-2.5 transition-all`}
-                  >
-                    Подробнее
-                    <ArrowRight size={16} />
-                  </Link>
-                  <button className={`flex-1 inline-flex items-center justify-center gap-1.5 text-sm font-semibold py-2.5 rounded-xl ${colors.btn}`}>
-                    <Rocket size={16} />
-                    Запустить
-                  </button>
-                </div>
-              </motion.div>
-            );
-          })}
+              <Link
+                to={`/bots/${bot.slug}`}
+                className="btn-primary w-full py-3.5 text-sm group/btn"
+                style={{ background: `linear-gradient(135deg, ${bot.color}, ${bot.color}CC)` }}
+              >
+                Подробнее о боте
+                <ArrowRight size={16} className="transition-transform group-hover/btn:translate-x-1" />
+              </Link>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>
