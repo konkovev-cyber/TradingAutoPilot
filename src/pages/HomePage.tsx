@@ -1,11 +1,8 @@
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
-import ProblemSolution from '@/components/ProblemSolution';
-import HowItWorks from '@/components/HowItWorks';
 import Products from '@/components/Products';
+import HowItWorks from '@/components/HowItWorks';
 import Calculator from '@/components/Calculator';
-import Advantages from '@/components/Advantages';
-import Stats from '@/components/Stats';
 import LiveTrades from '@/components/LiveTrades';
 import Testimonials from '@/components/Testimonials';
 import FAQ from '@/components/FAQ';
@@ -18,12 +15,9 @@ export default function HomePage() {
       <Header />
       <main>
         <Hero />
-        <ProblemSolution />
-        <HowItWorks />
         <Products />
+        <HowItWorks />
         <Calculator />
-        <Advantages />
-        <Stats />
         <LiveTrades />
         <Testimonials />
         <FAQ />

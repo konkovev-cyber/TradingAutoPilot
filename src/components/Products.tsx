@@ -1,71 +1,37 @@
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { ArrowRight, Rocket } from 'lucide-react';
+import { ArrowRight, Check } from 'lucide-react';
 import { bots } from '@/data/bots';
-import GridVisual from './GridVisual';
-import DcaVisual from './DcaVisual';
-import AiSignalVisual from './AiSignalVisual';
 
-const colorClasses = {
-  primary: { text: 'text-[#00FFB2]', bg: 'bg-[#00FFB2]/10', border: 'border-[#00FFB2]/20', btn: 'btn-primary', hex: '#00FFB2' },
-  secondary: { text: 'text-[#00D4FF]', bg: 'bg-[#00D4FF]/10', border: 'border-[#00D4FF]/20', btn: 'btn-secondary', hex: '#00D4FF' },
-  accent: { text: 'text-[#7B61FF]', bg: 'bg-[#7B61FF]/10', border: 'border-[#7B61FF]/20', btn: 'btn-secondary', hex: '#7B61FF' },
+const colorMap: Record<string, { bg: string; border: string; text: string }> = {
+  primary: { bg: 'bg-[var(--primary-dim)]', border: 'border-[var(--primary)]/20', text: 'text-[var(--primary)]' },
+  secondary: { bg: 'bg-[var(--secondary-dim)]', border: 'border-[var(--secondary)]/20', text: 'text-[var(--secondary)]' },
+  accent: { bg: 'bg-[var(--accent-dim)]', border: 'border-[var(--accent)]/20', text: 'text-[var(--accent)]' },
 };
-
-function BotVisual({ slug, color }: { slug: string; color: 'primary' | 'secondary' | 'accent' }) {
-  if (slug === 'grid-bot') return <GridVisual color={color} />;
-  if (slug === 'dca-bot') return <DcaVisual color={color} />;
-  return <AiSignalVisual color={color} />;
-}
-
-function MiniYieldChart({ color }: { color: string }) {
-  const bars = [40, 55, 48, 62, 70, 58, 75, 82, 68, 90];
-  return (
-    <svg viewBox="0 0 200 60" className="w-full h-full" preserveAspectRatio="none">
-      {bars.map((h, i) => (
-        <rect
-          key={i}
-          x={i * 20 + 2}
-          y={60 - h * 0.5}
-          width="14"
-          height={h * 0.5}
-          fill={color}
-          opacity={i === bars.length - 1 ? 0.9 : 0.4}
-          rx="1"
-        />
-      ))}
-    </svg>
-  );
-}
 
 export default function Products() {
   return (
-    <section id="products" className="section-padding relative">
-      <div className="absolute inset-0 bg-radial-glow opacity-50" />
+    <section id="bots" className="section-padding relative overflow-hidden">
+      <div className="absolute inset-0 bg-dot-pattern opacity-40" />
+      <div className="absolute top-1/2 left-0 w-[400px] h-[400px] bg-[var(--primary)]/5 rounded-full blur-[120px]" />
+      <div className="absolute top-1/4 right-0 w-[300px] h-[300px] bg-[var(--accent)]/5 rounded-full blur-[100px]" />
+
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-16"
-        >
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass mb-4">
-            <span className="text-xs text-[#8B95A7]">Наши продукты</span>
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }} className="text-center mb-16">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-6">
+            <span className="text-xs text-[var(--text-muted)] font-medium tracking-wide">БОТЫ</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-[#E6EDF7] mb-4">
-            Три бота под любой рынок
+          <h2 className="heading-lg text-[var(--text)] mb-4">
+            Три бота для{' '}
+            <span className="text-gradient">любого рынка</span>
           </h2>
-          <p className="text-[#8B95A7] max-w-2xl mx-auto text-lg">
-            Выберите стратегию, которая подходит вашему стилю торговли. Каждый бот
-            можно запустить за пару минут.
+          <p className="text-[var(--text-muted)] max-w-2xl mx-auto text-lg">
+            Grid для боковика, DCA для накопления, AI Signal для тренда. Без абонплаты  покупаете один раз.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
           {bots.map((bot, i) => {
-            const colors = colorClasses[bot.color];
-            const yield30 = bot.returns[0].value;
+            const colors = colorMap[bot.color];
             return (
               <motion.div
                 key={bot.slug}
@@ -73,54 +39,45 @@ export default function Products() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="glass rounded-2xl p-6 card-hover group flex flex-col"
+                className={`glass rounded-2xl p-8 card-hover relative overflow-hidden ${colors.border} border`}
               >
-                {/* Visual */}
-                <div className="h-32 mb-5 rounded-xl overflow-hidden bg-[#0A0E17]/50 border border-white/5">
-                  <BotVisual slug={bot.slug} color={bot.color} />
-                </div>
-
-                {/* Tag */}
-                <div className={`inline-flex items-center px-2.5 py-1 rounded-full ${colors.bg} ${colors.border} border mb-3 w-fit`}>
+                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[var(--primary)]/30 to-transparent" />
+                
+                <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full ${colors.bg} ${colors.border} border mb-6`}>
                   <span className={`text-xs font-medium ${colors.text}`}>{bot.tag}</span>
                 </div>
 
-                <h3 className="text-xl font-display font-bold text-[#E6EDF7] mb-2">
-                  {bot.name}
-                </h3>
-                <p className="text-sm text-[#8B95A7] mb-4 leading-relaxed">
-                  {bot.description}
-                </p>
+                <h3 className="heading-md text-[var(--text)] mb-3">{bot.name}</h3>
+                <p className="text-[var(--text-muted)] mb-6 leading-relaxed">{bot.description}</p>
 
-                {/* Yield + mini chart */}
-                <div className="flex items-center justify-between mb-5 px-3 py-3 rounded-xl bg-white/[0.02] border border-white/5">
-                  <div>
-                    <div className="text-[10px] text-[#8B95A7] mb-0.5">Доходность за 30 дней</div>
-                    <div className={`text-lg font-display font-bold ${colors.text}`}>{yield30}</div>
-                  </div>
-                  <div className="w-24 h-10">
-                    <MiniYieldChart color={colors.hex} />
-                  </div>
+                <div className={`text-3xl font-display font-bold ${colors.text} mb-2`}>{bot.benefit}</div>
+                <p className="text-sm text-[var(--text-muted)] mb-8">Ключевое преимущество</p>
+
+                <div className="space-y-3 mb-8">
+                  {bot.howItWorks.slice(0, 3).map((step, si) => (
+                    <div key={si} className="flex items-start gap-3">
+                      <Check size={16} className={`${colors.text} shrink-0 mt-0.5`} />
+                      <div>
+                        <div className="text-sm font-medium text-[var(--text)]">{step.title}</div>
+                        <div className="text-xs text-[var(--text-muted)]">{step.description}</div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
 
-                <div className={`text-sm font-medium ${colors.text} mb-5`}>
-                  {bot.benefit}
+                <div className="grid grid-cols-3 gap-2 mb-8">
+                  {bot.returns.slice(0, 3).map((r, ri) => (
+                    <div key={ri} className="glass rounded-xl p-3 text-center">
+                      <div className="text-[10px] text-[var(--text-muted)] mb-1">{r.period}</div>
+                      <div className={`text-lg font-display font-bold ${colors.text}`}>{r.value}</div>
+                    </div>
+                  ))}
                 </div>
 
-                {/* Dual buttons */}
-                <div className="mt-auto flex gap-3">
-                  <Link
-                    to={`/bots/${bot.slug}`}
-                    className={`flex-1 inline-flex items-center justify-center gap-1.5 text-sm font-medium py-2.5 rounded-xl btn-secondary group-hover:gap-2.5 transition-all`}
-                  >
-                    Подробнее
-                    <ArrowRight size={16} />
-                  </Link>
-                  <button className={`flex-1 inline-flex items-center justify-center gap-1.5 text-sm font-semibold py-2.5 rounded-xl ${colors.btn}`}>
-                    <Rocket size={16} />
-                    Запустить
-                  </button>
-                </div>
+                <button className={`w-full btn-primary flex items-center justify-center gap-2 group`}>
+                  Купить {bot.name}
+                  <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+                </button>
               </motion.div>
             );
           })}

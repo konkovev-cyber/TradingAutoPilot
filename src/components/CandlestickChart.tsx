@@ -1,149 +1,68 @@
 import { useEffect, useState } from 'react';
 
-interface Candle {
-  open: number;
-  close: number;
-  high: number;
-  low: number;
-}
-
-function generateCandles(count: number): Candle[] {
-  const candles: Candle[] = [];
+const generateCandles = (count: number) => {
+  const candles = [];
   let price = 64000;
   for (let i = 0; i < count; i++) {
-    const change = (Math.random() - 0.48) * 800;
     const open = price;
-    const close = price + change;
+    const change = (Math.random() - 0.48) * 400;
+    const close = open + change;
     const high = Math.max(open, close) + Math.random() * 200;
     const low = Math.min(open, close) - Math.random() * 200;
     candles.push({ open, close, high, low });
     price = close;
   }
   return candles;
-}
+};
 
 export default function CandlestickChart() {
-  const [candles, setCandles] = useState<Candle[]>([]);
-  const [tick, setTick] = useState(0);
+  const [candles, setCandles] = useState(() => generateCandles(30));
 
   useEffect(() => {
-    setCandles(generateCandles(30));
     const interval = setInterval(() => {
-      setCandles((prev) => {
-        const next = [...prev.slice(1)];
-        const lastPrice = prev[prev.length - 1].close;
-        const change = (Math.random() - 0.48) * 800;
-        const open = lastPrice;
-        const close = lastPrice + change;
-        const high = Math.max(open, close) + Math.random() * 200;
-        const low = Math.min(open, close) - Math.random() * 200;
-        next.push({ open, close, high, low });
-        return next;
+      setCandles(prev => {
+        const last = prev[prev.length - 1];
+        const change = (Math.random() - 0.48) * 300;
+        const newClose = last.close + change;
+        const newCandle = {
+          open: last.close,
+          close: newClose,
+          high: Math.max(last.close, newClose) + Math.random() * 100,
+          low: Math.min(last.close, newClose) - Math.random() * 100,
+        };
+        return [...prev.slice(1), newCandle];
       });
-      setTick((t) => t + 1);
-    }, 1500);
+    }, 2000);
     return () => clearInterval(interval);
   }, []);
 
-  if (candles.length === 0) return null;
-
-  const width = 100;
-  const height = 200;
-  const padding = 8;
-  const chartHeight = height - padding * 2;
-  const allPrices = candles.flatMap((c) => [c.high, c.low]);
-  const minPrice = Math.min(...allPrices);
-  const maxPrice = Math.max(...allPrices);
-  const range = maxPrice - minPrice || 1;
-  const candleWidth = (width - padding * 2) / candles.length;
-
-  const y = (price: number) =>
-    padding + chartHeight - ((price - minPrice) / range) * chartHeight;
-
-  const lastPrice = candles[candles.length - 1].close;
-  const firstPrice = candles[0].close;
-  const isUp = lastPrice >= firstPrice;
-  const lineColor = isUp ? '#00FFB2' : '#FF4D6A';
-
-  const linePoints = candles
-    .map((c, i) => {
-      const x = padding + i * candleWidth + candleWidth / 2;
-      const yp = y(c.close);
-      return `${x},${yp}`;
-    })
-    .join(' ');
+  const maxPrice = Math.max(...candles.map(c => c.high));
+  const minPrice = Math.min(...candles.map(c => c.low));
+  const range = maxPrice - minPrice;
+  const chartHeight = 120;
+  const candleWidth = 100 / candles.length;
 
   return (
-    <svg
-      viewBox={`0 0 ${width} ${height}`}
-      className="w-full h-full"
-      preserveAspectRatio="none"
-    >
-      <defs>
-        <linearGradient id="candle-area" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={lineColor} stopOpacity="0.15" />
-          <stop offset="100%" stopColor={lineColor} stopOpacity="0" />
-        </linearGradient>
-      </defs>
-
-      {/* Area fill */}
-      <polygon
-        points={`${padding},${height - padding} ${linePoints} ${padding + (candles.length - 1) * candleWidth + candleWidth / 2},${height - padding}`}
-        fill="url(#candle-area)"
-      />
-
-      {/* Candles */}
-      {candles.map((c, i) => {
-        const x = padding + i * candleWidth + candleWidth / 2;
-        const isGreen = c.close >= c.open;
-        const color = isGreen ? '#00FFB2' : '#FF4D6A';
-        const bodyTop = y(Math.max(c.open, c.close));
-        const bodyBottom = y(Math.min(c.open, c.close));
-        const bodyHeight = Math.max(bodyBottom - bodyTop, 0.5);
-        const wickTop = y(c.high);
-        const wickBottom = y(c.low);
-        return (
-          <g key={i}>
-            <line
-              x1={x}
-              x2={x}
-              y1={wickTop}
-              y2={wickBottom}
-              stroke={color}
-              strokeWidth="0.3"
-              opacity="0.6"
-            />
-            <rect
-              x={x - candleWidth * 0.3}
-              y={bodyTop}
-              width={candleWidth * 0.6}
-              height={bodyHeight}
-              fill={color}
-              opacity={i === candles.length - 1 ? 1 : 0.7}
-            />
-          </g>
-        );
-      })}
-
-      {/* Price line */}
-      <polyline
-        points={linePoints}
-        fill="none"
-        stroke={lineColor}
-        strokeWidth="0.5"
-        opacity="0.5"
-      />
-
-      {/* Last price dot */}
-      {candles.length > 0 && (
-        <circle
-          cx={padding + (candles.length - 1) * candleWidth + candleWidth / 2}
-          cy={y(lastPrice)}
-          r="1.2"
-          fill={lineColor}
-          className="animate-pulse-glow"
-        />
-      )}
-    </svg>
+    <div className="relative h-32 w-full">
+      <svg className="w-full h-full" preserveAspectRatio="none">
+        {candles.map((candle, i) => {
+          const isGreen = candle.close >= candle.open;
+          const color = isGreen ? 'var(--primary)' : 'var(--danger)';
+          const yOpen = chartHeight - ((candle.open - minPrice) / range) * chartHeight;
+          const yClose = chartHeight - ((candle.close - minPrice) / range) * chartHeight;
+          const yHigh = chartHeight - ((candle.high - minPrice) / range) * chartHeight;
+          const yLow = chartHeight - ((candle.low - minPrice) / range) * chartHeight;
+          const bodyTop = Math.min(yOpen, yClose);
+          const bodyHeight = Math.max(Math.abs(yOpen - yClose), 1);
+          
+          return (
+            <g key={i}>
+              <line x1={(i + 0.5) * candleWidth} y1={yHigh} x2={(i + 0.5) * candleWidth} y2={yLow} stroke={color} strokeWidth="1" opacity="0.6" />
+              <rect x={i * candleWidth + 1} y={bodyTop} width={candleWidth - 2} height={bodyHeight} fill={color} rx="0.5" />
+            </g>
+          );
+        })}
+      </svg>
+    </div>
   );
 }
