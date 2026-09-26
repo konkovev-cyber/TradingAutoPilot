@@ -1,4 +1,4 @@
-﻿import { motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { UserPlus, Key, Bot, TrendingUp, ArrowRight } from 'lucide-react';
 import { howItWorksSteps } from '@/data/content';
 

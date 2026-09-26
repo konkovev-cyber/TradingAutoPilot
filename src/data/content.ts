@@ -1,4 +1,4 @@
-﻿export interface Trade {
+export interface Trade {
   pair: string;
   type: 'Long' | 'Short';
   status: 'opened' | 'closed';

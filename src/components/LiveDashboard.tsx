@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import CandlestickChart from './CandlestickChart';
 
 interface DashboardProps {

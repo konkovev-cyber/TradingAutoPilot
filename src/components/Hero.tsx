@@ -1,4 +1,4 @@
-﻿import { motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { ArrowRight, Play, TrendingUp, ShieldCheck, Lock, Repeat, Activity } from 'lucide-react';
 import AnimatedCounter from './AnimatedCounter';
 import LiveDashboard from './LiveDashboard';
