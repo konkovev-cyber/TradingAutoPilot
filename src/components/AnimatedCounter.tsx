@@ -1,28 +1,47 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-export default function AnimatedCounter({ value, prefix = '', suffix = '' }: { value: number; prefix?: string; suffix?: string }) {
-  const [count, setCount] = useState(0);
-  const [mounted, setMounted] = useState(false);
+interface CounterProps {
+  value: number;
+  duration?: number;
+  prefix?: string;
+  suffix?: string;
+  className?: string;
+}
+
+export default function AnimatedCounter({
+  value,
+  duration = 2000,
+  prefix = '',
+  suffix = '',
+  className = '',
+}: CounterProps) {
+  const [display, setDisplay] = useState(0);
+  const rafRef = useRef<number>(0);
+  const startRef = useRef<number>(0);
 
   useEffect(() => {
-    setMounted(true);
-    const duration = 2000;
-    const steps = 60;
-    const increment = value / steps;
-    let current = 0;
-    const timer = setInterval(() => {
-      current += increment;
-      if (current >= value) {
-        setCount(value);
-        clearInterval(timer);
+    const animate = (ts: number) => {
+      if (!startRef.current) startRef.current = ts;
+      const progress = Math.min((ts - startRef.current) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setDisplay(Math.floor(eased * value));
+      if (progress < 1) {
+        rafRef.current = requestAnimationFrame(animate);
       } else {
-        setCount(Math.floor(current));
+        setDisplay(value);
       }
-    }, duration / steps);
-    return () => clearInterval(timer);
-  }, [value]);
+    };
+    rafRef.current = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [value, duration]);
 
-  if (!mounted) return <span>{prefix}0{suffix}</span>;
+  const formatted = display.toLocaleString('ru-RU');
 
-  return <span>{prefix}{count.toLocaleString()}{suffix}</span>;
+  return (
+    <span className={className}>
+      {prefix}
+      {formatted}
+      {suffix}
+    </span>
+  );
 }
