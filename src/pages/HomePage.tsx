@@ -8,7 +8,6 @@ import Advantages from '@/components/Advantages';
 import Stats from '@/components/Stats';
 import LiveTrades from '@/components/LiveTrades';
 import Testimonials from '@/components/Testimonials';
-import Pricing from '@/components/Pricing';
 import FAQ from '@/components/FAQ';
 import CTA from '@/components/CTA';
 import Footer from '@/components/Footer';
@@ -27,7 +26,6 @@ export default function HomePage() {
         <Stats />
         <LiveTrades />
         <Testimonials />
-        <Pricing />
         <FAQ />
         <CTA />
       </main>

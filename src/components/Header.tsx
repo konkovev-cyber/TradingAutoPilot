@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Globe } from 'lucide-react';
+import { Menu, X, Sun, Moon } from 'lucide-react';
 
 const navLinks = [
   { label: 'Продукты', href: '/#products' },
   { label: 'Как это работает', href: '/#how-it-works' },
-  { label: 'Тарифы', href: '/#pricing' },
   { label: 'FAQ', href: '/#faq' },
   { label: 'Поддержка', href: '/#support' },
 ];
@@ -13,7 +12,7 @@ const navLinks = [
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [lang, setLang] = useState<'RU' | 'EN'>('RU');
+  const { theme, toggleTheme } = useTheme();
   const location = useLocation();
 
   useEffect(() => {
