@@ -39,9 +39,12 @@ export default function Calculator() {
   const formatMoney = (n: number) => '$' + n.toLocaleString('ru-RU');
 
   return (
-    <section className="section-padding relative overflow-hidden">
-      <div className="absolute top-0 right-1/4 w-96 h-96 bg-[#00FFB2]/5 rounded-full blur-[120px]" />
-      <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="section-padding relative overflow-hidden" id="calculator">
+      <div className="absolute inset-0 bg-dot-pattern opacity-30" />
+      <div className="absolute top-0 right-0 w-96 h-96 bg-[#00D4FF]/4 rounded-full blur-[100px]" />
+      <div className="absolute bottom-0 left-0 w-80 h-80 bg-[#7B61FF]/4 rounded-full blur-[100px]" />
+
+      <div className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -49,15 +52,15 @@ export default function Calculator() {
           transition={{ duration: 0.5 }}
           className="text-center mb-12"
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass mb-4">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-6">
             <CalcIcon className="text-[#00FFB2]" size={14} />
-            <span className="text-xs text-[#8B95A7]">Калькулятор доходности</span>
+            <span className="text-xs text-[#94A3B8] font-medium tracking-wide">PROFIT CALCULATOR</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl font-display font-bold text-[#E6EDF7] mb-4">
-            Рассчитайте свою прибыль
+          <h2 className="heading-lg text-[#F1F5F9] mb-4">
+            Calculate your <span className="text-gradient-primary">profit</span>
           </h2>
-          <p className="text-[#8B95A7] max-w-2xl mx-auto">
-            Выберите сумму, бота и уровень риска — и увидите прогноз за 30 дней.
+          <p className="text-[#64748B] max-w-xl mx-auto">
+            Choose amount, bot and risk level  see your 30-day forecast.
           </p>
         </motion.div>
 
@@ -65,14 +68,13 @@ export default function Calculator() {
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           className="glass-strong rounded-2xl p-8"
         >
-          {/* Deposit slider */}
           <div className="mb-8">
-            <div className="flex items-center justify-between mb-3">
-              <label className="text-sm text-[#8B95A7]">Сумма депозита</label>
-              <span className="text-lg font-display font-bold text-[#E6EDF7]">{formatMoney(deposit)}</span>
+            <div className="flex items-center justify-between mb-4">
+              <label className="text-sm text-[#94A3B8]">Deposit amount</label>
+              <span className="text-2xl font-display font-bold text-[#F1F5F9] tabular-nums">{formatMoney(deposit)}</span>
             </div>
             <input
               type="range"
@@ -81,27 +83,24 @@ export default function Calculator() {
               step={100}
               value={deposit}
               onChange={(e) => setDeposit(Number(e.target.value))}
-              className="w-full h-2 rounded-full appearance-none cursor-pointer bg-white/10 accent-[#00FFB2]"
+              className="w-full h-2 rounded-full appearance-none cursor-pointer"
               style={{ background: `linear-gradient(to right, #00FFB2 ${((deposit - 100) / 99900) * 100}%, rgba(255,255,255,0.1) ${((deposit - 100) / 99900) * 100}%)` }}
             />
-            <div className="flex justify-between mt-2 text-xs text-[#8B95A7]">
+            <div className="flex justify-between mt-2 text-xs text-[#64748B]">
               <span>$100</span>
-              <span>$100 000</span>
+              <span>$100,000</span>
             </div>
           </div>
 
-          {/* Bot selector */}
           <div className="mb-8">
-            <label className="text-sm text-[#8B95A7] mb-3 block">Выберите бота</label>
+            <label className="text-sm text-[#94A3B8] mb-3 block">Choose a bot</label>
             <div className="grid grid-cols-3 gap-3">
               {(Object.keys(botLabels) as BotType[]).map((key) => (
                 <button
                   key={key}
                   onClick={() => setBot(key)}
-                  className={`py-3 px-4 rounded-xl text-sm font-medium transition-all ${
-                    bot === key
-                      ? 'btn-primary'
-                      : 'btn-secondary'
+                  className={`py-3 px-3 rounded-xl text-sm font-medium transition-all duration-200 ${
+                    bot === key ? 'btn-primary shadow-md shadow-[#00FFB2]/15' : 'btn-secondary'
                   }`}
                 >
                   {botLabels[key]}
@@ -110,22 +109,19 @@ export default function Calculator() {
             </div>
           </div>
 
-          {/* Risk selector */}
           <div className="mb-8">
-            <label className="text-sm text-[#8B95A7] mb-3 block">Уровень риска</label>
+            <label className="text-sm text-[#94A3B8] mb-3 block">Risk level</label>
             <div className="grid grid-cols-3 gap-3">
-              {([
-                { key: 'conservative', label: 'Консервативный' },
-                { key: 'medium', label: 'Средний' },
-                { key: 'aggressive', label: 'Агрессивный' },
-              ] as { key: RiskLevel; label: string }[]).map((r) => (
+              {[
+                { key: 'conservative' as RiskLevel, label: 'Conservative' },
+                { key: 'medium' as RiskLevel, label: 'Medium' },
+                { key: 'aggressive' as RiskLevel, label: 'Aggressive' },
+              ].map((r) => (
                 <button
                   key={r.key}
                   onClick={() => setRisk(r.key)}
-                  className={`py-3 px-4 rounded-xl text-sm font-medium transition-all ${
-                    risk === r.key
-                      ? 'btn-primary'
-                      : 'btn-secondary'
+                  className={`py-3 px-3 rounded-xl text-sm font-medium transition-all duration-200 ${
+                    risk === r.key ? 'btn-primary shadow-md' : 'btn-secondary'
                   }`}
                 >
                   {r.label}
@@ -134,19 +130,24 @@ export default function Calculator() {
             </div>
           </div>
 
-          {/* Result */}
-          <div className="rounded-xl bg-[#00FFB2]/5 border border-[#00FFB2]/15 p-6">
+          <div className="rounded-xl bg-gradient-to-br from-[#00FFB2]/5 to-[#00D4FF]/5 border border-[#00FFB2]/15 p-6">
             <div className="flex items-center gap-2 mb-3">
               <TrendingUp className="text-[#00FFB2]" size={18} />
-              <span className="text-sm text-[#8B95A7]">Прогноз прибыли за 30 дней</span>
+              <span className="text-sm text-[#94A3B8]">30-day profit forecast</span>
             </div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-display font-bold text-[#00FFB2]">{formatMoney(result.min)}</span>
-              <span className="text-xl text-[#8B95A7]">—</span>
-              <span className="text-3xl font-display font-bold text-[#00D4FF]">{formatMoney(result.max)}</span>
+            <div className="flex items-baseline gap-3">
+              <span className="text-3xl font-display font-bold text-[#00FFB2] tabular-nums">{formatMoney(result.min)}</span>
+              <span className="text-xl text-[#64748B]"></span>
+              <span className="text-3xl font-display font-bold text-[#00D4FF] tabular-nums">{formatMoney(result.max)}</span>
             </div>
-            <p className="text-xs text-[#8B95A7]/60 mt-4">
-              Прогноз основан на исторических данных. Не является гарантией будущей доходности.
+            <div className="mt-4 h-1.5 rounded-full bg-white/5 overflow-hidden">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-[#00FFB2] to-[#00D4FF] transition-all duration-500"
+                style={{ width: `${Math.min((result.max / (deposit * 0.15)) * 100, 100)}%` }}
+              />
+            </div>
+            <p className="text-xs text-[#64748B]/60 mt-3">
+              Forecast is based on historical data. Does not guarantee future returns.
             </p>
           </div>
         </motion.div>
