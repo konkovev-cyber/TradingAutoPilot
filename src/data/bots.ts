@@ -1,4 +1,4 @@
-export interface BotProduct {
+﻿export interface BotProduct {
   slug: string;
   name: string;
   tagline: string;

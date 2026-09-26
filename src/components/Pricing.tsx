@@ -1,17 +1,14 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Check, Sparkles, Crown, Zap } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { pricingPlans } from '@/data/content';
 
 export default function Pricing() {
   const [yearly, setYearly] = useState(false);
 
   return (
-    <section id="pricing" className="section-padding relative overflow-hidden">
-      <div className="absolute inset-0 bg-dot-pattern opacity-50" />
-      <div className="absolute top-1/3 right-0 w-[400px] h-[400px] bg-[#7B61FF]/5 rounded-full blur-[100px]" />
-      <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-[#00FFB2]/3 rounded-full blur-[80px]" />
-
+    <section id="pricing" className="section-padding relative">
+      <div className="absolute top-0 right-1/4 w-96 h-96 bg-[#7B61FF]/5 rounded-full blur-[120px]" />
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -20,34 +17,30 @@ export default function Pricing() {
           transition={{ duration: 0.5 }}
           className="text-center mb-12"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-6">
-            <Sparkles size={12} className="text-[#00FFB2]" />
-            <span className="text-xs text-[#94A3B8] font-medium tracking-wide">PRICING</span>
-          </div>
-          <h2 className="heading-lg text-[#F1F5F9] mb-4">
-            Pay only for <span className="text-gradient-primary">results</span>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-[#E6EDF7] mb-4">
+            Тарифы
           </h2>
-          <p className="text-[#94A3B8] max-w-2xl mx-auto mb-8 text-lg">
-            No subscription. You pay a commission only when you profit. Switch plans anytime.
+          <p className="text-[#8B95A7] max-w-2xl mx-auto mb-6">
+            Без абонплаты. Платите только когда зарабатываете. Переключайтесь между
+            планами в любой момент.
           </p>
-
-          <div className="inline-flex items-center gap-1.5 p-1.5 glass rounded-full">
+          {/* Toggle */}
+          <div className="inline-flex items-center gap-3 glass rounded-full p-1">
             <button
               onClick={() => setYearly(false)}
-              className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-                !yearly ? 'bg-[#00FFB2]/15 text-[#00FFB2] shadow-sm' : 'text-[#64748B] hover:text-[#94A3B8]'
+              className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${
+                !yearly ? 'btn-primary' : 'text-[#8B95A7]'
               }`}
             >
-              Monthly
+              Помесячно
             </button>
             <button
               onClick={() => setYearly(true)}
-              className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 flex items-center gap-2 ${
-                yearly ? 'bg-[#00FFB2]/15 text-[#00FFB2] shadow-sm' : 'text-[#64748B] hover:text-[#94A3B8]'
+              className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${
+                yearly ? 'btn-primary' : 'text-[#8B95A7]'
               }`}
             >
-              Yearly
-              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-[#00FFB2]/20 text-[#00FFB2] font-bold">-20%</span>
+              Годовой
             </button>
           </div>
         </motion.div>
@@ -56,84 +49,60 @@ export default function Pricing() {
           {pricingPlans.map((plan, i) => (
             <motion.div
               key={plan.name}
-              initial={{ opacity: 0, y: 40 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: i * 0.1 }}
-              className={`relative rounded-2xl p-8 flex flex-col ${
+              transition={{ duration: 0.5, delay: i * 0.1 }}
+              className={`relative rounded-2xl p-8 ${
                 plan.highlight
-                  ? 'glass-strong border-[#00FFB2]/25 glow-primary'
-                  : 'glass-card'
+                  ? 'glass-strong border-[#00FFB2]/30 glow-primary'
+                  : 'glass'
               }`}
             >
               {plan.highlight && (
-                <>
-                  <div className="absolute -inset-px rounded-2xl bg-gradient-to-b from-[#00FFB2]/20 via-transparent to-transparent opacity-50" />
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-px bg-gradient-to-r from-transparent via-[#00FFB2]/50 to-transparent" />
-                </>
-              )}
-
-              {plan.highlight && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-gradient-to-r from-[#00FFB2] to-[#00D4FF] text-[#050A14] text-xs font-bold shadow-lg">
-                  <Crown size={12} />
-                  Popular
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-[#00FFB2] text-[#0A0E17] text-xs font-bold">
+                  Популярный
                 </div>
               )}
 
-              <div className="relative">
-                <div className="flex items-center gap-2.5 mb-3">
-                  {plan.highlight ? (
-                    <Zap className="text-[#00FFB2]" size={18} />
-                  ) : (
-                    <div className="w-5 h-5 rounded-full bg-white/5 border border-white/10" />
-                  )}
-                  <h3 className="text-xl font-display font-bold text-[#F1F5F9]">
-                    {plan.name}
-                  </h3>
-                </div>
-                <p className="text-sm text-[#64748B] mb-6 min-h-[40px]">
-                  {plan.description}
-                </p>
+              <h3 className="text-xl font-display font-bold text-[#E6EDF7] mb-2">
+                {plan.name}
+              </h3>
+              <p className="text-sm text-[#8B95A7] mb-6">{plan.description}</p>
 
-                <div className="mb-6">
-                  {plan.price === 'Custom' ? (
-                    <span className="text-3xl font-display font-bold text-[#F1F5F9]">
-                      Custom
+              <div className="mb-6">
+                {plan.price === 'Кастом' ? (
+                  <span className="text-3xl font-display font-bold text-[#E6EDF7]">
+                    Кастом
+                  </span>
+                ) : (
+                  <>
+                    <span className="text-4xl font-display font-bold text-[#E6EDF7]">
+                      {plan.price === '0' ? '0' : yearly ? plan.price : plan.price}
                     </span>
-                  ) : (
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-4xl font-display font-bold text-[#F1F5F9]">
-                        {plan.price === '0' ? '0' : plan.price}
-                      </span>
-                      {plan.price !== '0' && (
-                        <span className="text-sm text-[#64748B] ml-1">
-                          {yearly ? '/year' : '/month'}
-                        </span>
-                      )}
-                      {plan.price === '0' && (
-                        <span className="text-sm text-[#64748B] ml-1">forever</span>
-                      )}
-                    </div>
-                  )}
-                </div>
-
-                <button
-                  className={`w-full py-3.5 rounded-xl text-sm font-semibold mb-7 transition-all ${
-                    plan.highlight ? 'btn-primary shadow-lg shadow-[#00FFB2]/15' : 'btn-secondary'
-                  }`}
-                >
-                  {plan.cta}
-                </button>
-
-                <ul className="space-y-3">
-                  {plan.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-2.5 text-sm text-[#94A3B8]">
-                      <Check size={14} className="text-[#00FFB2] shrink-0 mt-0.5" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
+                    <span className="text-sm text-[#8B95A7] ml-1">
+                      {plan.period && `${plan.period === 'мес' ? '/мес' : ''}`}
+                    </span>
+                  </>
+                )}
               </div>
+
+              <button
+                className={`w-full py-3 rounded-xl text-sm font-semibold mb-6 transition-all ${
+                  plan.highlight ? 'btn-primary' : 'btn-secondary'
+                }`}
+              >
+                {plan.cta}
+              </button>
+
+              <ul className="space-y-3">
+                {plan.features.map((feature) => (
+                  <li key={feature} className="flex items-start gap-2 text-sm text-[#8B95A7]">
+                    <Check size={16} className="text-[#00FFB2] shrink-0 mt-0.5" />
+                    {feature}
+                  </li>
+                ))}
+              </ul>
             </motion.div>
           ))}
         </div>

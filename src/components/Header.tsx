@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Globe, Sun, Moon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -8,7 +8,6 @@ import { useTheme } from '@/lib/theme';
 const navLinks = [
   { key: 'nav.products', href: '/#products' },
   { key: 'nav.howItWorks', href: '/#how-it-works' },
-  
   { key: 'nav.faq', href: '/#faq' },
   { key: 'nav.support', href: '/#support' },
 ];
@@ -37,12 +36,9 @@ export default function Header() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className={`flex items-center justify-between rounded-2xl transition-all duration-500 ${scrolled ? 'glass-strong px-5 py-2.5' : 'bg-transparent px-2 py-1'}`}>
             <Link to="/" className="flex items-center gap-2.5 shrink-0">
-              <svg width="32" height="32" viewBox="0 0 64 64" className="shrink-0">
-                <defs><linearGradient id="logo-grad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#00FFB2" /><stop offset="100%" stopColor="#00D4FF" /></linearGradient></defs>
-                <rect width="64" height="64" rx="16" fill="rgba(0,255,178,0.08)" />
-                <path d="M16 40 L24 28 L32 34 L40 20 L48 26" stroke="url(#logo-grad)" strokeWidth="3.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-                <circle cx="48" cy="26" r="4" fill="#00FFB2" />
-              </svg>
+                            <img src="/logo-dark.png" alt="Coinsofter" className="h-8 w-auto dark:hidden" />
+              <img src="/logo-light.png" alt="Coinsofter" className="h-8 w-auto hidden dark:block" />
+
               <span className="text-lg font-display font-bold text-[#F1F5F9] tracking-tight">Coin<span className="text-[#00FFB2]">soft</span>er</span>
             </Link>
             <nav className="hidden lg:flex items-center gap-1">

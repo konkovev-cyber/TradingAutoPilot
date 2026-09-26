@@ -1,11 +1,11 @@
-import { useEffect, useState, useCallback } from 'react';
+﻿import { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface LiveTrade {
   id: number;
   pair: string;
   type: 'Long' | 'Short';
-  status: 'opened' | 'closed' | 'tp';
+  status: 'opened' | 'closed' | 'TP hit';
   entry: string;
   exit: string;
   pnl: string;
@@ -14,7 +14,7 @@ interface LiveTrade {
 }
 
 const pairs = ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'BNB/USDT', 'XRP/USDT', 'ADA/USDT', 'AVAX/USDT', 'DOT/USDT', 'LINK/USDT', 'MATIC/USDT'];
-const statuses: LiveTrade['status'][] = ['opened', 'closed', 'tp'];
+const statuses: LiveTrade['status'][] = ['opened', 'closed', 'TP hit'];
 
 function generateTrade(id: number): LiveTrade {
   const pair = pairs[Math.floor(Math.random() * pairs.length)];
@@ -23,7 +23,7 @@ function generateTrade(id: number): LiveTrade {
   const isPositive = Math.random() > 0.25;
   const pnlVal = (Math.random() * 5).toFixed(2);
   const entryVal = (Math.random() * 50000 + 100).toFixed(2);
-  const exitVal = status === 'opened' ? '\u2014' : (Math.random() * 50000 + 100).toFixed(2);
+  const exitVal = status === 'opened' ? '—' : (Math.random() * 50000 + 100).toFixed(2);
 
   return {
     id,
@@ -32,41 +32,44 @@ function generateTrade(id: number): LiveTrade {
     status,
     entry: entryVal,
     exit: exitVal,
-    pnl: (isPositive ? '+' : '-') + pnlVal + '%',
+    pnl: `${isPositive ? '+' : '-'}${pnlVal}%`,
     pnlPositive: isPositive,
-    time: 'just now',
+    time: 'только что',
   };
 }
 
+function generateInitialTrades(): LiveTrade[] {
+  return Array.from({ length: 8 }, (_, i) => ({
+    ...generateTrade(i + 1),
+    time: `${(i + 1) * 3} мин назад`,
+  }));
+}
+
 export default function LiveTrades() {
-  const [trades, setTrades] = useState<LiveTrade[]>(() =>
-    Array.from({ length: 6 }, (_, i) => ({ ...generateTrade(i + 1), time: ((i + 1) * 3) + ' min ago' }))
-  );
-  const [nextId, setNextId] = useState(7);
+  const [trades, setTrades] = useState<LiveTrade[]>(generateInitialTrades);
+  const [nextId, setNextId] = useState(9);
 
   const addTrade = useCallback(() => {
     setTrades((prev) => {
       const newTrade = generateTrade(nextId);
       setNextId((n) => n + 1);
+      // Update existing trades' time labels
       const updated = prev.map((t, i) => ({
         ...t,
-        time: i === 0 ? 'just now' : ((i + 1) * 3 + 1) + ' min ago',
+        time: `${(i + 1) * 3 + 1} мин назад`,
       }));
       return [newTrade, ...updated].slice(0, 8);
     });
   }, [nextId]);
 
   useEffect(() => {
-    const interval = setInterval(addTrade, 7000);
+    const interval = setInterval(addTrade, 6000);
     return () => clearInterval(interval);
   }, [addTrade]);
 
   return (
-    <section className="section-padding relative overflow-hidden">
-      <div className="absolute inset-0 bg-dot-pattern opacity-40" />
-      <div className="absolute top-0 left-1/4 w-80 h-80 bg-[#00D4FF]/5 rounded-full blur-[100px]" />
-
-      <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="section-padding relative">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -74,17 +77,16 @@ export default function LiveTrades() {
           transition={{ duration: 0.5 }}
           className="text-center mb-12"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-4">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00FFB2] opacity-40"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#00FFB2]"></span>
-            </span>
-            <span className="text-xs text-[#00FFB2] font-semibold tracking-wide">LIVE</span>
-            <span className="text-xs text-[#64748B]">Real-time bots</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass mb-4">
+            <span className="w-2 h-2 rounded-full bg-[#00FFB2] animate-pulse-glow" />
+            <span className="text-xs text-[#00FFB2] font-medium">LIVE</span>
+            <span className="text-xs text-[#8B95A7]">Боты в реальном времени</span>
           </div>
-          <h2 className="heading-md text-[#F1F5F9] mb-3">Trades right now</h2>
-          <p className="text-[#64748B] max-w-xl mx-auto">
-            Coinsofter bots execute trades around the clock. New trades appear automatically.
+          <h2 className="text-3xl sm:text-4xl font-display font-bold text-[#E6EDF7] mb-4">
+            Сделки прямо сейчас
+          </h2>
+          <p className="text-[#8B95A7] max-w-2xl mx-auto">
+            Боты Coinsofter исполняют сделки круглосуточно. Новые сделки появляются автоматически.
           </p>
         </motion.div>
 
@@ -92,20 +94,20 @@ export default function LiveTrades() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="glass-strong rounded-2xl overflow-hidden"
+          transition={{ duration: 0.5 }}
+          className="glass rounded-2xl overflow-hidden"
         >
-          <div className="overflow-x-auto no-scrollbar table-container">
-            <table className="w-full min-w-[600px]">
+          <div className="overflow-x-auto no-scrollbar">
+            <table className="w-full min-w-[640px]">
               <thead>
                 <tr className="border-b border-white/5">
-                  <th className="text-left px-5 py-3.5 text-xs font-semibold text-[#64748B] uppercase tracking-wider">Pair</th>
-                  <th className="text-left px-5 py-3.5 text-xs font-semibold text-[#64748B] uppercase tracking-wider">Type</th>
-                  <th className="text-left px-5 py-3.5 text-xs font-semibold text-[#64748B] uppercase tracking-wider">Status</th>
-                  <th className="text-right px-5 py-3.5 text-xs font-semibold text-[#64748B] uppercase tracking-wider">Entry</th>
-                  <th className="text-right px-5 py-3.5 text-xs font-semibold text-[#64748B] uppercase tracking-wider">Exit</th>
-                  <th className="text-right px-5 py-3.5 text-xs font-semibold text-[#64748B] uppercase tracking-wider">PnL</th>
-                  <th className="text-right px-5 py-3.5 text-xs font-semibold text-[#64748B] uppercase tracking-wider">Time</th>
+                  <th className="text-left px-6 py-4 text-xs font-medium text-[#8B95A7] uppercase tracking-wider">Пара</th>
+                  <th className="text-left px-6 py-4 text-xs font-medium text-[#8B95A7] uppercase tracking-wider">Тип</th>
+                  <th className="text-left px-6 py-4 text-xs font-medium text-[#8B95A7] uppercase tracking-wider">Статус</th>
+                  <th className="text-right px-6 py-4 text-xs font-medium text-[#8B95A7] uppercase tracking-wider">Вход</th>
+                  <th className="text-right px-6 py-4 text-xs font-medium text-[#8B95A7] uppercase tracking-wider">Выход</th>
+                  <th className="text-right px-6 py-4 text-xs font-medium text-[#8B95A7] uppercase tracking-wider">PnL</th>
+                  <th className="text-right px-6 py-4 text-xs font-medium text-[#8B95A7] uppercase tracking-wider">Время</th>
                 </tr>
               </thead>
               <tbody>
@@ -114,53 +116,45 @@ export default function LiveTrades() {
                     <motion.tr
                       key={trade.id}
                       layout
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
+                      initial={{ opacity: 0, height: 0, backgroundColor: 'rgba(0, 255, 178, 0.08)' }}
+                      animate={{ opacity: 1, height: 'auto', backgroundColor: 'rgba(0, 0, 0, 0)' }}
                       exit={{ opacity: 0 }}
-                      transition={{ duration: 0.4 }}
-                      className="border-b border-white/[0.03] hover:bg-white/[0.02] transition-colors"
+                      transition={{ duration: 0.5 }}
+                      className="border-b border-white/5 hover:bg-white/5"
                     >
-                      <td className="px-5 py-3.5 text-sm font-semibold text-[#F1F5F9]">{trade.pair}</td>
-                      <td className="px-5 py-3.5">
-                        <span className={`text-xs font-semibold px-2.5 py-1 rounded-lg ${
+                      <td className="px-6 py-4 text-sm font-medium text-[#E6EDF7]">{trade.pair}</td>
+                      <td className="px-6 py-4">
+                        <span className={`text-xs font-medium px-2 py-0.5 rounded ${
                           trade.type === 'Long'
-                            ? 'bg-[#00FFB2]/10 text-[#00FFB2] border border-[#00FFB2]/15'
-                            : 'bg-[#FF4D6A]/10 text-[#FF4D6A] border border-[#FF4D6A]/15'
+                            ? 'bg-[#00FFB2]/10 text-[#00FFB2]'
+                            : 'bg-[#FF4D6A]/10 text-[#FF4D6A]'
                         }`}>
                           {trade.type}
                         </span>
                       </td>
-                      <td className="px-5 py-3.5">
-                        <span className={`inline-flex items-center gap-1.5 text-xs font-medium ${
-                          trade.status === 'opened' ? 'text-[#00D4FF]' : trade.status === 'tp' ? 'text-[#00FFB2]' : 'text-[#64748B]'
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex items-center gap-1.5 text-xs ${
+                          trade.status === 'opened' ? 'text-[#00D4FF]' : trade.status === 'TP hit' ? 'text-[#00FFB2]' : 'text-[#8B95A7]'
                         }`}>
                           <span className={`w-1.5 h-1.5 rounded-full ${
-                            trade.status === 'opened' ? 'bg-[#00D4FF] animate-pulse' : trade.status === 'tp' ? 'bg-[#00FFB2]' : 'bg-[#64748B]'
+                            trade.status === 'opened' ? 'bg-[#00D4FF] animate-pulse-glow' : trade.status === 'TP hit' ? 'bg-[#00FFB2]' : 'bg-[#8B95A7]'
                           }`} />
-                          {trade.status === 'opened' ? 'Open' : trade.status === 'tp' ? 'TP hit' : 'Closed'}
+                          {trade.status === 'opened' ? 'Открыта' : trade.status === 'TP hit' ? 'TP hit' : 'Закрыта'}
                         </span>
                       </td>
-                      <td className="px-5 py-3.5 text-sm text-right text-[#94A3B8] tabular-nums">{trade.entry}</td>
-                      <td className="px-5 py-3.5 text-sm text-right text-[#94A3B8] tabular-nums">{trade.exit}</td>
-                      <td className={`px-5 py-3.5 text-sm text-right font-semibold tabular-nums ${
+                      <td className="px-6 py-4 text-sm text-right text-[#8B95A7] tabular-nums">{trade.entry}</td>
+                      <td className="px-6 py-4 text-sm text-right text-[#8B95A7] tabular-nums">{trade.exit}</td>
+                      <td className={`px-6 py-4 text-sm text-right font-medium tabular-nums ${
                         trade.pnlPositive ? 'text-[#00FFB2]' : 'text-[#FF4D6A]'
                       }`}>
                         {trade.pnl}
                       </td>
-                      <td className="px-5 py-3.5 text-xs text-[#64748B] text-right">{trade.time}</td>
+                      <td className="px-6 py-4 text-xs text-right text-[#8B95A7]">{trade.time}</td>
                     </motion.tr>
                   ))}
                 </AnimatePresence>
               </tbody>
             </table>
-          </div>
-
-          <div className="px-5 py-3 border-t border-white/5 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-[#00FFB2] animate-pulse" />
-              <span className="text-xs text-[#64748B]">Auto-updating</span>
-            </div>
-            <span className="text-xs text-[#64748B]">{trades.length} trades in feed</span>
           </div>
         </motion.div>
       </div>
