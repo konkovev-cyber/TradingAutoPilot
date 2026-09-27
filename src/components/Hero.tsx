@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, BookOpen, ShieldCheck, Zap } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
@@ -6,112 +5,97 @@ import { TradingTerminal } from "./HeroTerminal";
 import { MetricsStrip } from "./HeroMetrics";
 
 export default function Hero() {
-  const { t } = useI18n();
-  const [mounted, setMounted] = useState(false);
-  
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-  
-  if (!mounted) return null;
-  
+  const { lang } = useI18n();
+  const isEnglish = lang === "en";
+  const copy = isEnglish
+    ? {
+        badge: "Autonomous trading system",
+        markets: "Crypto + Stocks",
+        title: <>Trade global markets.<br /><span>With one bot.</span></>,
+        description: "CryptoSuperStock analyzes price deviations, calculates entry levels and works through limit orders. Crypto and international stocks in one automated system.",
+        primary: "Choose a bot",
+        secondary: "How it works",
+        trust: ["API without withdrawal rights", "Setup in 2 minutes"],
+      }
+    : {
+        badge: "Автономная торговая система",
+        markets: "Crypto + Stocks",
+        title: <>Торгуйте мировыми<br />рынками.<br /><span>Одним роботом.</span></>,
+        description: "CryptoSuperStock анализирует отклонения цены, рассчитывает уровни входа и работает через лимитные ордера. Криптовалюты и международные акции в одной автоматической системе.",
+        primary: "Выбрать робота",
+        secondary: "Как это работает",
+        trust: ["API без права вывода", "Настройка за 2 минуты"],
+      };
+
   return (
-    <section className="relative bg-[#F8FAFC] dark:bg-[#0B1120] overflow-hidden flex items-start pt-16 md:pt-20 pb-12">
-      {/* Background */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div 
-          className="absolute inset-0 opacity-[0.025] dark:opacity-[0.05]"
-          style={{ backgroundImage: "radial-gradient(circle, #0B0F14 1px, transparent 1px)", backgroundSize: "24px 24px" }}
+    <section className="relative isolate box-border flex min-h-[100svh] items-start overflow-hidden bg-[#F8FAFC] pb-10 pt-20 dark:bg-[#080D16] md:pt-24">
+      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+        <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.07]" style={{ backgroundImage: "radial-gradient(circle, #0B0F14 1px, transparent 1px)", backgroundSize: "24px 24px" }} />
+        <motion.div
+          className="absolute -right-40 -top-48 h-[760px] w-[760px] rounded-full bg-[radial-gradient(circle,rgba(16,185,129,0.16),rgba(37,99,235,0.08)_35%,transparent_70%)] blur-3xl dark:opacity-90"
+          animate={{ x: [0, -28, 0], y: [0, 24, 0], scale: [1, 1.06, 1] }}
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
         />
-        <div 
-          className="absolute top-0 right-0 w-[600px] h-[600px] opacity-12 dark:opacity-8"
-          style={{ background: "radial-gradient(circle at 75% 25%, rgba(37, 99, 235, 0.12) 0%, transparent 55%)", filter: "blur(80px)" }}
+        <motion.div
+          className="absolute -bottom-64 left-1/3 h-[560px] w-[560px] rounded-full bg-[radial-gradient(circle,rgba(16,185,129,0.09),transparent_68%)] blur-3xl dark:opacity-90"
+          animate={{ x: [0, 35, 0], opacity: [0.55, 0.9, 0.55] }}
+          transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
         />
       </div>
 
-      <div className="relative max-w-[1280px] mx-auto px-6 lg:px-12 w-full">
-        {/* Eyebrow */}
+      <div className="relative mx-auto w-full max-w-[1440px] px-6 lg:px-10 xl:px-14 2xl:px-16">
         <motion.div
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="mb-5 flex items-center gap-3"
+          transition={{ duration: 0.45 }}
+          className="mb-6 flex items-center gap-3"
         >
-          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white dark:bg-[#15171C] border border-black/8 dark:border-white/10 shadow-sm">
+          <div className="flex items-center gap-2 rounded-full border border-black/[0.08] bg-white/80 px-3.5 py-1.5 shadow-sm backdrop-blur-md dark:border-white/[0.12] dark:bg-white/[0.06]">
             <span className="relative flex h-1.5 w-1.5">
-              <span className="absolute inline-flex h-full w-full rounded-full bg-[#10B981] opacity-60 animate-ping"></span>
-              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#10B981]"></span>
+              <motion.span animate={{ scale: [1, 2.4, 1], opacity: [0.65, 0, 0.65] }} transition={{ duration: 2, repeat: Infinity }} className="absolute inset-0 rounded-full bg-[#10B981]" />
+              <span className="relative h-1.5 w-1.5 rounded-full bg-[#10B981]" />
             </span>
-            <span className="text-[10px] font-semibold text-[#5A5F6B] dark:text-slate-400 uppercase tracking-widest">
-              Автономная торговая система
-            </span>
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-[#5A5F6B] dark:text-slate-300">{copy.badge}</span>
           </div>
-          <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500 hidden sm:block">
-            Crypto + Stocks
-          </span>
+          <span className="hidden text-[10px] font-medium text-slate-400 dark:text-slate-500 sm:block">{copy.markets}</span>
         </motion.div>
 
-        {/* Main grid */}
-        <div className="grid lg:grid-cols-[46%_54%] gap-12 items-start">
-          {/* Left */}
-          <div>
-            {/* Headline */}
+        <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] xl:gap-16">
+          <div className="relative z-10">
             <motion.h1
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-[42px] sm:text-[48px] lg:text-[56px] font-bold text-[#0B0F14] dark:text-white leading-[0.98] tracking-tight mb-5"
+              transition={{ duration: 0.6, delay: 0.08 }}
+              className="mb-5 text-[42px] font-bold leading-[0.98] tracking-tight text-[#0B0F14] dark:text-white sm:text-[52px] lg:text-[56px] xl:text-[64px]"
             >
-              Торгуйте мировыми<br />
-              рынками.<br />
-              <span className="text-[#10B981]">Одним роботом.</span>
+              {copy.title}
             </motion.h1>
-
-            {/* Description */}
             <motion.p
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-[16px] text-[#5A5F6B] dark:text-slate-400 leading-[1.6] max-w-[480px] mb-7"
+              transition={{ duration: 0.6, delay: 0.17 }}
+              className="mb-7 max-w-[520px] text-[16px] leading-[1.6] text-[#5A5F6B] dark:text-slate-400"
             >
-              CryptoSuperStock анализирует отклонения цены, пересчитывает уровни входа и работает через лимитные ордера. Криптовалюты и международные акции  в одной автоматической системе.
+              {copy.description}
             </motion.p>
 
-            {/* CTA */}
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="flex flex-col sm:flex-row gap-3 mb-6"
-            >
-              <a
-                href="#bots"
-                className="inline-flex items-center justify-center gap-2 h-[50px] px-7 bg-[#10B981] text-white font-semibold text-[14px] rounded-xl hover:bg-[#059669] hover:-translate-y-0.5 hover:shadow-lg hover:shadow-[#10B981]/20 transition-all"
-              >
-                {t("hero.pick")}
-                <ArrowRight size={16} strokeWidth={2.5} />
+            <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.26 }} className="mb-6 flex flex-col gap-3 sm:flex-row">
+              <a href="#bots" className="group inline-flex h-[50px] items-center justify-center gap-2 rounded-xl bg-[#10B981] px-7 text-[14px] font-semibold text-white shadow-[0_10px_30px_-10px_rgba(16,185,129,0.65)] transition-all hover:-translate-y-0.5 hover:bg-[#0D9669] hover:shadow-[0_16px_35px_-10px_rgba(16,185,129,0.75)]">
+                {copy.primary}
+                <ArrowRight size={16} strokeWidth={2.5} className="transition-transform group-hover:translate-x-1" />
               </a>
-              <a
-                href="#how"
-                className="inline-flex items-center justify-center h-[50px] px-7 text-[#0B0F14] dark:text-white font-medium text-[14px] rounded-xl border border-black/10 dark:border-white/15 hover:bg-black/[0.03] dark:hover:bg-white/[0.04] transition-colors"
-              >
+              <a href="#how" className="inline-flex h-[50px] items-center justify-center rounded-xl border border-black/10 px-7 text-[14px] font-medium text-[#0B0F14] transition-colors hover:bg-black/[0.03] dark:border-white/15 dark:text-white dark:hover:bg-white/[0.06]">
                 <BookOpen size={16} className="mr-2 opacity-50" />
-                {t("hero.cta2")}
+                {copy.secondary}
               </a>
             </motion.div>
 
-            {/* Trust points */}
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-              className="flex flex-wrap gap-5"
-            >
+            <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.35 }} className="flex flex-wrap gap-5">
               {[
-                { icon: ShieldCheck, text: "API без права вывода" },
-                { icon: Zap, text: "Настройка 2 минуты" },
-              ].map((item, i) => (
-                <div key={i} className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+                { icon: ShieldCheck, text: copy.trust[0] },
+                { icon: Zap, text: copy.trust[1] },
+              ].map((item) => (
+                <div key={item.text} className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
                   <item.icon size={13} className="text-[#10B981]" />
                   <span>{item.text}</span>
                 </div>
@@ -119,14 +103,12 @@ export default function Hero() {
             </motion.div>
           </div>
 
-          {/* Right - Trading Terminal */}
-          <div className="relative">
+          <div className="relative min-w-0">
             <TradingTerminal />
           </div>
         </div>
 
-        {/* Metrics - closer to terminal */}
-        <div className="mt-8">
+        <div className="mt-10">
           <MetricsStrip />
         </div>
       </div>
