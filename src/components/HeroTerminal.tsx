@@ -1,223 +1,121 @@
-import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { useId } from "react";
 
-// Keyframes for pulse animation
-const pulseKeyframes = `
-@keyframes pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(0.85); }
-}
-`;
+const months = ["Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"];
 
-// Zone components
-function MarketsZone() {
-  const markets = [
-    { symbol: "BTCUSDT", change: "+2.41%" },
-    { symbol: "ETHUSDT", change: "+3.17%" },
-    { symbol: "NVDA", change: "+1.82%" },
-    { symbol: "AMD", change: "+2.04%" },
-  ];
-  
-  return (
-    <div className="flex flex-col">
-      <div className="text-[9px] uppercase tracking-widest text-slate-500 font-semibold mb-4">MARKETS</div>
-      <div className="space-y-3">
-        {markets.map((m) => (
-          <div key={m.symbol} className="flex items-center justify-between">
-            <span className="text-white text-[12px] font-medium">{m.symbol}</span>
-            <span className="text-[#10B981] text-[11px] font-semibold tabular-nums">{m.change}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
+// An illustrative curve, not a record of trades or verified historical returns.
+// The two drawdowns are deliberate and the chart is not connected to market data.
+const curve = [
+  "M 20 240",
+  "C 38 239, 45 214, 60 220",
+  "C 76 225, 85 239, 100 235",
+  "C 122 230, 130 202, 150 200",
+  "C 170 197, 180 186, 200 180",
+  "C 226 170, 232 134, 250 130",
+  "C 268 127, 280 163, 300 165",
+  "C 322 165, 340 125, 360 120",
+  "C 385 116, 397 94, 420 90",
+  "C 445 84, 458 64, 480 60",
+  "C 505 54, 515 49, 540 45",
+  "C 558 42, 569 34, 580 30",
+].join(" ");
 
-function EngineZone() {
-  return (
-    <div className="w-[120px] flex items-center justify-center">
-      <div className="relative w-[120px] h-[120px] rounded-2xl flex flex-col items-center justify-center gap-1" style={{
-        background: "radial-gradient(circle at center, rgba(16,185,129,0.12), rgba(16,185,129,0.02))",
-        border: "1px solid rgba(16,185,129,0.25)"
-      }}>
-        <div className="text-white text-[24px] font-bold leading-none">CS</div>
-        <div className="text-slate-500 text-[9px] uppercase tracking-widest">ENGINE</div>
-        <div className="flex items-center gap-1.5">
-          <span className="relative inline-block w-2 h-2">
-            <span className="animate-pulse absolute inline-flex h-full w-full rounded-full bg-[#10B981] opacity-75"></span>
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-[#10B981]"></span>
-          </span>
-          <span className="text-[#10B981] text-[9px] font-semibold uppercase tracking-wider">ACTIVE</span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ActionsZone() {
-  return (
-    <div className="flex flex-col">
-      <div className="text-[9px] uppercase tracking-widest text-slate-500 font-semibold mb-4">ACTIONS</div>
-      <div className="space-y-3.5">
-        <div className="flex items-center justify-between">
-          <span className="text-slate-500 text-[10px] uppercase tracking-wide">LIMIT BUY</span>
-          <span className="text-[#10B981] text-[11px] font-semibold tabular-nums">$67,420</span>
-        </div>
-        <div className="flex items-center justify-between">
-          <span className="text-slate-500 text-[10px] uppercase tracking-wide">LIMIT SELL</span>
-          <span className="text-[#FF4D4D] text-[11px] font-semibold tabular-nums">$68,890</span>
-        </div>
-        <div className="pt-3.5 border-t border-white/6">
-          <div className="flex items-center justify-between">
-            <span className="text-slate-500 text-[10px] uppercase tracking-wide">MONITORING</span>
-            <span className="text-slate-400 text-[11px] font-medium tabular-nums">3 позиции</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function Connector({ reverse }: { reverse?: boolean }) {
-  return (
-    <div className="flex items-center flex-shrink-0" style={{ width: "40px", height: "2px" }}>
-      <div className="flex-1 h-px bg-[rgba(16,185,129,0.4)]" />
-      <div 
-        className="w-1 h-1 rounded-full bg-[#10B981] flex-shrink-0"
-        style={{ marginLeft: reverse ? "0" : "auto", marginRight: reverse ? "auto" : "0" }}
-      />
-    </div>
-  );
-}
-
-function SchematicCurve() {
-  return (
-    <div className="mt-4">
-      <div className="text-[9px] uppercase tracking-widest text-slate-500 font-semibold mb-3">Решения робота</div>
-      <svg 
-        viewBox="0 0 560 60" 
-        width="100%" 
-        height="60" 
-        preserveAspectRatio="none"
-        className="block"
-      >
-        <defs>
-          <linearGradient id="curveGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="rgba(16,185,129,0.15)" />
-            <stop offset="100%" stopColor="rgba(16,185,129,0)" />
-          </linearGradient>
-        </defs>
-        
-        {/* Curve path */}
-        <path 
-          d="M 0 45 Q 70 40, 140 35 T 280 30 T 420 25 T 560 10"
-          fill="none"
-          stroke="#10B981"
-          strokeWidth="1.5"
-          opacity="0.7"
-          strokeLinecap="round"
-        />
-        
-        {/* Fill under curve */}
-        <path 
-          d="M 0 45 Q 70 40, 140 35 T 280 30 T 420 25 T 560 10 L 560 60 L 0 60 Z"
-          fill="url(#curveGradient)"
-        />
-        
-        {/* BUY marker at X=140, Y35 */}
-        <g transform="translate(120, 22)">
-          <rect width="40" height="14" rx="3" fill="rgba(255,255,255,0.06)" />
-          <text x="20" y="10" fill="#10B981" fontSize="8" textAnchor="middle" fontWeight="600"> BUY</text>
-        </g>
-        
-        {/* SELL marker at X=320, Y27 */}
-        <g transform="translate(300, 14)">
-          <rect width="40" height="14" rx="3" fill="rgba(255,255,255,0.06)" />
-          <text x="20" y="10" fill="#FF4D4D" fontSize="8" textAnchor="middle" fontWeight="600"> SELL</text>
-        </g>
-        
-        {/* BUY marker at X=480, Y15 */}
-        <g transform="translate(460, 2)">
-          <rect width="40" height="14" rx="3" fill="rgba(255,255,255,0.06)" />
-          <text x="20" y="10" fill="#10B981" fontSize="8" textAnchor="middle" fontWeight="600"> BUY</text>
-        </g>
-      </svg>
-    </div>
-  );
-}
+const markers = [
+  { x: 150, y: 200, label: "BUY", color: "#00B96B", background: "rgba(0,185,107,0.2)" },
+  { x: 300, y: 165, label: "SELL", color: "#FF6666", background: "rgba(255,77,77,0.2)" },
+  { x: 480, y: 60, label: "BUY", color: "#00B96B", background: "rgba(0,185,107,0.2)" },
+] as const;
 
 export function TradingTerminal() {
-  const [mounted, setMounted] = useState(false);
-  
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-  
-  if (!mounted) return null;
-  
+  // Unique per instance so the SVG fill also works if this component is rendered twice.
+  const gradientId = useId().replace(/:/g, "");
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: 0.3 }}
-      className="relative mx-auto"
-      style={{ maxWidth: "640px" }}
+      transition={{ duration: 0.55, delay: 0.2 }}
+      className="mx-auto w-full max-w-[640px]"
     >
-      {/* Main panel - fixed height 440px */}
-      <div 
-        className="bg-[#0F141C] rounded-[24px] border border-white/10 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.5)] overflow-hidden"
-        style={{ height: "440px", boxSizing: "border-box" }}
-      >
-        {/* Header - 40px */}
-        <div className="flex items-center justify-between px-7 py-3.5 border-b border-white/6">
-          <div className="flex items-center gap-2.5">
-            <div className="w-6 h-6 rounded-md flex items-center justify-center" style={{ background: "#10B981" }}>
-              <span className="text-white text-[11px] font-bold">CS</span>
+      <div className="box-border flex h-[440px] min-w-0 flex-col gap-1 overflow-hidden rounded-[24px] border border-white/10 bg-[#0F141C] p-5 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.35)] sm:p-7">
+        <div className="flex h-[52px] shrink-0 items-center justify-between border-b border-white/[0.06]">
+          <div className="min-w-0">
+            <p className="text-[10px] font-medium uppercase tracking-[0.1em] text-[#A9B2C0]">
+              Доходность портфеля
+            </p>
+            <div className="flex items-baseline gap-2.5">
+              <span className="text-[28px] font-bold leading-none tabular-nums text-[#45D49A]">+96.4%</span>
+              <span className="text-xs text-[#A9B2C0]">за год</span>
             </div>
-            <span className="text-white text-[13px] font-semibold">CryptoSuperStock</span>
           </div>
-          
-          <div className="flex items-center gap-2">
-            <span className="relative inline-block w-2 h-2">
-              <span className="animate-pulse absolute inline-flex h-full w-full rounded-full bg-[#10B981] opacity-75"></span>
-              <span className="relative inline-flex h-2 h-2 rounded-full bg-[#10B981]"></span>
+          <div className="flex shrink-0 items-center gap-1.5 rounded-md bg-[#00B96B]/10 px-2.5 py-1.5 text-[10px] font-semibold tracking-wide text-[#45D49A]">
+            <span className="relative h-1.5 w-1.5">
+              <span className="absolute inset-0 rounded-full bg-[#45D49A] motion-safe:animate-pulse" />
             </span>
-            <span className="text-[#10B981] text-[10px] font-semibold uppercase tracking-widest">LIVE</span>
+            LIVE <span className="text-[#A9B2C0]"> DEMO</span>
           </div>
         </div>
-        
-        {/* Main area - flex layout with zones */}
-        <div className="px-7 py-5" style={{ height: "310px" }}>
-          <div className="flex items-center h-full">
-            {/* MARKETS zone */}
-            <div className="flex-1 pr-4">
-              <MarketsZone />
-            </div>
-            
-            {/* Connector */}
-            <Connector />
-            
-            {/* ENGINE zone */}
-            <EngineZone />
-            
-            {/* Connector */}
-            <Connector reverse />
-            
-            {/* ACTIONS zone */}
-            <div className="flex-1 pl-4">
-              <ActionsZone />
-            </div>
-          </div>
+
+        <div className="min-h-0 flex-1" role="img" aria-label="Демонстрационный график роста с двумя просадками и метками BUY и SELL. Данные симулированы.">
+          <svg className="block h-full w-full" viewBox="0 0 600 300" preserveAspectRatio="none" aria-hidden="true">
+            <defs>
+              <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#00B96B" stopOpacity="0.25" />
+                <stop offset="100%" stopColor="#00B96B" stopOpacity="0" />
+              </linearGradient>
+            </defs>
+
+            {[60, 120, 180, 240].map((y) => (
+              <line key={y} x1="20" x2="580" y1={y} y2={y} stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
+            ))}
+
+            <path d={`${curve} L 580 264 L 20 264 Z`} fill={`url(#${gradientId})`} />
+            <path d={curve} fill="none" stroke="#00B96B" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+
+            {markers.map(({ x, y, label, color, background }) => (
+              <g key={`${label}-${x}`}>
+                <circle cx={x} cy={y} r="3.5" fill="#0F141C" stroke={color} strokeWidth="2" />
+                <rect x={x - 29} y={y - 26} width="58" height="18" rx="4" fill={background} />
+                <text
+                  x={x}
+                  y={y - 17}
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  fill={color}
+                  className="text-[17px] font-semibold sm:text-[9px]"
+                >
+                  {label === "BUY" ? " BUY" : " SELL"}
+                </text>
+              </g>
+            ))}
+
+            <circle cx="580" cy="30" r="9" fill="#00B96B" opacity="0.24" className="motion-safe:animate-pulse" />
+            <circle cx="580" cy="30" r="5" fill="#00B96B" stroke="#0F141C" strokeWidth="2" />
+
+            {months.map((month, index) => (
+              <text
+                key={month}
+                x={20 + (560 / 11) * index}
+                y="287"
+                textAnchor="middle"
+                fill="#A9B2C0"
+                className={`${index % 2 === 1 ? "hidden sm:block" : ""} text-[20px] sm:text-[10px]`}
+              >
+                {month}
+              </text>
+            ))}
+          </svg>
         </div>
-        
-        {/* Schematic curve - 70px */}
-        <div className="px-7 pb-4" style={{ height: "70px" }}>
-          <SchematicCurve />
-        </div>
-        
-        {/* Footer - 20px */}
-        <div className="px-7 py-2 border-t border-white/6 flex justify-end">
-          <span className="text-white/30 text-[9px] italic">Demo  данные симулированы</span>
+
+        <div className="flex h-[24px] shrink-0 items-center justify-between gap-2 border-t border-white/[0.06] text-[#A9B2C0]">
+          <span className="whitespace-nowrap text-[10px] sm:text-[11px]">
+            <span className="sm:hidden">Просадка 4.1%</span>
+            <span className="hidden sm:inline">Макс. просадка 4.1% <span className="px-1"></span> Аптайм 99.9%</span>
+          </span>
+          <span className="whitespace-nowrap text-right text-[9px] italic">
+            <span className="sm:hidden">Демо  симуляция</span>
+            <span className="hidden sm:inline">Demo  данные симулированы</span>
+          </span>
         </div>
       </div>
     </motion.div>
