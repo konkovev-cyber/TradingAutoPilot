@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Users, MessageSquare, TrendingUp, Clock } from "lucide-react";
 
@@ -9,9 +9,16 @@ interface Stats {
   todayLeads: number;
 }
 
+interface Lead {
+  id: string;
+  name: string;
+  contact: string;
+  status: string;
+}
+
 export default function AdminDashboard() {
   const [stats, setStats] = useState<Stats>({ totalLeads: 0, newLeads: 0, botsCount: 3, todayLeads: 0 });
-  const [recentLeads, setRecentLeads] = useState<any[]>([]);
+  const [recentLeads, setRecentLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

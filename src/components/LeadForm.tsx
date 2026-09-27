@@ -22,6 +22,19 @@ export default function LeadForm() {
           created_at: new Date().toISOString()
         }]);
         if (error) throw error;
+        // Fire-and-forget Telegram notification via edge function
+        try {
+          await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/notify-lead`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+            },
+            body: JSON.stringify({ name: form.name, contact: form.contact, bot: form.bot, message: form.message }),
+          });
+        } catch {
+          /* notification is optional */
+        }
         setStatus("success");
       } catch {
         setStatus("error");

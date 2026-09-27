@@ -1,9 +1,19 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Download } from "lucide-react";
 
+interface Lead {
+  id: string;
+  name: string;
+  contact: string;
+  bot: string;
+  message: string | null;
+  status: string;
+  created_at: string;
+}
+
 export default function AdminLeads() {
-  const [leads, setLeads] = useState<any[]>([]);
+  const [leads, setLeads] = useState<Lead[]>([]);
   const [filter, setFilter] = useState<"all" | "new" | "read" | "replied">("all");
   const [loading, setLoading] = useState(true);
 

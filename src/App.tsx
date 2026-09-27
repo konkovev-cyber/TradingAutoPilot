@@ -1,8 +1,7 @@
-﻿import React, { lazy, Suspense } from "react";
+import React, { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { I18nProvider } from "./lib/i18n";
 import { ThemeProvider } from "./lib/theme";
-import { motion, AnimatePresence } from "framer-motion";
 
 const HomePage = lazy(() => import("./pages/HomePage"));
 const BotDetailPage = lazy(() => import("./pages/BotDetailPage"));
