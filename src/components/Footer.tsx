@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+﻿import { Link } from "react-router-dom";
 import { bots } from "@/data/bots";
 import { useI18n } from "@/lib/i18n";
 
@@ -8,35 +8,25 @@ export default function Footer() {
   const { t } = useI18n();
 
   return (
-    <footer className="py-12 border-t border-[var(--border)] relative">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-8 mb-10">
+    <footer className="py-16 border-t border-gray-100 bg-white">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+        <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-10 mb-12">
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <svg width="28" height="28" viewBox="0 0 64 64" className="shrink-0">
-                <defs>
-                  <linearGradient id="lgF" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="var(--primary)" />
-                    <stop offset="100%" stopColor="var(--secondary)" />
-                  </linearGradient>
-                </defs>
-                <rect width="64" height="64" rx="14" fill="rgba(0,255,178,0.08)" stroke="url(#lgF)" strokeWidth="2" />
-                <path d="M16 40 L24 28 L32 34 L40 20 L48 26" stroke="url(#lgF)" strokeWidth="3.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-                <circle cx="48" cy="26" r="4" fill="var(--primary)" />
-              </svg>
-              <span className="text-lg font-display font-bold text-[var(--text)]">
-                Coin<span className="text-[var(--primary)]">soft</span>er
-              </span>
+              <div className="w-8 h-8 bg-brand-blue rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-lg">C</span>
+              </div>
+              <span className="text-lg font-bold text-gray-900">Coinsofter</span>
             </div>
-            <p className="text-sm text-[var(--text-muted)] leading-relaxed">{t("footer.desc")}</p>
+            <p className="text-sm text-gray-500 leading-relaxed">{t("footer.desc")}</p>
           </div>
 
           <div>
-            <h4 className="font-display font-bold text-[var(--text)] mb-4 text-sm">{t("footer.robots")}</h4>
+            <h4 className="font-bold text-gray-900 mb-4 text-sm">{t("footer.robots")}</h4>
             <ul className="space-y-2">
               {bots.map((b) => (
                 <li key={b.slug}>
-                  <Link to={`/bots/${b.slug}`} className="text-sm text-[var(--text-muted)] hover:text-[var(--text)] transition-colors">
+                  <Link to={`/bots/${b.slug}`} className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
                     {b.name}
                   </Link>
                 </li>
@@ -45,19 +35,19 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="font-display font-bold text-[var(--text)] mb-4 text-sm">{t("footer.support")}</h4>
-            <ul className="space-y-2 text-sm text-[var(--text-muted)]">
-              <li><a href="#faq" className="hover:text-[var(--text)] transition-colors">FAQ</a></li>
-              <li><a href="https://t.me/coinsofter" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--text)] transition-colors">Telegram</a></li>
-              <li><a href="#" className="hover:text-[var(--text)] transition-colors">{t("footer.knowledge") || "Knowledge base"}</a></li>
+            <h4 className="font-bold text-gray-900 mb-4 text-sm">{t("footer.support")}</h4>
+            <ul className="space-y-2 text-sm text-gray-500">
+              <li><a href="#faq" className="hover:text-gray-900 transition-colors">FAQ</a></li>
+              <li><a href="https://t.me/coinsofter" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900 transition-colors">Telegram</a></li>
+              <li><a href="#" className="hover:text-gray-900 transition-colors">{t("footer.knowledge") || "Knowledge base"}</a></li>
             </ul>
           </div>
 
           <div>
-            <h4 className="font-display font-bold text-[var(--text)] mb-4 text-sm">{t("footer.exchanges")}</h4>
+            <h4 className="font-bold text-gray-900 mb-4 text-sm">{t("footer.exchanges")}</h4>
             <div className="flex flex-wrap gap-1.5">
               {exchanges.map((e) => (
-                <span key={e} className="text-[11px] text-[var(--text-muted)] bg-[var(--surface)] px-2 py-1 rounded-lg border border-[var(--border)]">
+                <span key={e} className="text-[11px] text-gray-500 bg-gray-50 px-2.5 py-1 rounded-md border border-gray-100">
                   {e}
                 </span>
               ))}
@@ -65,9 +55,9 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-[var(--border)] pt-7 flex flex-col sm:flex-row justify-between items-center gap-3">
-          <p className="text-xs text-[var(--text-subtle)]">{t("footer.copyright")}</p>
-          <p className="text-xs text-[var(--text-subtle)] max-w-xl sm:text-right">{t("footer.risk")}</p>
+        <div className="border-t border-gray-100 pt-8 flex flex-col sm:flex-row justify-between items-center gap-3">
+          <p className="text-xs text-gray-400">{t("footer.copyright")}</p>
+          <p className="text-xs text-gray-400 max-w-xl sm:text-right">{t("footer.risk")}</p>
         </div>
       </div>
     </footer>

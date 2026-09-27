@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
@@ -8,17 +8,17 @@ export default function FAQ() {
   const [open, setOpen] = useState<number | null>(0);
 
   return (
-    <section id="faq" className="section-padding relative overflow-hidden">
-      <div className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="faq" className="section-padding bg-white">
+      <div className="max-w-3xl mx-auto px-6 lg:px-8">
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.55 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
           className="text-center mb-12"
         >
-          <h2 className="heading-lg text-[var(--text)] mb-4">{t("faq.title")}</h2>
-          <p className="text-[var(--text-muted)] text-lg">{t("faq.subtitle")}</p>
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-gray-900 mb-4">{t("faq.title")}</h2>
+          <p className="text-lg text-gray-500">{t("faq.subtitle")}</p>
         </motion.div>
 
         <div className="space-y-3">
@@ -29,14 +29,14 @@ export default function FAQ() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.3, delay: i * 0.05 }}
-              className="glass rounded-2xl overflow-hidden"
+              className="bg-white rounded-xl border border-gray-100 overflow-hidden"
             >
               <button
                 onClick={() => setOpen(open === i ? null : i)}
-                className="w-full flex items-center justify-between gap-4 p-5 text-left hover:bg-[var(--surface-hover)] transition-colors"
+                className="w-full flex items-center justify-between gap-4 p-5 text-left hover:bg-gray-50 transition-colors"
               >
-                <span className="font-medium text-[var(--text)] text-sm sm:text-base">{faq.q}</span>
-                <ChevronDown size={18} className={`shrink-0 text-[var(--primary)] transition-transform duration-300 ${open === i ? "rotate-180" : ""}`} />
+                <span className="font-medium text-gray-900 text-sm sm:text-base">{faq.q}</span>
+                <ChevronDown size={18} className={`shrink-0 text-gray-400 transition-transform duration-300 ${open === i ? "rotate-180" : ""}`} />
               </button>
               <motion.div
                 initial={false}
@@ -44,7 +44,7 @@ export default function FAQ() {
                 transition={{ duration: 0.25 }}
                 className="overflow-hidden"
               >
-                <p className="px-5 pb-5 text-sm text-[var(--text-muted)] leading-relaxed">{faq.a}</p>
+                <p className="px-5 pb-5 text-sm text-gray-500 leading-relaxed">{faq.a}</p>
               </motion.div>
             </motion.div>
           ))}
