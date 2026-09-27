@@ -1,10 +1,10 @@
-﻿import { useEffect } from "react";
+import { useEffect } from "react";
 import { useSeo } from "@/lib/seo";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
 import Hero from "@/components/Hero";
-import Trust from "@/components/Trust";
+
 import Products from "@/components/Products";
 import Compare from "@/components/Compare";
 import Calculator from "@/components/Calculator";
@@ -20,7 +20,7 @@ import { useI18n } from "@/lib/i18n";
 
 const componentMap: Record<string, ComponentType> = {
   hero: Hero,
-  trust: Trust,
+
   products: Products,
   compare: Compare,
   calculator: Calculator,
