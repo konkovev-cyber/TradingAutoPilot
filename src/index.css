@@ -109,3 +109,80 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* ============ Премиум дизайн-система (апгрейд) ============ */
+:root {
+  --shadow-lg: 0 20px 50px -12px rgba(15, 23, 42, 0.15);
+  --shadow-glow: 0 8px 30px -6px rgba(59, 130, 246, 0.45);
+  --gradient-brand: linear-gradient(135deg, #3b82f6 0%, #6366f1 50%, #8b5cf6 100%);
+}
+.dark {
+  --shadow-lg: 0 20px 50px -12px rgba(0, 0, 0, 0.5);
+}
+@layer components {
+  .text-gradient {
+    background: linear-gradient(135deg, #3b82f6 0%, #6366f1 55%, #8b5cf6 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+  .glass {
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+  }
+  .dark .glass { background: rgba(17, 24, 39, 0.75); }
+  .btn-gradient {
+    background: linear-gradient(135deg, #3b82f6 0%, #6366f1 55%, #8b5cf6 100%);
+    background-size: 160% 150%;
+    color: #ffffff;
+    font-weight: 600;
+    border: none;
+    box-shadow: 0 8px 30px -6px rgba(59, 130, 246, 0.45);
+    transition: all 0.25s ease;
+  }
+  .btn-gradient:hover {
+    background-position: 100% 50%;
+    transform: translateY(-1px);
+    box-shadow: 0 12px 36px -6px rgba(59, 130, 246, 0.55);
+  }
+  .btn-gradient:active { transform: translateY(0); }
+  .input-premium {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border-radius: 0.9rem;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  }
+  .input-premium::placeholder { color: var(--text-subtle); }
+  .input-premium:focus {
+    border-color: #93c5fd;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+    background: #ffffff;
+  }
+  .dark .input-premium:focus { border-color: #3b82f6; background: #111827; }
+  .blob {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(80px);
+    pointer-events: none;
+  }
+  .card-premium {
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  }
+  .card-premium:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 50px -12px rgba(15, 23, 42, 0.15);
+    border-color: #bfdbfe;
+  }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-24px) scale(1.05); }
+}
+.animate-float { animation: float 8s ease-in-out infinite; }
+.animate-float-slow { animation: float 12s ease-in-out infinite; }

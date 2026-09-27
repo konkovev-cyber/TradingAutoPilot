@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { useI18n } from "@/lib/i18n";
 
 export default function Calculator() {
@@ -21,7 +21,7 @@ export default function Calculator() {
           <p className="text-lg text-gray-500 dark:text-gray-400">{t("calculator.subtitle")}</p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-12 items-center bg-white dark:bg-gray-950 p-8 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-xl">
+        <div className="grid lg:grid-cols-2 gap-12 items-center bg-white dark:bg-gray-950 p-8 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-xl card-premium">
           <div className="space-y-8">
             <div>
               <div className="flex justify-between mb-4">

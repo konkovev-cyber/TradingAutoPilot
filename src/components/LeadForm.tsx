@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Send, CheckCircle2 } from "lucide-react";
+﻿import React, { useState } from "react";
+import { Send, CheckCircle2, User, AtSign, Bot as BotIcon, MessageSquareText, Sparkles, ShieldCheck, Settings2, Rocket } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { getSupabase } from "@/lib/supabase";
 
@@ -14,15 +14,15 @@ export default function LeadForm() {
     const sb = getSupabase();
     if (sb) {
       try {
-        const { error } = await sb.from("leads").insert([{ 
-          name: form.name, 
-          contact: form.contact, 
-          bot: form.bot, 
+        const { error } = await sb.from("leads").insert([{
+          name: form.name,
+          contact: form.contact,
+          bot: form.bot,
           message: form.message,
           created_at: new Date().toISOString()
         }]);
         if (error) throw error;
-        // Fire-and-forget Telegram notification via edge function
+        // Telegram-уведомление через edge function (необязательно)
         try {
           await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/notify-lead`, {
             method: "POST",
@@ -33,14 +33,13 @@ export default function LeadForm() {
             body: JSON.stringify({ name: form.name, contact: form.contact, bot: form.bot, message: form.message }),
           });
         } catch {
-          /* notification is optional */
+          /* уведомление опционально */
         }
         setStatus("success");
       } catch {
         setStatus("error");
       }
     } else {
-      // Fallback to Telegram if Supabase not configured
       window.open(`https://t.me/coinsofter?text=${encodeURIComponent(`Заявка:\nИмя: ${form.name}\nКонтакт: ${form.contact}\nБот: ${form.bot}\nСообщение: ${form.message}`)}`, "_blank");
       setStatus("success");
     }
@@ -48,103 +47,135 @@ export default function LeadForm() {
 
   if (status === "success") {
     return (
-      <section id="lead" className="section-padding bg-white dark:bg-gray-950 transition-colors duration-300">
-        <div className="max-w-3xl mx-auto px-6 lg:px-8">
-      <div className="text-center p-12 bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800">
-        <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
-          <CheckCircle2 size={32} className="text-green-600 dark:text-green-400" />
-        </div>
-        <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{t("lead.success")}</h3>
-        <p className="text-gray-500 dark:text-gray-400 mb-8">{t("lead.privacy")}</p>
-        <button onClick={() => setStatus("idle")} className="text-brand-blue font-semibold hover:underline">Отправить ещё одну заявку</button>
-      </div>
+      <section id="lead" className="section-padding relative overflow-hidden" style={{ background: "linear-gradient(180deg, #ffffff 0%, #eff6ff 100%)" }}>
+        <div className="blob w-[400px] h-[400px] bg-blue-400/15 -top-20 right-0 dark:hidden" aria-hidden="true" />
+        <div className="max-w-3xl mx-auto px-6 lg:px-8 relative">
+          <div className="text-center p-12 bg-white rounded-3xl border border-gray-100 shadow-[0_20px_50px_-12px_rgba(15,23,42,0.12)]">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <CheckCircle2 size={32} className="text-green-600" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">{t("lead.success")}</h3>
+            <p className="text-gray-500 mb-8">{t("lead.privacy")}</p>
+            <button onClick={() => setStatus("idle")} className="text-brand-blue font-semibold hover:underline">Отправить ещё одну заявку</button>
+          </div>
         </div>
       </section>
     );
   }
 
+  const labelCls = "block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1.5";
+
   return (
-    <section id="lead" className="section-padding bg-white dark:bg-gray-950 transition-colors duration-300">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <form onSubmit={handleSubmit} className="grid lg:grid-cols-2 gap-12 items-start">
-      <div className="space-y-6">
-        <h3 className="text-3xl font-bold text-gray-900 dark:text-white">{t("lead.title")}</h3>
-        <p className="text-lg text-gray-500 dark:text-gray-400">{t("lead.subtitle")}</p>
-        
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t("lead.name")}</label>
-            <input 
-              required
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-brand-blue outline-none transition-all"
-              value={form.name} onChange={e => setForm({...form, name: e.target.value})}
-              placeholder="Иван Иванов"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t("lead.contact")}</label>
-            <input 
-              required
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-brand-blue outline-none transition-all"
-              value={form.contact} onChange={e => setForm({...form, contact: e.target.value})}
-              placeholder="@username / email"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t("lead.bot")}</label>
-            <select 
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-brand-blue outline-none transition-all"
-              value={form.bot} onChange={e => setForm({...form, bot: e.target.value})}
-            >
-              <option value="any">{t("lead.botAny")}</option>
-              <option value="cryptosuperstock">CryptoSuperStock</option>
-              <option value="megagrid-ai">MEGAGRID-AI</option>
-              <option value="smartix">SMARTIX</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t("lead.message")}</label>
-            <textarea 
-              rows={4}
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-brand-blue outline-none transition-all"
-              value={form.message} onChange={e => setForm({...form, message: e.target.value})}
-              placeholder="Ваши вопросы..."
-            />
-          </div>
-          <button 
-            disabled={status === "sending"}
-            className="w-full py-4 bg-brand-blue text-white font-bold rounded-xl hover:bg-blue-700 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-          >
-            {status === "sending" ? "Отправка..." : t("lead.submit")}
-            <Send size={18} />
-          </button>
-          {status === "error" && <p className="text-red-500 text-xs text-center">{t("lead.error")}</p>}
-          <p className="text-[10px] text-center text-gray-400 dark:text-gray-500">{t("lead.privacy")}</p>
-        </div>
-      </div>
-      
-      <div className="hidden lg:block bg-blue-50 dark:bg-blue-900/10 rounded-3xl p-8 border border-blue-100 dark:border-blue-900 relative overflow-hidden">
-        <div className="relative z-10">
-          <h4 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Почему стоит написать нам?</h4>
-          <ul className="space-y-6">
-            {[
-              { t: "Подбор стратегии", d: "Поможем выбрать робота исходя из вашего риск-профиля и депозита" },
-              { t: "Помощь в настройке", d: "Проконсультируем по подключению API и первичной конфигурации" },
-              { t: "Эксклюзивы", d: "Расскажем о новых бета-тестах и закрытых стратегиях" }
-            ].map((item, i) => (
-              <li key={i} className="flex gap-4">
-                <div className="w-6 h-6 rounded-full bg-brand-blue text-white flex items-center justify-center shrink-0 text-xs font-bold">{i+1}</div>
-                <div>
-                  <div className="font-semibold text-gray-900 dark:text-white">{item.t}</div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400">{item.d}</div>
+    <section id="lead" className="section-padding relative overflow-hidden" style={{ background: "linear-gradient(180deg, #ffffff 0%, #eff6ff 100%)" }}>
+      <div className="blob animate-float-slow w-[420px] h-[420px] bg-indigo-400/15 top-10 -left-40 dark:hidden" aria-hidden="true" />
+      <div className="blob w-[320px] h-[320px] bg-blue-400/15 bottom-0 -right-24 dark:hidden" aria-hidden="true" />
+
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 relative">
+        <form onSubmit={handleSubmit} className="grid lg:grid-cols-5 gap-8 items-stretch">
+          {/* Форма  стеклянная карточка */}
+          <div className="lg:col-span-3 glass rounded-3xl border border-white/60 shadow-[0_20px_50px_-12px_rgba(15,23,42,0.12)] p-8 lg:p-10">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "linear-gradient(135deg, #3b82f6 0%, #6366f1 100%)" }}>
+                <Sparkles size={20} className="text-white" />
+              </div>
+              <h3 className="text-3xl font-bold text-gray-900">{t("lead.title")}</h3>
+            </div>
+            <p className="text-lg text-gray-500 mb-8">{t("lead.subtitle")}</p>
+
+            <div className="space-y-5">
+              <div>
+                <label className={labelCls}>{t("lead.name")}</label>
+                <div className="relative">
+                  <User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                  <input
+                    required
+                    className="input-premium !pl-11"
+                    value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
+                    placeholder="Иван Иванов"
+                  />
                 </div>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-brand-blue/10 rounded-full blur-3xl" />
-      </div>
-    </form>
+              </div>
+              <div>
+                <label className={labelCls}>{t("lead.contact")}</label>
+                <div className="relative">
+                  <AtSign size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                  <input
+                    required
+                    className="input-premium !pl-11"
+                    value={form.contact} onChange={(e) => setForm({ ...form, contact: e.target.value })}
+                    placeholder="@username / email / телефон"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className={labelCls}>{t("lead.bot")}</label>
+                <div className="relative">
+                  <BotIcon size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none z-10" />
+                  <select
+                    className="input-premium !pl-11 appearance-none cursor-pointer"
+                    value={form.bot} onChange={(e) => setForm({ ...form, bot: e.target.value })}
+                  >
+                    <option value="any">{t("lead.botAny")}</option>
+                    <option value="cryptosuperstock">CryptoSuperStock</option>
+                    <option value="megagrid-ai">MEGAGRID-AI</option>
+                    <option value="smartix">SMARTIX: PUMP DUMP</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label className={labelCls}>{t("lead.message")}</label>
+                <div className="relative">
+                  <MessageSquareText size={18} className="absolute left-4 top-4 text-gray-400 pointer-events-none" />
+                  <textarea
+                    rows={4}
+                    className="input-premium !pl-11 resize-none"
+                    value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })}
+                    placeholder="Ваши вопросы..."
+                  />
+                </div>
+              </div>
+              <button
+                disabled={status === "sending"}
+                className="btn-gradient w-full py-4 rounded-xl flex items-center justify-center gap-2 disabled:opacity-60 disabled:transform-none"
+              >
+                {status === "sending" ? "Отправка..." : t("lead.submit")}
+                <Send size={18} />
+              </button>
+              {status === "error" && <p className="text-red-500 text-xs text-center">{t("lead.error")}</p>}
+              <p className="text-[11px] text-center text-gray-400">{t("lead.privacy")}</p>
+            </div>
+          </div>
+
+          {/* Правая панель  градиентная */}
+          <div className="lg:col-span-2 relative rounded-3xl p-8 lg:p-10 overflow-hidden text-white" style={{ background: "linear-gradient(160deg, #1e3a8a 0%, #3b82f6 60%, #6366f1 100%)" }}>
+            <div className="blob w-64 h-64 bg-white/20 -bottom-16 -right-16" aria-hidden="true" />
+            <div className="blob w-40 h-40 bg-white/10 top-10 -left-10" aria-hidden="true" />
+            <div className="relative z-10 h-full flex flex-col">
+              <div className="w-12 h-12 rounded-2xl bg-white/15 backdrop-blur flex items-center justify-center mb-6">
+                <Rocket size={22} className="text-white" />
+              </div>
+              <h4 className="text-2xl font-bold mb-3">Почему стоит написать нам?</h4>
+              <p className="text-blue-100 text-sm mb-8">Отвечаем в течение часа, подберём робота под ваш депозит и риск-профиль.</p>
+              <ul className="space-y-6 flex-grow">
+                {[
+                  { icon: Sparkles, t: "Подбор стратегии", d: "Поможем выбрать робота исходя из вашего риск-профиля и депозита" },
+                  { icon: Settings2, t: "Помощь в настройке", d: "Проконсультируем по подключению API и первичной конфигурации" },
+                  { icon: ShieldCheck, t: "Эксклюзивы", d: "Расскажем о новых бета-тестах и закрытых стратегиях" },
+                ].map((item, i) => (
+                  <li key={i} className="flex gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-white/15 backdrop-blur flex items-center justify-center shrink-0">
+                      <item.icon size={18} className="text-white" />
+                    </div>
+                    <div>
+                      <div className="font-semibold">{item.t}</div>
+                      <div className="text-sm text-blue-100 leading-snug">{item.d}</div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </form>
       </div>
     </section>
   );

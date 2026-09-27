@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback } from "react";
+﻿import { useEffect, useState, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, TrendingUp, Shield, Zap, Globe } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
@@ -272,7 +272,17 @@ export default function Hero() {
   const stats: { value: string; label: string }[] = t("hero.stats");
 
   return (
-    <section className="relative min-h-screen flex items-center bg-white dark:bg-gray-950 overflow-hidden">
+    <section className="relative min-h-screen flex items-center overflow-hidden" style={{ background: "linear-gradient(180deg, #eff6ff 0%, #ffffff 55%)" }}>
+      <div className="dark:hidden">
+        <div className="blob animate-float w-[480px] h-[480px] bg-blue-400/25 -top-40 -right-32" aria-hidden="true" />
+        <div className="blob animate-float-slow w-[380px] h-[380px] bg-indigo-400/20 top-1/3 -left-40" aria-hidden="true" />
+        <div className="blob w-[300px] h-[300px] bg-violet-300/15 bottom-0 right-1/3" aria-hidden="true" />
+      </div>
+      <div
+        className="absolute inset-0 opacity-[0.25] dark:opacity-[0.05]"
+        style={{ backgroundImage: "radial-gradient(circle, #cbd5e1 1px, transparent 1px)", backgroundSize: "32px 32px" }}
+        aria-hidden="true"
+      />
       <div
         className="absolute inset-0 opacity-[0.35] dark:opacity-[0.05]"
         style={{ backgroundImage: "radial-gradient(circle, #e5e7eb 1px, transparent 1px)", backgroundSize: "32px 32px" }}
@@ -286,7 +296,7 @@ export default function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 dark:bg-blue-950 border border-blue-100 dark:border-blue-900 mb-8"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-blue-100/70 dark:border-blue-900 mb-8 shadow-sm"
             >
               <span className="w-2 h-2 rounded-full bg-brand-blue animate-pulse" />
               <span className="text-sm font-medium text-blue-700 dark:text-blue-300">{c("hero", "badge", t("hero.badge"))}</span>
@@ -299,7 +309,7 @@ export default function Hero() {
               className="heading-xl text-gray-900 dark:text-white mb-6"
             >
               {c("hero", "title1", t("hero.title1"))}{" "}
-              <span className="text-brand-blue">{c("hero", "title2", t("hero.title2"))}</span>
+              <span className="text-gradient">{c("hero", "title2", t("hero.title2"))}</span>
             </motion.h1>
 
             <motion.p
@@ -319,7 +329,7 @@ export default function Hero() {
             >
               <a
                 href="#bots"
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-brand-blue text-white font-semibold rounded-xl hover:bg-blue-700 transition-all shadow-sm hover:shadow-md"
+                className="btn-gradient inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl"
               >
                 {c("hero", "pick", t("hero.pick"))}
                 <ArrowRight size={18} />

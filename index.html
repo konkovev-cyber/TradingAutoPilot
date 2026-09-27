@@ -13,7 +13,7 @@
     <script>
       (function() {
         const theme = localStorage.getItem("coinsofter-theme") || 
-                      (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+                      "light";
         if (theme === "dark") document.documentElement.classList.add("dark");
       })();
     </script>
