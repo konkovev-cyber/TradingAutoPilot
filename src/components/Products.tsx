@@ -1,4 +1,4 @@
-﻿import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Check, ArrowRight, TrendingUp, ShieldCheck, Gauge, type LucideIcon } from "lucide-react";
 import { useBots } from "@/lib/use-bots";
@@ -15,7 +15,7 @@ export default function Products() {
   const bots = useBots();
 
   return (
-    <section id="bots" className="py-24 md:py-32 bg-white dark:bg-gray-950 transition-colors duration-300">
+    <section id="bots" className="py-16 md:py-20 bg-white dark:bg-gray-950 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
