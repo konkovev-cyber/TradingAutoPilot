@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+﻿import { motion } from "framer-motion";
 import { ArrowRight, BookOpen, ShieldCheck, Zap } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { TradingTerminal } from "./HeroTerminal";
@@ -11,7 +11,7 @@ export default function Hero() {
     ? {
         badge: "Autonomous trading system",
         markets: "Crypto + Stocks",
-        title: <>Trade global markets.<br /><span>With one bot.</span></>,
+        title: <>Trade global<br />markets. With one<br /><span>bot.</span></>,
         description: "CryptoSuperStock analyzes price deviations, calculates entry levels and works through limit orders. Crypto and international stocks in one automated system.",
         primary: "Choose a bot",
         secondary: "How it works",
@@ -20,7 +20,7 @@ export default function Hero() {
     : {
         badge: "Автономная торговая система",
         markets: "Crypto + Stocks",
-        title: <>Торгуйте мировыми<br />рынками.<br /><span>Одним роботом.</span></>,
+        title: <>Торгуйте мировыми<br />рынками. Одним<br /><span>роботом.</span></>,
         description: "CryptoSuperStock анализирует отклонения цены, рассчитывает уровни входа и работает через лимитные ордера. Криптовалюты и международные акции в одной автоматической системе.",
         primary: "Выбрать робота",
         secondary: "Как это работает",
@@ -60,13 +60,13 @@ export default function Hero() {
           <span className="hidden text-[10px] font-medium text-slate-400 dark:text-slate-500 sm:block">{copy.markets}</span>
         </motion.div>
 
-        <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] xl:gap-16">
+        <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] xl:gap-16">
           <div className="relative z-10">
             <motion.h1
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.08 }}
-              className="mb-5 text-[42px] font-bold leading-[0.98] tracking-tight text-[#0B0F14] dark:text-white sm:text-[52px] lg:text-[56px] xl:text-[64px]"
+              className="mb-5 text-[42px] font-bold leading-[1.1] tracking-[-0.02em] text-[#0B0F14] dark:text-white sm:text-[46px] lg:text-[48px] xl:text-[48px]"
             >
               {copy.title}
             </motion.h1>
@@ -79,7 +79,7 @@ export default function Hero() {
               {copy.description}
             </motion.p>
 
-            <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.26 }} className="mb-6 flex flex-col gap-3 sm:flex-row">
+            <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.26 }} className="mb-5 flex flex-col gap-3 sm:flex-row">
               <a href="#bots" className="group inline-flex h-[50px] items-center justify-center gap-2 rounded-xl bg-[#10B981] px-7 text-[14px] font-semibold text-white shadow-[0_10px_30px_-10px_rgba(16,185,129,0.65)] transition-all hover:-translate-y-0.5 hover:bg-[#0D9669] hover:shadow-[0_16px_35px_-10px_rgba(16,185,129,0.75)]">
                 {copy.primary}
                 <ArrowRight size={16} strokeWidth={2.5} className="transition-transform group-hover:translate-x-1" />

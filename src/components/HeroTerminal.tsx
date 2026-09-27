@@ -20,9 +20,9 @@ const curve = [
 ].join(" ");
 
 const markers = [
-  { x: 150, y: 200, label: " BUY", color: "#00B96B", background: "rgba(0,185,107,0.15)" },
-  { x: 300, y: 165, label: " SELL", color: "#FF5A5F", background: "rgba(255,77,77,0.15)" },
-  { x: 480, y: 60, label: " BUY", color: "#00B96B", background: "rgba(0,185,107,0.15)" },
+  { x: 150, y: 200, label: "▲ BUY", color: "#00B96B", background: "rgba(0,185,107,0.25)" },
+  { x: 300, y: 165, label: "▼ SELL", color: "#FF5A5F", background: "rgba(255,77,77,0.25)" },
+  { x: 480, y: 60, label: "▲ BUY", color: "#00B96B", background: "rgba(0,185,107,0.25)" },
 ] as const;
 
 export function TradingTerminal() {
@@ -57,9 +57,7 @@ export function TradingTerminal() {
 
         <header className="relative z-10 flex h-[52px] shrink-0 items-center justify-between border-b border-white/[0.08]">
           <div className="min-w-0">
-            <p className="mb-1 text-[10px] font-medium uppercase tracking-[1px] text-[#8A8F99]">
-              Доходность портфеля
-            </p>
+            <p className="mb-1 text-[10px] font-medium uppercase tracking-[1px] text-[#8A8F99]">Доходность портфеля</p>
             <div className="flex items-baseline gap-2.5">
               <span className="text-[28px] font-bold leading-none tabular-nums text-[#00D084]">+96.4%</span>
               <span className="text-xs font-normal text-[#8A8F99]">за год</span>
@@ -83,22 +81,17 @@ export function TradingTerminal() {
           </motion.div>
         </header>
 
-        <div
-          className="relative z-10 h-[300px] min-h-0 shrink-0"
-          role="img"
-          aria-label="График доходности портфеля с двумя просадками и тремя отметками сделок"
-        >
+        <div className="relative z-10 h-[280px] min-h-0 shrink-0" role="img" aria-label="График доходности портфеля с двумя просадками и тремя отметками сделок">
           <motion.div
             initial={{ opacity: 0, x: -8 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.8, duration: 0.5 }}
-            className="absolute left-0 top-3 z-10 hidden items-center gap-2 rounded-lg border border-white/[0.09] bg-[#151D28]/85 px-2.5 py-1.5 text-[9px] font-medium tracking-wide text-[#AEB8C5] shadow-lg backdrop-blur-md sm:flex"
+            className="absolute left-0 top-3 z-10 hidden text-[10px] font-normal text-[#8A8F99] sm:block"
           >
-            <span className="h-1.5 w-1.5 rounded-full bg-[#00D084] shadow-[0_0_10px_rgba(0,208,132,0.9)]" />
-            AI ENGINE ACTIVE
+            Бэктест · 2024
           </motion.div>
 
-          <svg className="block h-[300px] w-full" viewBox="0 0 600 300" preserveAspectRatio="none" aria-hidden="true">
+          <svg className="block h-[280px] w-full" viewBox="0 0 600 300" preserveAspectRatio="none" aria-hidden="true">
             <defs>
               <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="#00B96B" stopOpacity="0.3" />
@@ -110,7 +103,7 @@ export function TradingTerminal() {
             </defs>
 
             {[60, 120, 180, 240].map((y) => (
-              <line key={y} x1="20" x2="580" y1={y} y2={y} stroke="rgba(255,255,255,0.055)" strokeWidth="1" />
+              <line key={y} x1="20" x2="580" y1={y} y2={y} stroke="rgba(255,255,255,0.02)" strokeWidth="1" />
             ))}
 
             <path d={`${curve} L 580 300 L 20 300 Z`} fill={`url(#${gradientId})`} />
@@ -158,8 +151,8 @@ export function TradingTerminal() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.45, delay: 1.05 + index * 0.16 }}
               >
-                <rect x={x - 22} y={y - 24} width="44" height="18" rx="4" fill={background} />
-                <text x={x} y={y - 15} textAnchor="middle" dominantBaseline="middle" fill={color} className="text-[9px] font-semibold">
+                <rect x={x - 31} y={y - 36} width="62" height="20" rx="4" fill={background} />
+                <text x={x} y={y - 26} textAnchor="middle" dominantBaseline="middle" fill={color} fontSize="10" fontWeight="600">
                   {label}
                 </text>
               </motion.g>
@@ -178,7 +171,7 @@ export function TradingTerminal() {
             <circle cx="580" cy="30" r="4" fill="#00D084" />
 
             {months.map((month, index) => (
-              <text key={month} x={20 + (560 / 11) * index} y="285" textAnchor="middle" fill="#8A8F99" className="text-[10px]">
+              <text key={month} x={20 + (560 / 11) * index} y="288" textAnchor="middle" fill="#8A8F99" fontSize="10">
                 {month}
               </text>
             ))}
@@ -186,15 +179,11 @@ export function TradingTerminal() {
         </div>
 
         <footer className="relative z-10 flex h-[24px] shrink-0 items-center justify-between gap-2 text-[#8A8F99]">
-          <span className="whitespace-nowrap text-[10px] sm:text-[11px]">
-            <span className="sm:hidden">4.1%  Аптайм 99.9%</span>
-            <span className="hidden sm:inline">Макс. просадка 4.1%  Аптайм 99.9%</span>
-          </span>
-          <span className="whitespace-nowrap text-right text-[8px] italic sm:text-[9px]">
-            <span className="sm:hidden">Demo  симуляция</span>
-            <span className="hidden sm:inline">Demo  данные симулированы</span>
-          </span>
+          <span className="whitespace-nowrap text-[10px] sm:text-[11px]">Макс. просадка −4.1% · Аптайм 99.9%</span>
         </footer>
+        <div className="relative z-10 flex h-[14px] shrink-0 items-center justify-end text-right text-[10px] italic text-white/40">
+          Demo · данные симулированы
+        </div>
       </div>
     </motion.div>
   );
