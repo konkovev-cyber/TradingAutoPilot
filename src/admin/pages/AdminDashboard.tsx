@@ -135,6 +135,34 @@ export default function AdminDashboard() {
         </button>
       </div>
 
+      {!authInfo?.isAdmin && authInfo && (
+        <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4 mb-4">
+          <div className="flex items-start gap-3">
+            <span className="text-yellow-400 text-2xl"></span>
+            <div>
+              <div className="font-semibold text-yellow-200">Нет прав администратора</div>
+              <p className="text-yellow-200/80 text-sm mt-1">
+                Ваша учётная запись <code className="bg-yellow-500/20 px-1 rounded">{authInfo.email}</code> не имеет роли admin.
+              </p>
+              <p className="text-yellow-200/80 text-sm mt-2">
+                Чтобы получить доступ, выполните SQL в{' '}
+                <a href="https://app.supabase.com/project/zsupqrsnnegeclrlvlqg/sql" target="_blank" rel="noreferrer"
+                   className="text-yellow-300 underline hover:text-yellow-100">
+                  Supabase SQL Editor
+                </a>:
+              </p>
+              <pre className="bg-black/30 rounded-lg p-3 mt-2 text-xs text-yellow-100 overflow-x-auto">
+{`INSERT INTO user_roles (user_id, role)
+SELECT id, 'admin'
+FROM auth.users
+WHERE email = '${authInfo.email}'
+ON CONFLICT (user_id) DO UPDATE SET role = 'admin';`}
+              </pre>
+            </div>
+          </div>
+        </div>
+      )}
+
       {authInfo && (
         <div className={`flex items-center gap-3 text-sm px-4 py-2 rounded-lg border ${
           authInfo.isAdmin
