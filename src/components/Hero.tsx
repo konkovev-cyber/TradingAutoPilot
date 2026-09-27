@@ -19,13 +19,15 @@ export default function Hero() {
     <section className="relative bg-[#F8FAFC] dark:bg-[#0B1120] overflow-hidden flex items-center py-8 md:py-12">
       {/* Background */}
       <div className="absolute inset-0 pointer-events-none">
+        {/* Dot grid - subtle */}
         <div 
-          className="absolute inset-0 opacity-[0.025] dark:opacity-[0.04]"
+          className="absolute inset-0 opacity-[0.03] dark:opacity-[0.06]"
           style={{ backgroundImage: "radial-gradient(circle, #0B0F14 1px, transparent 1px)", backgroundSize: "24px 24px" }}
         />
+        {/* Blue glow top right */}
         <div 
-          className="absolute top-0 right-0 w-[600px] h-[600px] opacity-15 dark:opacity-8"
-          style={{ background: "radial-gradient(circle at 75% 25%, rgba(37, 99, 235, 0.12) 0%, transparent 55%)", filter: "blur(80px)" }}
+          className="absolute top-0 right-0 w-[500px] h-[500px] opacity-15 dark:opacity-10"
+          style={{ background: "radial-gradient(circle at 75% 25%, rgba(37, 99, 235, 0.15) 0%, transparent 55%)", filter: "blur(60px)" }}
         />
       </div>
 
@@ -37,7 +39,7 @@ export default function Hero() {
           transition={{ duration: 0.4 }}
           className="mb-5 flex items-center gap-3"
         >
-          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white dark:bg-[#15171C] border border-black/8 dark:border-white/10 shadow-sm">
+          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white dark:bg-[#15171C] border border-black/10 dark:border-white/10 shadow-sm">
             <span className="relative flex h-1.5 w-1.5">
               <span className="absolute inline-flex h-full w-full rounded-full bg-[#10B981] opacity-60 animate-ping"></span>
               <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#10B981]"></span>
@@ -55,24 +57,24 @@ export default function Hero() {
         <div className="grid lg:grid-cols-[45%_55%] gap-10 lg:gap-14 items-center">
           {/* Left */}
           <div>
-            {/* Headline - 3 lines max */}
+            {/* Headline - 3 lines */}
             <motion.h1
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-[44px] sm:text-[52px] lg:text-[60px] font-bold text-[#0B0F14] dark:text-white leading-[0.98] tracking-tight mb-5"
+              className="text-[44px] sm:text-[52px] lg:text-[58px] font-bold text-[#0B0F14] dark:text-white leading-[0.98] tracking-tight mb-5"
             >
               Торгуйте мировыми<br />
               рынками.<br />
               <span className="text-[#10B981]">Одним роботом.</span>
             </motion.h1>
 
-            {/* Description - compact */}
+            {/* Description */}
             <motion.p
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-[16px] text-[#5A5F6B] dark:text-slate-400 leading-[1.6] max-w-[480px] mb-7"
+              className="text-[16px] text-[#5A5F6B] dark:text-slate-400 leading-[1.6] max-w-[460px] mb-7"
             >
               CryptoSuperStock анализирует отклонения цены, пересчитывает уровни входа и работает через лимитные ордера.
             </motion.p>
@@ -93,7 +95,7 @@ export default function Hero() {
               </a>
               <a
                 href="#how"
-                className="inline-flex items-center justify-center h-[50px] px-7 text-[#0B0F14] dark:text-white font-medium text-[14px] rounded-xl border border-black/10 dark:border-white/10 hover:bg-black/[0.03] dark:hover:bg-white/[0.04] transition-colors"
+                className="inline-flex items-center justify-center h-[50px] px-7 text-[#0B0F14] dark:text-white font-medium text-[14px] rounded-xl border border-black/10 dark:border-white/15 hover:bg-black/[0.03] dark:hover:bg-white/[0.04] transition-colors"
               >
                 <BookOpen size={16} className="mr-2 opacity-50" />
                 {t("hero.cta2")}
@@ -126,7 +128,7 @@ export default function Hero() {
         </div>
 
         {/* Metrics */}
-        <div className="mt-10">
+        <div className="mt-8">
           <MetricsStrip />
         </div>
       </div>
