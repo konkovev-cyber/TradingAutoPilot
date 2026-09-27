@@ -1,60 +1,64 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
-// Compact market row
+// Compact market row - clean premium look
 function MarketRow({ symbol, type, change, sparkline }: { symbol: string; type: string; change: string; sparkline: number[] }) {
   const isPositive = change.startsWith("+");
   const color = isPositive ? "text-[#10B981]" : "text-[#EF4444]";
-  const dotColor = isPositive ? "#10B981" : "#EF4444";
   
   return (
-    <div className="flex items-center justify-between py-2 border-b border-white/5 last:border-0 hover:bg-white/[0.02] px-2 rounded transition-colors">
-      <div className="flex items-center gap-2.5">
-        <div className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center text-[10px] font-bold text-white/80">
+    <div className="flex items-center justify-between py-3 border-b border-white/5 last:border-0 hover:bg-white/[0.02] px-3 rounded transition-colors">
+      <div className="flex items-center gap-3">
+        <div className="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center text-[11px] font-bold text-white/90">
           {symbol.slice(0, 2)}
         </div>
         <div>
-          <div className="text-white text-xs font-semibold leading-none">{symbol}</div>
-          <div className={`text-[9px] font-medium mt-0.5 ${isPositive ? "text-[#10B981]" : "text-[#EF4444]"}`}>{type}</div>
+          <div className="text-white text-sm font-semibold leading-none">{symbol}</div>
+          <div className={`text-[10px] font-medium mt-1 ${isPositive ? "text-[#10B981]" : "text-[#EF4444]"}`}>{type}</div>
         </div>
       </div>
-      <div className="flex items-center gap-3">
-        <svg width="48" height="20" className="opacity-50">
+      <div className="flex items-center gap-4">
+        {/* Sparkline */}
+        <svg width="56" height="24" className="opacity-60">
           <polyline
-            points={sparkline.map((v, i) => `${(i / (sparkline.length - 1)) * 48},${20 - v * 16}`).join(" ")}
+            points={sparkline.map((v, i) => `${(i / (sparkline.length - 1)) * 56},${24 - v * 20}`).join(" ")}
             fill="none"
-            stroke={dotColor}
+            stroke={isPositive ? "#10B981" : "#EF4444"}
             strokeWidth="1.5"
             strokeLinecap="round"
             strokeLinejoin="round"
           />
         </svg>
-        <div className={`text-xs font-semibold ${color} w-14 text-right`}>{change}</div>
+        <div className={`text-sm font-semibold ${color} w-16 text-right`}>{change}</div>
       </div>
     </div>
   );
 }
 
-// Process steps - compact vertical flow
+// Readable process flow - vertical with clear steps
 function ProcessFlow() {
   const steps = [
-    { icon: "M", label: "DATA", sub: "Анализ" },
-    { icon: "D", label: "DEV", sub: "Поиск" },
-    { icon: "L", label: "ORDER", sub: "Ордер" },
-    { icon: "P", label: "POS", sub: "Позиция" },
-    { icon: "N", label: "NORM", sub: "Баланс" },
+    { label: "MARKET DATA", sub: "Анализ рынка" },
+    { label: "DEVIATION", sub: "Поиск отклонений" },
+    { label: "LIMIT ORDER", sub: "Размещение ордера" },
+    { label: "POSITION", sub: "Управление позицией" },
   ];
   
   return (
-    <div className="flex gap-1.5 mt-4">
+    <div className="mt-6 flex flex-col gap-2">
+      <div className="text-[9px] uppercase tracking-widest text-slate-500 font-semibold mb-1">Process</div>
       {steps.map((step, i) => (
-        <div key={i} className="flex-1 flex flex-col items-center gap-1 group">
-          <div className="w-6 h-6 rounded-full bg-[#10B981]/15 border border-[#10B981]/25 flex items-center justify-center text-[#10B981] text-[8px] font-bold group-hover:bg-[#10B981]/25 transition-colors">
-            {step.icon}
+        <div key={i} className="flex items-center gap-3">
+          <div className="flex flex-col items-center">
+            <div className="w-7 h-7 rounded-full bg-[#10B981]/20 border border-[#10B981]/40 flex items-center justify-center text-[#10B981] text-[10px] font-bold">
+              {i + 1}
+            </div>
+            {i < steps.length - 1 && <div className="w-px h-4 bg-[#10B981]/30"></div>}
           </div>
-          <div className="text-[7px] font-semibold text-slate-400 uppercase tracking-wide text-center leading-tight">{step.label}</div>
-          <div className="text-[7px] text-slate-500">{step.sub}</div>
-          {i < steps.length - 1 && <div className="h-px w-px bg-[#10B981]/20 mt-1 mb-[-4px]"></div>}
+          <div className="flex-1 py-2 px-3 rounded-lg bg-white/5 border border-white/5">
+            <div className="text-white text-xs font-semibold">{step.label}</div>
+            <div className="text-slate-400 text-[10px]">{step.sub}</div>
+          </div>
         </div>
       ))}
     </div>
@@ -65,7 +69,7 @@ export function TradingEngine() {
   const [status, setStatus] = useState("Scanning...");
   
   useEffect(() => {
-    const statuses = ["Scanning market...", "Recalculating...", "Monitoring..."];
+    const statuses = ["Scanning market...", "Recalculating levels...", "Monitoring positions..."];
     let i = 0;
     const interval = setInterval(() => {
       i = (i + 1) % statuses.length;
@@ -87,39 +91,39 @@ export function TradingEngine() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay: 0.3 }}
       className="relative mx-auto"
-      style={{ maxWidth: "600px" }}
+      style={{ maxWidth: "680px" }}
     >
-      {/* Main panel - slightly lighter for dark mode visibility */}
-      <div className="bg-[#0C1A2A] dark:bg-[#0A1520] rounded-[20px] border border-white/10 dark:border-white/15 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.5)] overflow-hidden">
+      {/* Main panel */}
+      <div className="bg-[#07131D] dark:bg-[#0A1520] rounded-[22px] border border-white/10 dark:border-white/15 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
-          <div className="flex items-center gap-2.5">
-            <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-[#10B981] to-[#059669] flex items-center justify-center">
-              <span className="text-white font-bold text-[9px]">CS</span>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#10B981] to-[#059669] flex items-center justify-center shadow-lg shadow-[#10B981]/20">
+              <span className="text-white font-bold text-sm">CS</span>
             </div>
             <div>
-              <div className="text-white font-bold text-[12px] leading-none">CryptoSuperStock</div>
-              <div className="text-slate-500 text-[8px] font-medium mt-0.5">AUTONOMOUS TRADING</div>
+              <div className="text-white font-bold text-[14px] leading-none">CryptoSuperStock</div>
+              <div className="text-slate-500 text-[10px] font-medium mt-0.5">AUTONOMOUS TRADING ENGINE</div>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-[#10B981]/10 border border-[#10B981]/20">
-              <span className="relative flex h-1.5 w-1.5">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#10B981]/10 border border-[#10B981]/25">
+              <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#10B981] opacity-75"></span>
-                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#10B981]"></span>
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-[#10B981]"></span>
               </span>
-              <span className="text-[#10B981] text-[9px] font-semibold">ACTIVE</span>
+              <span className="text-[#10B981] text-xs font-semibold">ACTIVE</span>
             </div>
-            <span className="text-slate-500 text-[9px]">24/7</span>
+            <span className="text-slate-400 text-xs">24/7</span>
           </div>
         </div>
         
         {/* Content */}
-        <div className="p-3.5">
-          <div className="grid grid-cols-[1fr_110px] gap-3">
+        <div className="p-5">
+          <div className="grid grid-cols-[1fr_160px] gap-6">
             {/* Markets list */}
             <div>
-              <div className="text-[8px] uppercase tracking-widest text-slate-500 font-semibold mb-2">Markets</div>
+              <div className="text-[10px] uppercase tracking-widest text-slate-500 font-semibold mb-3">Active Markets</div>
               <div className="space-y-0">
                 {markets.map((m, i) => (
                   <MarketRow key={i} {...m} />
@@ -127,12 +131,22 @@ export function TradingEngine() {
               </div>
             </div>
             
-            {/* Engine core */}
-            <div className="flex flex-col items-center justify-center py-1">
-              <div className="relative w-14 h-14 rounded-xl bg-gradient-to-br from-[#10B981]/20 to-[#059669]/10 border border-[#10B981]/30 flex flex-col items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.15)]">
+            {/* Engine core + Process */}
+            <div className="flex flex-col">
+              {/* Engine core */}
+              <div className="relative flex items-center justify-center h-[140px] rounded-xl bg-gradient-to-br from-[#10B981]/10 to-transparent border border-[#10B981]/20">
                 <div className="absolute inset-0 rounded-xl bg-[#10B981]/5 animate-pulse"></div>
-                <div className="text-[#10B981] text-[6px] font-bold tracking-widest uppercase">ENGINE</div>
-                <div className="text-white text-sm font-bold leading-none">CS</div>
+                <div className="text-center">
+                  <div className="text-[#10B981] text-[10px] font-bold tracking-widest uppercase mb-2">ENGINE</div>
+                  <div className="text-white text-3xl font-bold leading-none">CS</div>
+                  <div className="flex items-center justify-center gap-1.5 mt-3">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#10B981] opacity-75"></span>
+                      <span className="relative inline-flex h-2 w-2 rounded-full bg-[#10B981]"></span>
+                    </span>
+                    <span className="text-[#10B981] text-[10px] font-semibold">ACTIVE</span>
+                  </div>
+                </div>
               </div>
               
               {/* Process flow */}
@@ -141,20 +155,20 @@ export function TradingEngine() {
           </div>
           
           {/* Status bar */}
-          <div className="mt-2.5 px-2.5 py-1.5 rounded-lg bg-[#10B981]/5 border border-[#10B981]/12 flex items-center gap-2">
-            <span className="relative flex h-1.5 w-1.5 shrink-0">
+          <div className="mt-4 px-4 py-2.5 rounded-lg bg-[#10B981]/5 border border-[#10B981]/15 flex items-center gap-2">
+            <span className="relative flex h-2 w-2 shrink-0">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#10B981] opacity-75"></span>
-              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#10B981]"></span>
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-[#10B981]"></span>
             </span>
-            <span className="text-[#10B981] text-[9px] font-medium">{status}</span>
+            <span className="text-[#10B981] text-xs font-medium">{status}</span>
           </div>
         </div>
       </div>
       
-      {/* Background glow - adjusted for dark mode */}
+      {/* Background glow */}
       <div 
-        className="absolute -inset-6 -z-10 opacity-20 dark:opacity-15 blur-3xl"
-        style={{ background: "radial-gradient(circle at 65% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 55%)" }}
+        className="absolute -inset-8 -z-10 opacity-20 blur-3xl"
+        style={{ background: "radial-gradient(circle at 65% 50%, rgba(16, 185, 129, 0.12) 0%, transparent 55%)" }}
       />
     </motion.div>
   );
