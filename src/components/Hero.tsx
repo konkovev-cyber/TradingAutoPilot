@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, BookOpen, ShieldCheck, Zap } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
-import { TradingEngine } from "./HeroEngine";
+import { TradingTerminal } from "./HeroTerminal";
 import { MetricsStrip } from "./HeroMetrics";
 
 export default function Hero() {
@@ -19,12 +19,10 @@ export default function Hero() {
     <section className="relative bg-[#F8FAFC] dark:bg-[#0B1120] overflow-hidden flex items-center py-10 md:py-14">
       {/* Background */}
       <div className="absolute inset-0 pointer-events-none">
-        {/* Subtle dot grid */}
         <div 
           className="absolute inset-0 opacity-[0.025] dark:opacity-[0.05]"
           style={{ backgroundImage: "radial-gradient(circle, #0B0F14 1px, transparent 1px)", backgroundSize: "24px 24px" }}
         />
-        {/* Blue glow */}
         <div 
           className="absolute top-0 right-0 w-[600px] h-[600px] opacity-12 dark:opacity-8"
           style={{ background: "radial-gradient(circle at 75% 25%, rgba(37, 99, 235, 0.12) 0%, transparent 55%)", filter: "blur(80px)" }}
@@ -57,7 +55,7 @@ export default function Hero() {
         <div className="grid lg:grid-cols-[46%_54%] gap-12 items-center">
           {/* Left */}
           <div>
-            {/* Headline - 3 lines max */}
+            {/* Headline */}
             <motion.h1
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
@@ -121,9 +119,9 @@ export default function Hero() {
             </motion.div>
           </div>
 
-          {/* Right - Trading Engine */}
+          {/* Right - Trading Terminal */}
           <div className="relative">
-            <TradingEngine />
+            <TradingTerminal />
           </div>
         </div>
 
