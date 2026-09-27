@@ -50,6 +50,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [debug, setDebug] = useState<string>("");
   const [authInfo, setAuthInfo] = useState<{ email: string; isAdmin: boolean } | null>(null);
 
   const load = async () => {
@@ -67,6 +68,7 @@ export default function AdminDashboard() {
         admin = Boolean(roleData);
       }
       setAuthInfo({ email: session?.user?.email ?? "не залогинен", isAdmin: admin });
+      setDebug(`User: ${session?.user?.email ?? "none"} | Admin: ${admin} | Session: ${!!session?.user}`);
     } catch {
       setAuthInfo({ email: "неизвестно", isAdmin: false });
     }
@@ -176,6 +178,12 @@ ON CONFLICT (user_id) DO UPDATE SET role = 'admin';`}
                добавьте строку в таблицу user_roles (user_id = ваш ID из Auth, role = admin)
             </span>
           )}
+        </div>
+      )}
+
+      {debug && (
+        <div className="text-xs text-gray-500 bg-gray-900 border border-gray-800 rounded-lg px-4 py-2 mb-4">
+          Debug: {debug}
         </div>
       )}
 
