@@ -70,7 +70,7 @@ export default function Header() {
     <>
       <a
         href="#main"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-brand-blue focus:text-white focus:rounded-lg"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-transparent focus:text-[#2563EB] focus:rounded-lg"
       >
         {t("ui.skip")}
       </a>
@@ -98,7 +98,7 @@ export default function Header() {
                 onClick={(e) => handleAnchor(e, link.href)}
                 className={`text-sm font-medium transition-colors ${
                   active === link.id
-                    ? "text-brand-blue"
+                    ? "text-[#2563EB]"
                     : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
                 }`}
               >
@@ -129,9 +129,9 @@ export default function Header() {
             <a
               href="#bots"
               onClick={(e) => handleAnchor(e, "/#bots")}
-              className="hidden sm:inline-flex px-5 py-2.5 bg-brand-blue text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+              className="hidden sm:inline-flex px-5 py-2.5 border border-[#2563EB]/30 bg-transparent text-[#2563EB] text-sm font-semibold rounded-lg hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-colors"
             >
-              "Войти"
+              Смотреть роботов
             </a>
 
             <button
@@ -160,15 +160,15 @@ export default function Header() {
             <a
               href="#bots"
               onClick={(e) => handleAnchor(e, "/#bots")}
-              className="block w-full text-center px-5 py-2.5 bg-brand-blue text-white text-sm font-semibold rounded-lg"
+              className="block w-full text-center px-5 py-2.5 border border-[#2563EB]/30 bg-transparent text-[#2563EB] text-sm font-semibold rounded-lg"
             >
-              "Войти"
+              Смотреть роботов
             </a>
           </div>
         )}
 
         <div
-          className="absolute bottom-0 left-0 h-[2px] bg-brand-blue transition-[width] duration-150"
+          className="absolute bottom-0 left-0 h-[2px] bg-[#2563EB] transition-[width] duration-150"
           style={{ width: progress + "%" }}
           aria-hidden="true"
         />

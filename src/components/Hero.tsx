@@ -4,13 +4,11 @@ import { TrendingUp, ShieldCheck, Globe, Zap, ChevronRight } from "lucide-react"
 import { useI18n } from "@/lib/i18n";
 import { useContent } from "@/lib/site-content";
 
-// Реалистичные данные с просадками: рост -> провал -> восстановление -> рост -> провал
+// Реалистичные данные: 18 точек, 2 просадки (-8% и -12%)
 const chartData = [
-  100, 104, 107, 105, 108, 112, 109, 114, 118, 115, 120, 125, 122, 128, 132,
-  128, 124, 119, 115, 120, 126, 130, 127, 133, 138, 134, 140, 145, 141, 147,
-  152, 148, 143, 138, 134, 130, 135, 140, 145, 150, 155, 151, 156, 161, 157,
-  163, 168, 164, 170, 175, 171, 177, 182, 178, 184, 189, 185, 191, 196, 192,
-  198, 203, 199, 205, 210, 206, 212, 217, 213, 219, 224, 220, 226, 231, 227
+  100, 108, 112, 109, 115, 118, 112, 108, // весна: падение -8%
+  115, 122, 118, 125, 128, 120, 112, // лето: падение -12%
+  118, 125, 132, 138
 ];
 
 function CountUp({ value, className }: { value: string; className?: string }) {
@@ -48,18 +46,14 @@ function CountUp({ value, className }: { value: string; className?: string }) {
   return <span ref={ref} className={className}>{text}</span>;
 }
 
-// Настоящие SVG логотипы бирж (упрощённые но узнаваемые)
-const ExchangeLogo = ({ viewBox, path }: { viewBox: string; path: string }) => (
-  <svg 
-    width="28" 
-    height="28" 
-    viewBox={viewBox} 
-    fill="none" 
-    xmlns="http://www.w3.org/2000/svg" 
-    className="text-[#A0A5B0] opacity-75 hover:opacity-100 transition-all duration-200"
-  >
-    <path d={path} fill="currentColor" />
-  </svg>
+// SVG логотипы бирж (монохромные, упрощённые)
+const ExchangeLogo = ({ name, path }: { name: string; path: string }) => (
+  <div className="flex flex-col items-center gap-1.5">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#A0A5B0] opacity-75">
+      <path d={path} fill="currentColor" />
+    </svg>
+    <span className="text-[10px] font-medium text-[#A0A5B0] tracking-[0.08em] uppercase">{name}</span>
+  </div>
 );
 
 function CleanChart({ todayLabel }: { todayLabel: string }) {
@@ -113,7 +107,7 @@ function CleanChart({ todayLabel }: { todayLabel: string }) {
       };
 
       const fill = ctx.createLinearGradient(0, padding.top, 0, height - padding.bottom);
-      fill.addColorStop(0, "rgba(37, 99, 235, 0.16)");
+      fill.addColorStop(0, "rgba(37, 99, 235, 0.15)");
       fill.addColorStop(1, "rgba(37, 99, 235, 0)");
       drawPath();
       ctx.lineTo(toX(visibleData.length - 1), height - padding.bottom);
@@ -139,7 +133,7 @@ function CleanChart({ todayLabel }: { todayLabel: string }) {
         ctx.beginPath();
         ctx.moveTo(lastX, padding.top);
         ctx.lineTo(lastX, height - padding.bottom);
-        ctx.strokeStyle = "rgba(138, 143, 153, 0.35)";
+        ctx.strokeStyle = "rgba(0, 0, 0, 0.15)";
         ctx.lineWidth = 1;
         ctx.setLineDash([4, 4]);
         ctx.stroke();
@@ -151,20 +145,13 @@ function CleanChart({ todayLabel }: { todayLabel: string }) {
         ctx.fillText(todayLabel, lastX, height - 6);
         ctx.restore();
 
-        // Пульсирующий ореол
-        const pulse = (Math.sin(performance.now() / 500) + 1) / 2;
-        ctx.beginPath();
-        ctx.arc(lastX, lastY, 16 + pulse * 8, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(37, 99, 235, ${(0.12 - pulse * 0.08).toFixed(2)})`;
-        ctx.fill();
-        
         // Точка с белой обводкой
         ctx.beginPath();
         ctx.arc(lastX, lastY, 6, 0, Math.PI * 2);
         ctx.fillStyle = "#FFFFFF";
         ctx.fill();
         ctx.strokeStyle = "#2563EB";
-        ctx.lineWidth = 2.5;
+        ctx.lineWidth = 2;
         ctx.stroke();
       }
     };
@@ -199,7 +186,7 @@ const statIcons = [TrendingUp, ShieldCheck, Globe, Zap];
 function StatCard({ icon: Icon, value, label }: { icon: typeof TrendingUp; value: string; label: string }) {
   return (
     <div className="flex items-center gap-3 text-left px-2 sm:px-4">
-      <Icon size={22} className="text-[#2563EB] shrink-0" strokeWidth={2} />
+      <Icon size={22} className="text-[#2563EB] shrink-0" strokeWidth={1.8} />
       <div className="min-w-0">
         <CountUp value={value} className="block text-[22px] font-bold text-[#0A0A0A] dark:text-white leading-tight tabular-nums" />
         <div className="text-xs text-[#8A8F99] dark:text-[#8a919e] leading-snug mt-0.5">{label}</div>
@@ -215,33 +202,29 @@ function ExchangeTrust() {
         Работаем с ведущими биржами
       </div>
       
-      {/* Логотипы бирж */}
+      {/* Логотипы бирж с подписями */}
       <div className="flex items-center justify-center gap-10 flex-wrap">
-        {/* Binance */}
         <ExchangeLogo 
-          viewBox="0 0 32 32"
-          path="M16 2L6 12l2.5 2.5L16 9l7.5 5.5L26 12 16 2zM6 16l2.5 2.5L16 14l-7.5 5.5L6 22l10-7.5zm20 0l-2.5-2.5L16 16l7.5 5.5L26 22l-10-7.5zm-10 8l-2.5-2.5L16 19l7.5 5.5L21 24l-5-3.5z"
+          name="BINANCE"
+          path="M12 2L6 8l2.5 2.5L12 7l3.5 3.5L18 8 12 2zm-6 8l6 6 6-6-2-2-4 4-4-4-2 2zm12 8l-6-6-6 6 2 2 4-4 4 4 2-2z"
         />
-        {/* Bybit */}
         <ExchangeLogo 
-          viewBox="0 0 32 32"
-          path="M16 4C9.37 4 4 9.37 4 16s5.37 12 12 12 12-5.37 12-12S22.63 4 16 4zm-2 18V10l8 6-8 6z"
+          name="BYBIT"
+          path="M12 4C7.58 4 4 7.58 4 12s3.58 8 8 8 8-3.58 8-8S16.42 4 12 4zm-2 12V8l6 4-6 4z"
         />
-        {/* OKX */}
         <ExchangeLogo 
-          viewBox="0 0 32 32"
-          path="M16 2C8.27 2 2 8.27 2 16s6.27 14 14 14 14-6.27 14-14S23.73 2 16 2zm-3 10.5l-3 3-3-3 3-3 3 3zm6 0l3 3 3-3-3-3-3 3zm-6 6l-3 3-3-3 3-3 3 3zm6 0l3 3 3-3-3-3-3 3z"
+          name="OKX"
+          path="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 7l-3 3 3 3 3-3-3-3zm5 5l-3 3-3-3 3-3 3 3z"
         />
-        {/* KuCoin */}
         <ExchangeLogo 
-          viewBox="0 0 32 32"
-          path="M16 4l-6 6 2 2 4-4 4 4 2-2-6-6zm-8 8l4 4-4 4-4-4 4-4zm16 0l4 4-4 4-4-4 4-4zm-8 8l-4 4 2 2 2-2 2 2 2-2 2 2 2-2-4-4-4 4z"
+          name="KUCOIN"
+          path="M12 2L4 7v10l8 5 8-5V7l-8-5zm0 2.5L18 8l-6 3.5L6 8l6-3.5zM6 9.5l6 3.5v7l-6-3.5v-7zm12 0v7l-6 3.5v-7l6-3.5z"
         />
       </div>
       
       {/* Live ticker */}
       <div className="flex items-center gap-3 px-5 py-3 rounded-xl" style={{ 
-        background: "rgba(0,185,107,0.06)",
+        background: "rgba(0,185,107,0.05)",
         border: "1px solid rgba(0,185,107,0.2)"
       }}>
         <span className="relative flex h-2 w-2 shrink-0">
@@ -263,7 +246,7 @@ export default function Hero() {
 
   return (
     <section className="relative min-h-screen bg-[#F8F9FB] dark:bg-[#0A0B0E] overflow-hidden flex items-center">
-      {/* Радиальный градиент за правой колонкой */}
+      {/* Радиальный градиент */}
       <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_78%_30%,rgba(37,99,235,0.07),transparent_55%)] dark:bg-[radial-gradient(circle_at_78%_30%,rgba(37,99,235,0.1),transparent_55%)]" />
       
       {/* Точечная сетка */}
@@ -320,14 +303,14 @@ export default function Hero() {
             >
               <a
                 href="#bots"
-                className="inline-flex items-center justify-center gap-2 h-[52px] px-7 bg-[#2563EB] text-white font-semibold text-[15px] rounded-xl shadow-[0_8px_24px_rgba(37,99,235,0.25)] hover:-translate-y-0.5 hover:bg-[#1d4ed8] hover:shadow-[0_12px_30px_rgba(37,99,235,0.32)] transition-all"
+                className="inline-flex items-center justify-center gap-2 h-[48px] px-6 bg-[#2563EB] text-white font-semibold text-[15px] rounded-[10px] hover:-translate-y-[1px] hover:bg-[#1d4ed8] transition-all"
               >
                 {c("hero", "pick", t("hero.pick"))}
                 <ChevronRight size={16} strokeWidth={2.5} />
               </a>
               <a
                 href="#how"
-                className="inline-flex items-center justify-center h-[52px] px-7 text-[#0A0A0A] dark:text-gray-200 font-medium text-[15px] rounded-xl border border-black/10 dark:border-white/15 hover:bg-black/[0.03] dark:hover:bg-white/[0.04] transition-colors"
+                className="inline-flex items-center justify-center h-[48px] px-6 text-[#0A0A0A] dark:text-gray-200 font-medium text-[15px] rounded-[10px] border border-black/10 dark:border-white/15 hover:bg-black/[0.03] dark:hover:bg-white/[0.04] transition-colors"
               >
                 {c("hero", "cta2", t("hero.cta2"))}
               </a>
