@@ -16,7 +16,7 @@ export default function Hero() {
   if (!mounted) return null;
   
   return (
-    <section className="relative bg-[#F8FAFC] dark:bg-[#0B1120] overflow-hidden flex items-center py-10 md:py-14">
+    <section className="relative bg-[#F8FAFC] dark:bg-[#0B1120] overflow-hidden flex items-start pt-16 md:pt-20 pb-12">
       {/* Background */}
       <div className="absolute inset-0 pointer-events-none">
         <div 
@@ -52,7 +52,7 @@ export default function Hero() {
         </motion.div>
 
         {/* Main grid */}
-        <div className="grid lg:grid-cols-[46%_54%] gap-12 items-center">
+        <div className="grid lg:grid-cols-[46%_54%] gap-12 items-start">
           {/* Left */}
           <div>
             {/* Headline */}
@@ -125,7 +125,7 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Unified Trust Strip */}
+        {/* Metrics - closer to terminal */}
         <div className="mt-8">
           <MetricsStrip />
         </div>
