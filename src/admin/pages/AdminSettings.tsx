@@ -34,7 +34,6 @@ const HELP_TEXT: Record<string, string> = {
 };
 
 interface Field { key: string; label: string; multiline?: boolean; placeholder?: string; }
-interface TextSection extends Array<Field> {}
 interface ListEditorProps {
   items: Json[];
   onChange: (items: Json[]) => void;
