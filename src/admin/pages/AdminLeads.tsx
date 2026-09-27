@@ -106,8 +106,8 @@ export default function AdminLeads() {
           Заявок не найдено. Попробуйте другой фильтр.
         </div>
       ) : (
-        <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
-          <table className="w-full">
+        <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden overflow-x-auto">
+          <table className="w-full min-w-[760px]">
             <thead className="bg-gray-800/50">
               <tr>
                 {["Имя", "Контакт", "Робот", "Сообщение", "Статус", "Дата", "Ответ"].map((h) => (
@@ -120,8 +120,8 @@ export default function AdminLeads() {
             <tbody className="divide-y divide-gray-800">
               {filtered.map((lead) => (
                 <tr key={lead.id} className="hover:bg-gray-800/30 transition-colors">
-                  <td className="px-5 py-4 text-white font-medium break-words">{lead.name}</td>
-                  <td className="px-5 py-4 text-gray-400 break-all">{lead.contact}</td>
+                  <td className="px-5 py-4 text-white font-medium whitespace-nowrap">{lead.name}</td>
+                  <td className="px-5 py-4 text-gray-400 whitespace-nowrap">{lead.contact}</td>
                   <td className="px-5 py-4 text-gray-400 whitespace-nowrap">{lead.bot}</td>
                   <td className="px-5 py-4 text-gray-400 max-w-md whitespace-normal break-words">{lead.message ?? ""}</td>
                   <td className="px-5 py-4">
