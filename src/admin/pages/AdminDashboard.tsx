@@ -7,6 +7,7 @@ interface Lead {
   id: string;
   name: string;
   contact: string;
+  message: string | null;
   status: string;
   created_at: string;
 }
@@ -255,19 +256,22 @@ ON CONFLICT (user_id) DO UPDATE SET role = 'admin';`}
         ) : (
           <div className="space-y-3">
             {recentLeads.map((lead) => (
-              <div key={lead.id} className="flex items-center justify-between p-4 bg-gray-800/50 rounded-lg">
-                <div className="min-w-0">
-                  <div className="text-white font-medium truncate">{lead.name}</div>
-                  <div className="text-gray-400 text-sm truncate">{lead.contact}</div>
-                </div>
-                <div className="flex items-center gap-3 shrink-0">
-                  <span className="text-gray-500 text-xs hidden md:block">
-                    {new Date(lead.created_at).toLocaleString("ru-RU", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}
-                  </span>
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${statusStyle(lead.status)}`}>
+              <div key={lead.id} className="p-4 bg-gray-800/50 rounded-lg space-y-1.5">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="text-white font-medium break-words">{lead.name}</div>
+                  <span className={`px-3 py-1 rounded-full text-xs font-medium shrink-0 ${statusStyle(lead.status)}`}>
                     {STATUS_LABELS[lead.status] ?? lead.status}
                   </span>
                 </div>
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-400">
+                  <span className="break-all">{lead.contact}</span>
+                  <span className="text-gray-500 text-xs">
+                    {new Date(lead.created_at).toLocaleString("ru-RU", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}
+                  </span>
+                </div>
+                {lead.message && (
+                  <div className="text-sm text-gray-300 break-words">{lead.message}</div>
+                )}
               </div>
             ))}
           </div>

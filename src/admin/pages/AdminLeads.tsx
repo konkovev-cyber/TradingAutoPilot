@@ -120,10 +120,10 @@ export default function AdminLeads() {
             <tbody className="divide-y divide-gray-800">
               {filtered.map((lead) => (
                 <tr key={lead.id} className="hover:bg-gray-800/30 transition-colors">
-                  <td className="px-5 py-4 text-white font-medium whitespace-nowrap">{lead.name}</td>
-                  <td className="px-5 py-4 text-gray-400 whitespace-nowrap">{lead.contact}</td>
+                  <td className="px-5 py-4 text-white font-medium break-words">{lead.name}</td>
+                  <td className="px-5 py-4 text-gray-400 break-all">{lead.contact}</td>
                   <td className="px-5 py-4 text-gray-400 whitespace-nowrap">{lead.bot}</td>
-                  <td className="px-5 py-4 text-gray-400 max-w-xs truncate">{lead.message ?? ""}</td>
+                  <td className="px-5 py-4 text-gray-400 max-w-md whitespace-normal break-words">{lead.message ?? ""}</td>
                   <td className="px-5 py-4">
                     <select
                       value={lead.status}
