@@ -10,25 +10,30 @@ export function useAuth() {
   const loadRole = async () => {
     if (!supabase || !user) {
       setIsAdmin(false);
+      setLoading(false);
       return;
     }
     try {
-      // Сначала пробуем RPC
-      const { data, error } = await supabase.rpc("is_admin");
-      if (!error && data !== null && data !== undefined) {
-        setIsAdmin(Boolean(data));
-        return;
-      }
-      // Если RPC не работает, проверяем таблицу напрямую
-      const { data: roles } = await supabase
+      // Проверяем таблицу user_roles напрямую
+      const { data, error } = await supabase
         .from("user_roles")
         .select("role")
         .eq("user_id", user.id)
         .single();
-      setIsAdmin(roles?.role === "admin");
-    } catch {
+      
+      if (error) {
+        console.error("Error loading role:", error);
+        setIsAdmin(false);
+      } else {
+        const isAdminRole = data?.role === "admin";
+        console.log("User role check:", { userId: user.id, role: data?.role, isAdmin: isAdminRole });
+        setIsAdmin(isAdminRole);
+      }
+    } catch (e) {
+      console.error("loadRole error:", e);
       setIsAdmin(false);
     }
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -40,7 +45,7 @@ export function useAuth() {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       setUser(session?.user ?? null);
       if (session?.user) await loadRole();
-      setLoading(false);
+      else setLoading(false);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -49,6 +54,7 @@ export function useAuth() {
         loadRole();
       } else {
         setIsAdmin(false);
+        setLoading(false);
       }
     });
 
