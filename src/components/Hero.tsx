@@ -10,7 +10,7 @@ const chartData = [
   185, 190, 188, 195, 192, 198, 205, 210, 208, 215, 220, 218, 225, 230, 228, 235,
 ];
 
-function CountUp({ value, className, suffix, prefix }: { value: string; className?: string; suffix?: string; prefix?: string }) {
+function CountUp({ value, className }: { value: string; className?: string }) {
   const ref = useRef<HTMLSpanElement>(null);
   const [text, setText] = useState(value);
   const started = useRef(false);
@@ -18,42 +18,34 @@ function CountUp({ value, className, suffix, prefix }: { value: string; classNam
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const m = value.match(/^([^\d]*)(\d+(?:[.,]\d+)?)(.*)$/);
-    if (!m) return;
-    const [, pre, numStr, suf] = m;
-    const dec = /[.,]/.test(numStr) ? numStr.split(/[.,]/)[1].length : 0;
-    const target = parseFloat(numStr.replace(",", "."));
-    const io = new IntersectionObserver(
+    const match = value.match(/^([^\d]*)(\d+(?:[.,]\d+)?)(.*)$/);
+    if (!match) return;
+    const [, prefix, number, suffix] = match;
+    const decimals = /[.,]/.test(number) ? number.split(/[.,]/)[1].length : 0;
+    const target = parseFloat(number.replace(",", "."));
+    const observer = new IntersectionObserver(
       (entries) => {
         if (!entries[0].isIntersecting || started.current) return;
         started.current = true;
-        const t0 = performance.now();
+        const startedAt = performance.now();
         const tick = (now: number) => {
-          const p = Math.min(1, (now - t0) / 1200);
-          const eased = 1 - Math.pow(1 - p, 3);
-          setText((prefix ?? pre) + (target * eased).toFixed(dec) + (suffix ?? suf));
-          if (p < 1) requestAnimationFrame(tick);
+          const progress = Math.min(1, (now - startedAt) / 1000);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          setText(prefix + (target * eased).toFixed(decimals) + suffix);
+          if (progress < 1) requestAnimationFrame(tick);
         };
         requestAnimationFrame(tick);
       },
-      { threshold: 0.4 }
+      { threshold: 0.4 },
     );
-    io.observe(el);
-    return () => io.disconnect();
-  }, [value, prefix, suffix]);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [value]);
 
-  return (
-    <span ref={ref} className={className}>
-      {text}
-    </span>
-  );
+  return <span ref={ref} className={className}>{text}</span>;
 }
 
-/*
- * Чистая кривая роста  без сетки и осей.
- * Под ней градиентная заливка. Одна ключевая точка снизу.
- */
-function CleanChart() {
+function CleanChart({ todayLabel }: { todayLabel: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const progressRef = useRef(0);
   const startedRef = useRef(false);
@@ -64,118 +56,160 @@ function CleanChart() {
     if (!canvas) return;
 
     const draw = () => {
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
+      const context = canvas.getContext("2d");
+      if (!context) return;
       const dpr = window.devicePixelRatio || 1;
       const rect = canvas.getBoundingClientRect();
       if (rect.width === 0) return;
-      if (canvas.width !== Math.round(rect.width * dpr)) {
+      if (canvas.width !== Math.round(rect.width * dpr) || canvas.height !== Math.round(rect.height * dpr)) {
         canvas.width = Math.round(rect.width * dpr);
         canvas.height = Math.round(rect.height * dpr);
       }
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      ctx.clearRect(0, 0, rect.width, rect.height);
+      context.setTransform(dpr, 0, 0, dpr, 0, 0);
+      context.clearRect(0, 0, rect.width, rect.height);
 
-      const w = rect.width;
-      const h = rect.height;
-      const pad = { top: 12, bottom: 12, left: 8, right: 8 };
-      const cw = w - pad.left - pad.right;
-      const ch = h - pad.top - pad.bottom;
+      const width = rect.width;
+      const height = rect.height;
+      const padding = { top: 14, bottom: 24, left: 8, right: 8 };
+      const chartWidth = width - padding.left - padding.right;
+      const chartHeight = height - padding.top - padding.bottom;
+      const minValue = Math.min(...chartData) - 8;
+      const maxValue = Math.max(...chartData) + 8;
+      const toX = (index: number) => padding.left + (index / (chartData.length - 1)) * chartWidth;
+      const toY = (value: number) => padding.top + chartHeight - ((value - minValue) / (maxValue - minValue)) * chartHeight;
+      const progress = progressRef.current;
+      const pointCount = Math.max(2, Math.floor(chartData.length * progress));
+      const visibleData = chartData.slice(0, pointCount);
 
-      const minV = Math.min(...chartData) - 8;
-      const maxV = Math.max(...chartData) + 8;
-      const toX = (i: number) => pad.left + (i / (chartData.length - 1)) * cw;
-      const toY = (v: number) => pad.top + ch - ((v - minV) / (maxV - minV)) * ch;
-
-      const prog = progressRef.current;
-      const count = Math.max(2, Math.floor(chartData.length * prog));
-      const slice = chartData.slice(0, count);
-
-      // градиентная заливка под кривой
-      const grad = ctx.createLinearGradient(0, pad.top, 0, h - pad.bottom);
-      grad.addColorStop(0, "rgba(37, 99, 235, 0.18)");
-      grad.addColorStop(1, "rgba(37, 99, 235, 0)");
-
-      const strokePath = () => {
-        ctx.beginPath();
-        ctx.moveTo(toX(0), toY(slice[0]));
-        for (let i = 1; i < slice.length; i++) {
-          const xc = (toX(i) + toX(i - 1)) / 2;
-          const yc = (toY(slice[i]) + toY(slice[i - 1])) / 2;
-          ctx.quadraticCurveTo(toX(i - 1), toY(slice[i - 1]), xc, yc);
+      const drawPath = () => {
+        context.beginPath();
+        context.moveTo(toX(0), toY(visibleData[0]));
+        for (let index = 1; index < visibleData.length; index += 1) {
+          const midpointX = (toX(index) + toX(index - 1)) / 2;
+          const midpointY = (toY(visibleData[index]) + toY(visibleData[index - 1])) / 2;
+          context.quadraticCurveTo(toX(index - 1), toY(visibleData[index - 1]), midpointX, midpointY);
         }
-        if (slice.length > 1) {
-          const lastX = toX(slice.length - 1);
-          const lastY = toY(slice[slice.length - 1]);
-          ctx.quadraticCurveTo(lastX, lastY, lastX, lastY);
+        if (visibleData.length > 1) {
+          const last = visibleData.length - 1;
+          context.quadraticCurveTo(toX(last), toY(visibleData[last]), toX(last), toY(visibleData[last]));
         }
       };
 
-      // заливка
-      strokePath();
-      ctx.lineTo(toX(slice.length - 1), h - pad.bottom);
-      ctx.lineTo(toX(0), h - pad.bottom);
-      ctx.closePath();
-      ctx.fillStyle = grad;
-      ctx.fill();
+      const fill = context.createLinearGradient(0, padding.top, 0, height - padding.bottom);
+      fill.addColorStop(0, "rgba(37, 99, 235, 0.16)");
+      fill.addColorStop(1, "rgba(37, 99, 235, 0)");
+      drawPath();
+      context.lineTo(toX(visibleData.length - 1), height - padding.bottom);
+      context.lineTo(toX(0), height - padding.bottom);
+      context.closePath();
+      context.fillStyle = fill;
+      context.fill();
 
-      // линия
-      strokePath();
-      ctx.strokeStyle = "#2563EB";
-      ctx.lineWidth = 2.5;
-      ctx.lineJoin = "round";
-      ctx.lineCap = "round";
-      ctx.stroke();
+      drawPath();
+      context.strokeStyle = "#2563EB";
+      context.lineWidth = 2.5;
+      context.lineJoin = "round";
+      context.lineCap = "round";
+      context.stroke();
 
-      // живая точка на конце
-      if (prog >= 1 && slice.length > 0) {
-        const lastX = toX(slice.length - 1);
-        const lastY = toY(slice[slice.length - 1]);
+      if (progress >= 1) {
+        const last = visibleData.length - 1;
+        const lastX = toX(last);
+        const lastY = toY(visibleData[last]);
+        context.save();
+        context.beginPath();
+        context.moveTo(lastX, padding.top);
+        context.lineTo(lastX, height - padding.bottom + 2);
+        context.strokeStyle = "rgba(138, 143, 153, 0.45)";
+        context.lineWidth = 1;
+        context.setLineDash([3, 4]);
+        context.stroke();
+        context.setLineDash([]);
+        context.font = "11px Inter, sans-serif";
+        context.fillStyle = "#8A8F99";
+        context.textAlign = lastX > width - 45 ? "right" : "center";
+        context.fillText(todayLabel, lastX > width - 45 ? lastX - 4 : lastX, height - 5);
+        context.restore();
+
         const pulse = (Math.sin(performance.now() / 500) + 1) / 2;
-        ctx.beginPath();
-        ctx.arc(lastX, lastY, 4 + pulse * 3, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(37, 99, 235, " + (0.3 - pulse * 0.2).toFixed(2) + ")";
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(lastX, lastY, 4, 0, Math.PI * 2);
-        ctx.fillStyle = "#2563EB";
-        ctx.fill();
+        context.beginPath();
+        context.arc(lastX, lastY, 4 + pulse * 3, 0, Math.PI * 2);
+        context.fillStyle = `rgba(37, 99, 235, ${(0.28 - pulse * 0.16).toFixed(2)})`;
+        context.fill();
+        context.beginPath();
+        context.arc(lastX, lastY, 4, 0, Math.PI * 2);
+        context.fillStyle = "#2563EB";
+        context.fill();
       }
     };
 
-    const loop = (now: number) => {
-      if (startedRef.current && progressRef.current < 1) progressRef.current = Math.min(1, progressRef.current + 0.012);
+    const loop = () => {
+      if (startedRef.current && progressRef.current < 1) {
+        progressRef.current = Math.min(1, progressRef.current + 0.012);
+      }
       draw();
       rafRef.current = requestAnimationFrame(loop);
     };
 
-    const io = new IntersectionObserver(
+    const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) startedRef.current = true;
       },
-      { threshold: 0.3 }
+      { threshold: 0.3 },
     );
-    io.observe(canvas);
+    observer.observe(canvas);
     rafRef.current = requestAnimationFrame(loop);
-
     return () => {
       cancelAnimationFrame(rafRef.current);
-      io.disconnect();
+      observer.disconnect();
     };
-  }, []);
+  }, [todayLabel]);
 
-  return <canvas ref={canvasRef} className="w-full h-[200px] block" />;
+  return <canvas ref={canvasRef} className="w-full h-[220px] block" aria-label={todayLabel} />;
 }
 
 const statIcons = [TrendingUp, ShieldCheck, Globe, Zap];
 
-
 function StatCard({ icon: Icon, value, label }: { icon: typeof TrendingUp; value: string; label: string }) {
   return (
-    <div className="flex flex-col items-center gap-2 text-center px-2">
-      <Icon size={20} className="text-[#2563EB]" strokeWidth={2} />
-      <CountUp value={value} className="text-[22px] md:text-2xl font-bold text-[#0A0A0A] dark:text-white leading-tight tabular-nums" />
-      <div className="text-xs text-[#8A8F99] dark:text-[#8a919e] leading-snug">{label}</div>
+    <div className="flex items-center gap-3 text-left px-2 sm:px-3">
+      <Icon size={20} className="text-[#2563EB] shrink-0" strokeWidth={2} />
+      <div className="min-w-0">
+        <CountUp value={value} className="block text-[22px] font-bold text-[#0A0A0A] dark:text-white leading-tight tabular-nums" />
+        <div className="text-xs text-[#8A8F99] dark:text-[#8a919e] leading-snug mt-1">{label}</div>
+      </div>
+    </div>
+  );
+}
+
+function ExchangeTrust({ title, liveLabel }: { title: string; liveLabel: string }) {
+  return (
+    <div className="mt-5 space-y-4">
+      <div className="flex items-center justify-between gap-4">
+        <span className="text-xs text-[#8A8F99] dark:text-[#8a919e]">{title}</span>
+        <div className="flex items-center gap-2 text-[11px] text-[#8A8F99] dark:text-[#8a919e]">
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full rounded-full bg-[#00B96B] opacity-60 animate-ping" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-[#00B96B]" />
+          </span>
+          {liveLabel}
+        </div>
+      </div>
+      <div className="grid grid-cols-4 gap-2 rounded-xl border border-black/5 dark:border-white/10 bg-white/70 dark:bg-[#15171C]/70 px-3 py-3">
+        {['BINANCE', 'BYBIT', 'OKX', 'KUCOIN'].map((exchange) => (
+          <span key={exchange} className="text-center text-[11px] font-bold tracking-[0.08em] text-[#8A8F99] dark:text-[#87909d]">{exchange}</span>
+        ))}
+      </div>
+      <div className="flex items-center justify-between rounded-xl border border-black/5 dark:border-white/10 bg-white/80 dark:bg-[#15171C]/80 px-4 py-3">
+        <div className="flex items-center gap-2.5">
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full rounded-full bg-[#00B96B] opacity-60 animate-ping" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-[#00B96B]" />
+          </span>
+          <span className="text-xs font-semibold text-[#5A5F6B] dark:text-[#c3c9d4]">BTC/USDT  LONG</span>
+        </div>
+        <span className="text-sm font-bold text-[#00B96B]">+2.4%</span>
+      </div>
     </div>
   );
 }
@@ -186,26 +220,31 @@ export default function Hero() {
   const stats: { value: string; label: string }[] = t("hero.stats");
 
   return (
-    <section className="relative bg-[#F7F8FA] dark:bg-[#0A0B0E] overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 lg:px-16 pt-20 pb-20 w-full">
-        <div className="grid lg:grid-cols-[55%_45%] gap-12 lg:gap-16 items-center">
-          {/* Левая колонка: текст */}
+    <section className="relative overflow-hidden bg-[#F8F9FB] dark:bg-[#0A0B0E]">
+      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_75%_35%,rgba(37,99,235,0.09),transparent_58%)] dark:bg-[radial-gradient(circle_at_75%_35%,rgba(37,99,235,0.12),transparent_58%)]" />
+      <div className="absolute inset-0 pointer-events-none opacity-40 dark:opacity-10" style={{ backgroundImage: "radial-gradient(rgba(37,99,235,0.18) 1px, transparent 1px)", backgroundSize: "28px 28px" }} />
+
+      <div className="relative max-w-7xl mx-auto px-6 lg:px-16 pt-20 pb-20 w-full">
+        <div className="grid lg:grid-cols-[55%_45%] gap-12 lg:gap-16 items-start">
           <div>
             <motion.div
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white dark:bg-[#15171C] border border-black/10 dark:border-white/10 shadow-sm mb-6"
+              className="inline-flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-white dark:bg-[#15171C] border border-black/10 dark:border-white/10 shadow-sm mb-6"
             >
-              <span className="w-2 h-2 rounded-full bg-[#00B96B]" />
-              <span className="text-[13px] font-medium text-[#5A5F6B]">{c("hero", "badge", t("hero.badge"))}</span>
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full rounded-full bg-[#00B96B] opacity-60 animate-ping" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-[#00B96B]" />
+              </span>
+              <span className="text-[13px] font-medium text-[#5A5F6B] dark:text-[#c3c9d4]">{c("hero", "badge", t("hero.badge"))}</span>
             </motion.div>
 
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-[36px] sm:text-[44px] lg:text-[56px] xl:text-[60px] font-extrabold text-[#0A0A0A] dark:text-white leading-[1.08] tracking-tight mb-5"
+              className="text-[36px] sm:text-[42px] lg:text-[48px] font-bold text-[#0A0A0A] dark:text-white leading-[1.1] tracking-[-0.02em] mb-5"
             >
               {c("hero", "title1", t("hero.title1"))}
               <br />
@@ -216,7 +255,7 @@ export default function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-[17px] md:text-lg text-[#5A5F6B] dark:text-[#9aa1ad] font-normal max-w-[520px] leading-relaxed mb-8"
+              className="text-[17px] text-[#5A5F6B] dark:text-[#9aa1ad] font-normal max-w-[480px] leading-[1.5] mb-8"
             >
               {c("hero", "subtitle", t("hero.subtitle"))}
             </motion.p>
@@ -225,69 +264,63 @@ export default function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="flex flex-col sm:flex-row gap-3 mb-10"
+              className="flex flex-col sm:flex-row gap-3"
             >
               <a
                 href="#bots"
-                className="inline-flex items-center justify-center gap-2 h-12 px-6 bg-[#2563EB] text-white font-semibold text-[15px] rounded-[10px] hover:bg-[#1d4ed8] transition-colors"
+                className="inline-flex items-center justify-center gap-2 h-[52px] px-7 bg-[#2563EB] text-white font-semibold text-[15px] rounded-xl shadow-[0_8px_24px_rgba(37,99,235,0.25)] hover:-translate-y-0.5 hover:bg-[#1d4ed8] hover:shadow-[0_12px_30px_rgba(37,99,235,0.32)] transition-all"
               >
                 {c("hero", "pick", t("hero.pick"))}
                 <ChevronRight size={16} strokeWidth={2.5} />
               </a>
               <a
                 href="#how"
-                className="inline-flex items-center justify-center h-12 px-6 text-[#0A0A0A] dark:text-gray-200 font-medium text-[15px] rounded-[10px] border border-black/10 dark:border-white/15 hover:bg-black/[0.03] dark:hover:bg-white/[0.04] transition-colors"
+                className="inline-flex items-center justify-center h-[52px] px-7 text-[#0A0A0A] dark:text-gray-200 font-medium text-[15px] rounded-xl border border-black/10 dark:border-white/15 hover:bg-black/[0.03] dark:hover:bg-white/[0.04] transition-colors"
               >
                 {c("hero", "cta2", t("hero.cta2"))}
               </a>
             </motion.div>
-
-            {/* Панель метрик — 4 равные ячейки */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              className="bg-white dark:bg-[#15171C] rounded-2xl shadow-[0_8px_40px_rgba(0,0,0,0.06)] px-4 sm:px-6 py-6"
-            >
-              <div className="grid grid-cols-2 sm:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-black/5 dark:divide-white/10">
-                {stats.map((s, i) => {
-                  const Icon = statIcons[i] || TrendingUp;
-                  return (
-                    <div key={i} className="px-2 py-4 sm:py-0 first:pl-0 last:pr-0">
-                      <StatCard icon={Icon} value={s.value} label={s.label} />
-                    </div>
-                  );
-                })}
-              </div>
-            </motion.div>
           </div>
 
-          {/* Правая колонка: карточка доходности */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="bg-white dark:bg-[#15171C] rounded-2xl shadow-[0_8px_40px_rgba(0,0,0,0.06)] p-6"
           >
-            <div className="flex items-center justify-between mb-4">
-              <div className="text-[13px] text-[#8A8F99] dark:text-[#8a919e]">{t("hero.chart.portfolio")}</div>
-              <span className="inline-flex items-center px-3 py-1.5 rounded-lg text-lg font-bold text-[#00B96B] bg-[rgba(0,185,107,0.1)]">
-                {stats[0]?.value ?? "+96.4%"}
-              </span>
+            <div className="bg-white dark:bg-[#15171C] rounded-[20px] shadow-[0_20px_60px_-20px_rgba(37,99,235,0.15)] p-6">
+              <div className="flex items-center justify-between mb-3">
+                <div className="text-[13px] text-[#8A8F99] dark:text-[#8a919e]">{t("hero.chart.portfolio")}</div>
+                <span className="inline-flex items-center px-3 py-1.5 rounded-lg text-[15px] font-bold text-[#00B96B] bg-[rgba(0,185,107,0.1)]">{stats[0]?.value ?? "+96.4%"}</span>
+              </div>
+              <CleanChart todayLabel={t("hero.chart.today")} />
+              <div className="flex items-center gap-3 mt-3 pt-3 border-t border-black/5 dark:border-white/10 text-xs text-[#8A8F99] dark:text-[#8a919e]">
+                <span>{t("hero.chart.drawdown")} 4.1%</span>
+                <span className="h-1 w-1 rounded-full bg-[#8A8F99]" />
+                <span>{t("hero.chart.uptime")} 99.9%</span>
+              </div>
             </div>
-
-            <CleanChart />
-
-            <div className="flex items-center justify-between mt-4 pt-4 border-t border-black/5 dark:border-white/10">
-              <div className="text-xs text-[#8A8F99]">{t("hero.chart.drawdown")}</div>
-              <div className="text-xs font-semibold text-[#5A5F6B] dark:text-[#c3c9d4]">4.1%</div>
-            </div>
+            <ExchangeTrust title={t("hero.exchangeTitle")} liveLabel={t("hero.live")} />
           </motion.div>
         </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.45 }}
+          className="mt-12 bg-white dark:bg-[#15171C] rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] px-4 sm:px-6 py-5"
+        >
+          <div className="grid grid-cols-2 lg:grid-cols-4 divide-y lg:divide-y-0 lg:divide-x divide-black/5 dark:divide-white/10">
+            {stats.map((stat, index) => {
+              const Icon = statIcons[index] || TrendingUp;
+              return (
+                <div key={index} className="py-4 lg:py-0 first:pt-0 last:pb-0 lg:first:pl-0 lg:last:pr-0 lg:px-6">
+                  <StatCard icon={Icon} value={stat.value} label={stat.label} />
+                </div>
+              );
+            })}
+          </div>
+        </motion.div>
       </div>
     </section>
   );
 }
-
-
-

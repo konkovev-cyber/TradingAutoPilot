@@ -12,10 +12,10 @@ export const ruTranslations = {
     "scrollTo": "Перейти к разделу"
   },
   "hero": {
-    "badge": "Торговые роботы с ИИ",
-    "title1": "Торгуйте на крипторынке",
-    "title2": "с помощью роботов",
-    "subtitle": "Боты работают через API на 20+ биржах. ИИ-алгоритмы находят сделки и торгуют 24/7.",
+    "badge": "20+ бирж · ИИ-торговля 24/7",
+    "title1": "Торгуйте криптой",
+    "title2": "на автопилоте",
+    "subtitle": "Боты на ИИ торгуют на 20+ биржах через API. Средняя доходность портфеля — +96.4% за год. Работают 24/7.",
     "title": "Три торговых робота. Прибыль 24/7",
     "desc": "Гибрид акций и крипты, торговый пулемёт и охота за Pump & Dump. Выберите своего робота \u2014 он торгует, пока вы занимаетесь своими делами.",
     "cta1": "Смотреть роботов",
@@ -27,12 +27,13 @@ export const ruTranslations = {
       "API без права вывода"
     ],
     "live": "LIVE",
+    "exchangeTitle": "Работаем с ведущими биржами",
     "profit": "Прибыль за сегодня",
     "stats": [
       { "value": "+96.4%", "label": "Доходность за год" },
       { "value": "24/7", "label": "Автоторговля" },
       { "value": "20+", "label": "Бирж через API" },
-      { "value": "< 1 сек", "label": "Реакция на сигнал" }
+      { "value": "<1 сек", "label": "Реакция на сигнал" }
     ],
     "chart": {
       "portfolio": "Доходность портфеля",
@@ -41,6 +42,8 @@ export const ruTranslations = {
       "deals": "Всего сделок",
       "win": "Прибыльных",
       "drawdown": "Макс. просадка",
+      "today": "Сегодня",
+      "uptime": "Аптайм",
       "months": ["Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"]
     }
   },
@@ -170,10 +173,10 @@ export const enTranslations = {
   "nav": { "bots": "Bots", "how": "How it works", "faq": "FAQ" },
   "ui": { "themeLight": "Light theme", "themeDark": "Dark theme", "menu": "Menu", "skip": "Skip to content", "scrollTo": "Go to section" },
   "hero": {
-    "badge": "AI-powered trading bots",
+    "badge": "20+ exchanges · AI trading 24/7",
     "title1": "Trade crypto",
-    "title2": "with smart robots",
-    "subtitle": "Bots work via API on 20+ exchanges. AI algorithms find trades and trade around the clock.",
+    "title2": "on autopilot",
+    "subtitle": "AI-powered bots trade on 20+ exchanges via API. Average portfolio return is +96.4% per year. They work 24/7.",
     "title": "Three trading bots. Profit 24/7",
     "desc": "Stock-crypto hybrid, trading machine and Pump & Dump hunter. Choose your bot \u2014 it trades while you live your life.",
     "cta1": "View bots",
@@ -181,12 +184,13 @@ export const enTranslations = {
     "pick": "Choose a bot",
     "trust": ["No subscription, buy once", "Setup in 2 minutes", "API without withdrawal"],
     "live": "LIVE",
+    "exchangeTitle": "Works with leading exchanges",
     "profit": "Profit today",
     "stats": [
       { "value": "+96.4%", "label": "Annual return" },
       { "value": "24/7", "label": "Auto trading" },
       { "value": "20+", "label": "Exchanges via API" },
-      { "value": "< 1 sec", "label": "Signal reaction" }
+      { "value": "<1 sec", "label": "Signal reaction" }
     ],
     "chart": {
       "portfolio": "Portfolio return",
@@ -195,6 +199,8 @@ export const enTranslations = {
       "deals": "Total trades",
       "win": "Profitable",
       "drawdown": "Max drawdown",
+      "today": "Today",
+      "uptime": "Uptime",
       "months": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
     }
   },
