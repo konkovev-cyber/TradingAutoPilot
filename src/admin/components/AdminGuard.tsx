@@ -1,4 +1,4 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, Link } from "react-router-dom";
 import { useAuth } from "@/admin/hooks/useAuth";
 import { ShieldAlert } from "lucide-react";
 
@@ -12,7 +12,7 @@ export default function AdminGuard({ children }: AdminGuardProps) {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-950 flex items-center justify-center">
-        <div className="text-white text-lg">Loading...</div>
+        <div className="text-white text-lg">Загрузка...</div>
       </div>
     );
   }
@@ -28,10 +28,11 @@ export default function AdminGuard({ children }: AdminGuardProps) {
           <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
             <ShieldAlert size={32} className="text-red-400" />
           </div>
-          <h1 className="text-2xl font-bold text-white mb-2">Access denied</h1>
+          <h1 className="text-2xl font-bold text-white mb-2">Доступ запрещен</h1>
           <p className="text-gray-400 mb-8">
-            Your account does not have admin rights. Contact the site owner to get access.
+            У вашей учетной записи нет прав администратора. Обратитесь к владельцу сайта, чтобы получить доступ.
           </p>
+          <Link to="/" className="text-brand-blue font-semibold hover:underline">На главную</Link>
         </div>
       </div>
     );
