@@ -1,10 +1,9 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Menu, X, Sun, Moon, Globe } from "lucide-react";
 import { useTheme } from "@/lib/theme";
 import { useI18n } from "@/lib/i18n";
-
-const sectionIds = ["bots", "how", "faq"];
+import { useSections } from "@/lib/sections";
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -13,6 +12,18 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const { lang, setLang, t } = useI18n();
+  const { sections } = useSections();
+
+  const navMap: Record<string, { href: string; label: string }> = {
+    products: { href: "/#bots", label: t("nav.bots") },
+    how: { href: "/#how", label: t("nav.how") },
+    faq: { href: "/#faq", label: t("nav.faq") },
+  };
+  const enabledKeys = new Set(sections.filter((s) => s.enabled).map((s) => s.key));
+  const navLinks = Object.entries(navMap)
+    .filter(([key]) => enabledKeys.has(key))
+    .map(([key, v]) => ({ id: key, ...v }));
+  const navLinkIds = navLinks.map((l) => l.id);
 
   useEffect(() => {
     const onScroll = () => {
@@ -26,7 +37,7 @@ export default function Header() {
   }, []);
 
   useEffect(() => {
-    const els = sectionIds
+    const els = navLinkIds
       .map((id) => document.getElementById(id))
       .filter((el): el is HTMLElement => Boolean(el));
     if (!els.length) return;
@@ -40,13 +51,7 @@ export default function Header() {
     );
     els.forEach((el) => io.observe(el));
     return () => io.disconnect();
-  }, []);
-
-  const navLinks = [
-    { id: "bots", label: t("nav.bots"), href: "/#bots" },
-    { id: "how", label: t("nav.how"), href: "/#how" },
-    { id: "faq", label: t("nav.faq"), href: "/#faq" },
-  ];
+  }, [navLinkIds.join(",")]);
 
   const handleAnchor = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     const id = href.split("#")[1];

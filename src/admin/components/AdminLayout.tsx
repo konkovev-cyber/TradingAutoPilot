@@ -1,10 +1,11 @@
-﻿import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
-import { LayoutDashboard, Bot, MessageSquare, FileText, LogOut, Menu, X, ExternalLink } from "lucide-react";
+import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
+import { LayoutDashboard, LayoutList, Bot, MessageSquare, FileText, LogOut, Menu, X, ExternalLink } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 
 const navItems = [
   { path: "/admin", label: "Обзор", desc: "Сколько заявок пришло и их состояния", icon: LayoutDashboard },
+  { path: "/admin/sections", label: "Секции", desc: "Порядок и видимость блоков на сайте", icon: LayoutList },
   { path: "/admin/bots", label: "Роботы", desc: "Добавление и редактирование ботов", icon: Bot },
   { path: "/admin/leads", label: "Заявки", desc: "Обращения с формы на сайте", icon: MessageSquare },
   { path: "/admin/settings", label: "Контент", desc: "Тексты всех секций сайта", icon: FileText },
