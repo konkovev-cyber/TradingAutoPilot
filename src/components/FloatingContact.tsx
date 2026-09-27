@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
+import { useI18n } from '@/lib/i18n';
 import { MessageCircle, X, ArrowUp, Send } from 'lucide-react';
 
 export default function FloatingContact() {
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const [showTop, setShowTop] = useState(false);
 
@@ -29,7 +31,7 @@ export default function FloatingContact() {
               <Send size={18} className="text-[#229ED9]" />
             </span>
             <span>
-              <span className="block text-xs text-[var(--text-subtle)]">Написать в</span>
+              <span className="block text-xs text-[var(--text-subtle)]">{t("contact.writeIn")}</span>
               <span className="text-sm font-semibold text-[var(--text)]">Telegram</span>
             </span>
           </a>
@@ -43,7 +45,7 @@ export default function FloatingContact() {
               <MessageCircle size={18} className="text-[#25D366]" />
             </span>
             <span>
-              <span className="block text-xs text-[var(--text-subtle)]">Написать в</span>
+              <span className="block text-xs text-[var(--text-subtle)]">{t("contact.writeIn")}</span>
               <span className="text-sm font-semibold text-[var(--text)]">WhatsApp</span>
             </span>
           </a>
@@ -56,8 +58,8 @@ export default function FloatingContact() {
         className={`fixed bottom-24 right-5 z-[70] w-11 h-11 rounded-full glass-strong flex items-center justify-center text-[var(--primary)] shadow-lg transition-all duration-300 hover:scale-110 ${
           showTop && !open ? 'opacity-100' : 'opacity-0 pointer-events-none'
         }`}
-        title="Наверх"
-        aria-label="Наверх"
+        title={t("contact.up")}
+        aria-label={t("contact.up")}
       >
         <ArrowUp size={18} />
       </button>
@@ -67,8 +69,8 @@ export default function FloatingContact() {
         onClick={() => setOpen(!open)}
         className="fixed bottom-5 right-5 z-[70] w-14 h-14 rounded-full flex items-center justify-center shadow-xl transition-all duration-300 hover:scale-110"
         style={{ background: 'linear-gradient(135deg, #00FFB2, #00D4FF)' }}
-        title="Связаться с нами"
-        aria-label="Связаться с нами"
+        title={t("contact.open")}
+        aria-label={t("contact.open")}
       >
         {open ? <X size={22} className="text-[#04121C]" /> : <MessageCircle size={22} className="text-[#04121C]" />}
       </button>
