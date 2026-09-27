@@ -9,3 +9,6 @@ export function getSupabase(): SupabaseClient | null {
   if (!client) client = createClient(url, key);
   return client;
 }
+
+// Export default for components that use it directly
+export const supabase = getSupabase();
