@@ -48,6 +48,8 @@ export default function LeadForm() {
 
   if (status === "success") {
     return (
+      <section id="lead" className="section-padding bg-white dark:bg-gray-950 transition-colors duration-300">
+        <div className="max-w-3xl mx-auto px-6 lg:px-8">
       <div className="text-center p-12 bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800">
         <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
           <CheckCircle2 size={32} className="text-green-600 dark:text-green-400" />
@@ -56,11 +58,15 @@ export default function LeadForm() {
         <p className="text-gray-500 dark:text-gray-400 mb-8">{t("lead.privacy")}</p>
         <button onClick={() => setStatus("idle")} className="text-brand-blue font-semibold hover:underline">Отправить ещё одну заявку</button>
       </div>
+        </div>
+      </section>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="grid lg:grid-cols-2 gap-12 items-start">
+    <section id="lead" className="section-padding bg-white dark:bg-gray-950 transition-colors duration-300">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+        <form onSubmit={handleSubmit} className="grid lg:grid-cols-2 gap-12 items-start">
       <div className="space-y-6">
         <h3 className="text-3xl font-bold text-gray-900 dark:text-white">{t("lead.title")}</h3>
         <p className="text-lg text-gray-500 dark:text-gray-400">{t("lead.subtitle")}</p>
@@ -139,5 +145,7 @@ export default function LeadForm() {
         <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-brand-blue/10 rounded-full blur-3xl" />
       </div>
     </form>
+      </div>
+    </section>
   );
 }
