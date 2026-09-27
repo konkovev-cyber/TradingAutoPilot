@@ -74,6 +74,7 @@ export default function AdminDashboard() {
     }
     const dayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
     const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+try {
     const [leadsRes, botsRes, viewsRes, totalViewsRes] = await Promise.all([
       supabase.from("leads").select("*").order("created_at", { ascending: false }),
       supabase.from("bots").select("id", { count: "exact", head: true }),
@@ -104,6 +105,9 @@ export default function AdminDashboard() {
     });
     setRecentLeads(leads.slice(0, 5));
     setError(null);
+} catch (e) {
+    setError(e instanceof Error ? e.message : "Ошибка загрузки данных");
+}
     setLoading(false);
     setRefreshing(false);
   };
