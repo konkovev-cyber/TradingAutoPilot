@@ -1,4 +1,4 @@
-﻿/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "./supabase";
 
@@ -10,10 +10,10 @@ const FALLBACKS: Record<string, Json> = {
     description: "Coinsofter \u2014 интеллектуальные торговые роботы для криптовалют и акций. Автоматическая торговля 24/7 через API.",
   },
   hero: {
-    badge: "Торговые роботы с ИИ для любых бирж",
+    badge: "Торговые роботы с ИИ",
     title1: "Торгуйте на крипторынке",
     title2: "с помощью роботов",
-    subtitle: "Боты работают на любых криптобиржах через API. Алгоритмы с искусственным интеллектом находят сделки и торгуют автоматически 24 часа в сутки.",
+    subtitle: "Боты работают через API на 20+ биржах. ИИ-алгоритмы находят сделки и торгуют 24/7.",
     pick: "Выбрать робота",
     cta2: "Как это работает",
   },

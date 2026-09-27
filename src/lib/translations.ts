@@ -12,10 +12,10 @@ export const ruTranslations = {
     "scrollTo": "Перейти к разделу"
   },
   "hero": {
-    "badge": "Торговые роботы с ИИ для любых бирж",
+    "badge": "Торговые роботы с ИИ",
     "title1": "Торгуйте на крипторынке",
     "title2": "с помощью роботов",
-    "subtitle": "Боты работают на любых криптобиржах через API. Алгоритмы с искусственным интеллектом находят сделки и торгуют автоматически 24 часа в сутки.",
+    "subtitle": "Боты работают через API на 20+ биржах. ИИ-алгоритмы находят сделки и торгуют 24/7.",
     "title": "Три торговых робота. Прибыль 24/7",
     "desc": "Гибрид акций и крипты, торговый пулемёт и охота за Pump & Dump. Выберите своего робота \u2014 он торгует, пока вы занимаетесь своими делами.",
     "cta1": "Смотреть роботов",
@@ -30,9 +30,9 @@ export const ruTranslations = {
     "profit": "Прибыль за сегодня",
     "stats": [
       { "value": "+96.4%", "label": "Доходность за год" },
-      { "value": "24/7", "label": "Алгоритмическая торговля" },
-      { "value": "20+", "label": "Поддерживаемых бирж" },
-      { "value": "< 1 сек", "label": "Скорость реакции" }
+      { "value": "24/7", "label": "Автоторговля" },
+      { "value": "20+", "label": "Бирж через API" },
+      { "value": "< 1 сек", "label": "Реакция на сигнал" }
     ],
     "chart": {
       "portfolio": "Доходность портфеля",
@@ -170,10 +170,10 @@ export const enTranslations = {
   "nav": { "bots": "Bots", "how": "How it works", "faq": "FAQ" },
   "ui": { "themeLight": "Light theme", "themeDark": "Dark theme", "menu": "Menu", "skip": "Skip to content", "scrollTo": "Go to section" },
   "hero": {
-    "badge": "AI-powered trading bots for any exchange",
+    "badge": "AI-powered trading bots",
     "title1": "Trade crypto",
     "title2": "with smart robots",
-    "subtitle": "Bots work on any crypto exchange via API. AI algorithms find trades and trade automatically 24 hours a day.",
+    "subtitle": "Bots work via API on 20+ exchanges. AI algorithms find trades and trade around the clock.",
     "title": "Three trading bots. Profit 24/7",
     "desc": "Stock-crypto hybrid, trading machine and Pump & Dump hunter. Choose your bot \u2014 it trades while you live your life.",
     "cta1": "View bots",
@@ -184,9 +184,9 @@ export const enTranslations = {
     "profit": "Profit today",
     "stats": [
       { "value": "+96.4%", "label": "Annual return" },
-      { "value": "24/7", "label": "Algorithmic trading" },
-      { "value": "20+", "label": "Supported exchanges" },
-      { "value": "< 1 sec", "label": "Reaction speed" }
+      { "value": "24/7", "label": "Auto trading" },
+      { "value": "20+", "label": "Exchanges via API" },
+      { "value": "< 1 sec", "label": "Signal reaction" }
     ],
     "chart": {
       "portfolio": "Portfolio return",
