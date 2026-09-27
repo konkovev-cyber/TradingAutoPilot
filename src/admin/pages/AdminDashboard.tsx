@@ -49,9 +49,27 @@ export default function AdminDashboard() {
   const [viewsChart, setViewsChart] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [authInfo, setAuthInfo] = useState<{ email: string; isAdmin: boolean } | null>(null);
 
   const load = async () => {
-    if (!supabase) { setLoading(false); return; }
+    if (!supabase) {
+      setError("Supabase не подключён  проверьте VITE_SUPABASE_URL в переменных окружения");
+      setLoading(false);
+      return;
+    }
+    // Диагностика: кто залогинен и есть ли права админа
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      let admin = false;
+      if (session?.user) {
+        const { data: roleData } = await supabase.rpc("is_admin");
+        admin = Boolean(roleData);
+      }
+      setAuthInfo({ email: session?.user?.email ?? "не залогинен", isAdmin: admin });
+    } catch {
+      setAuthInfo({ email: "неизвестно", isAdmin: false });
+    }
     const dayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
     const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
     const [leadsRes, botsRes, viewsRes, totalViewsRes] = await Promise.all([
@@ -60,6 +78,10 @@ export default function AdminDashboard() {
       supabase.from("page_views").select("created_at").gte("created_at", weekAgo),
       supabase.from("page_views").select("id", { count: "exact", head: true }),
     ]);
+    if (leadsRes.error) throw new Error("Заявки: " + leadsRes.error.message);
+    if (botsRes.error) throw new Error("Роботы: " + botsRes.error.message);
+    if (viewsRes.error) throw new Error("Просмотры: " + viewsRes.error.message);
+    if (totalViewsRes.error) throw new Error("Просмотры (всего): " + totalViewsRes.error.message);
     const leads: Lead[] = (leadsRes.data as Lead[]) ?? [];
     const views: string[] = (viewsRes.data ?? []).map((v: { created_at: string }) => v.created_at);
 
@@ -79,6 +101,7 @@ export default function AdminDashboard() {
       viewsTotal: totalViewsRes.count,
     });
     setRecentLeads(leads.slice(0, 5));
+    setError(null);
     setLoading(false);
     setRefreshing(false);
   };
@@ -112,6 +135,33 @@ export default function AdminDashboard() {
         </button>
       </div>
 
+      {authInfo && (
+        <div className={`flex items-center gap-3 text-sm px-4 py-2 rounded-lg border ${
+          authInfo.isAdmin
+            ? "bg-green-500/10 border-green-500/20 text-green-300"
+            : "bg-red-500/10 border-red-500/20 text-red-300"
+        }`}>
+          {authInfo.isAdmin ? " Админ: " : " Нет прав админа: "}
+          <span className="font-medium">{authInfo.email}</span>
+          {!authInfo.isAdmin && (
+            <span className="text-gray-400">
+               добавьте строку в таблицу user_roles (user_id = ваш ID из Auth, role = admin)
+            </span>
+          )}
+        </div>
+      )}
+
+      {error && (
+        <div className="text-sm text-red-300 bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3">
+          <span className="font-semibold">Ошибка загрузки:</span> {error}
+        </div>
+      )}
+
+      {stats.totalLeads === 0 && stats.views7d === 0 && !error && (
+        <div className="text-sm text-gray-400 bg-gray-900 border border-gray-800 rounded-lg px-4 py-3">
+          Пока нет данных: ни одной заявки и ни одного просмотра за 7 дней. Откройте главную страницу сайта и отправьте тестовую заявку  счётчики появятся.
+        </div>
+      )}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         {statCards.map(({ label, hint, value, icon: Icon, color }) => (
           <div key={label} className="bg-gray-900 border border-gray-800 rounded-xl p-5">
