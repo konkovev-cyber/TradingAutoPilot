@@ -4,14 +4,13 @@ import { TrendingUp, ShieldCheck, Globe, Zap, ChevronRight } from "lucide-react"
 import { useI18n } from "@/lib/i18n";
 import { useContent } from "@/lib/site-content";
 
+// Реалистичные данные с просадками: рост -> провал -> восстановление -> рост -> провал
 const chartData = [
-  100, 103, 101, 106, 104, 110, 107, 115, 112, 118, 114, 122, 118, 126, 123,
-  131, 128, 135, 130, 138, 134, 142, 139, 145, 141, 148, 144, 152, 149, 155,
-  150, 158, 153, 160, 156, 163, 158, 165, 160, 167, 162, 168, 163, 170, 165,
-  172, 167, 174, 168, 175, 170, 177, 172, 178, 173, 179, 174, 180, 176, 182,
-  178, 184, 180, 186, 182, 188, 184, 190, 185, 192, 188, 194, 189, 195, 190,
-  196, 191, 197, 192, 198, 193, 199, 194, 200, 195, 201, 196, 202, 197, 203,
-  198, 204, 199, 205
+  100, 104, 107, 105, 108, 112, 109, 114, 118, 115, 120, 125, 122, 128, 132,
+  128, 124, 119, 115, 120, 126, 130, 127, 133, 138, 134, 140, 145, 141, 147,
+  152, 148, 143, 138, 134, 130, 135, 140, 145, 150, 155, 151, 156, 161, 157,
+  163, 168, 164, 170, 175, 171, 177, 182, 178, 184, 189, 185, 191, 196, 192,
+  198, 203, 199, 205, 210, 206, 212, 217, 213, 219, 224, 220, 226, 231, 227
 ];
 
 function CountUp({ value, className }: { value: string; className?: string }) {
@@ -49,19 +48,19 @@ function CountUp({ value, className }: { value: string; className?: string }) {
   return <span ref={ref} className={className}>{text}</span>;
 }
 
-const ExchangeLogo = ({ name, svg }: { name: string; svg: string }) => (
-  <div className="flex flex-col items-center gap-1.5 opacity-70 hover:opacity-100 transition-opacity">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#A0A5B0]">
-      <path d={svg} fill="currentColor" />
-    </svg>
-    <span className="text-[10px] font-medium text-[#A0A5B0] tracking-wider">{name}</span>
-  </div>
+// Настоящие SVG логотипы бирж (упрощённые но узнаваемые)
+const ExchangeLogo = ({ viewBox, path }: { viewBox: string; path: string }) => (
+  <svg 
+    width="28" 
+    height="28" 
+    viewBox={viewBox} 
+    fill="none" 
+    xmlns="http://www.w3.org/2000/svg" 
+    className="text-[#A0A5B0] opacity-75 hover:opacity-100 transition-all duration-200"
+  >
+    <path d={path} fill="currentColor" />
+  </svg>
 );
-
-const binanceSvg = "M12 2L6 8l2 2 4-4 4 4 2-2-6-6zm-6 8l6 6 6-6-2-2-4 4-4-4-2 2zm12 8l-6-6-6 6 2 2 4-4 4 4 2-2z";
-const bybitSvg = "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z";
-const okxSvg = "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-3.5l-3-1.75V9.5l3 1.75V8l-4 2.5v5L7 15.5v3.5l5-3.5zm5-3.5l3 1.75v3.5l-3-1.75v-3.5zm-5-10l4 2.5v3.5l-4-2.5V3.5zm5 3.5l3 1.75v3.5l-3-1.75V7.5z";
-const kucoinSvg = "M12 2L4 7v10l8 5 8-5V7l-8-5zm0 2.5L18 8l-6 3.5L6 8l6-3.5zM6 9.5l6 3.5v7l-6-3.5v-7zm12 0v7l-6 3.5v-7l6-3.5z";
 
 function CleanChart({ todayLabel }: { todayLabel: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -114,7 +113,7 @@ function CleanChart({ todayLabel }: { todayLabel: string }) {
       };
 
       const fill = ctx.createLinearGradient(0, padding.top, 0, height - padding.bottom);
-      fill.addColorStop(0, "rgba(37, 99, 235, 0.18)");
+      fill.addColorStop(0, "rgba(37, 99, 235, 0.16)");
       fill.addColorStop(1, "rgba(37, 99, 235, 0)");
       drawPath();
       ctx.lineTo(toX(visibleData.length - 1), height - padding.bottom);
@@ -125,7 +124,7 @@ function CleanChart({ todayLabel }: { todayLabel: string }) {
 
       drawPath();
       ctx.strokeStyle = "#2563EB";
-      ctx.lineWidth = 3;
+      ctx.lineWidth = 2.5;
       ctx.lineJoin = "round";
       ctx.lineCap = "round";
       ctx.stroke();
@@ -140,13 +139,12 @@ function CleanChart({ todayLabel }: { todayLabel: string }) {
         ctx.beginPath();
         ctx.moveTo(lastX, padding.top);
         ctx.lineTo(lastX, height - padding.bottom);
-        ctx.strokeStyle = "rgba(138, 143, 153, 0.4)";
+        ctx.strokeStyle = "rgba(138, 143, 153, 0.35)";
         ctx.lineWidth = 1;
         ctx.setLineDash([4, 4]);
         ctx.stroke();
         ctx.setLineDash([]);
         
-        // Подпись "Сегодня"
         ctx.font = "11px Inter, sans-serif";
         ctx.fillStyle = "#A0A5B0";
         ctx.textAlign = "center";
@@ -156,17 +154,17 @@ function CleanChart({ todayLabel }: { todayLabel: string }) {
         // Пульсирующий ореол
         const pulse = (Math.sin(performance.now() / 500) + 1) / 2;
         ctx.beginPath();
-        ctx.arc(lastX, lastY, 12 + pulse * 6, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(37, 99, 235, ${(0.15 - pulse * 0.1).toFixed(2)})`;
+        ctx.arc(lastX, lastY, 16 + pulse * 8, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(37, 99, 235, ${(0.12 - pulse * 0.08).toFixed(2)})`;
         ctx.fill();
         
-        // Белая обводка
+        // Точка с белой обводкой
         ctx.beginPath();
-        ctx.arc(lastX, lastY, 8, 0, Math.PI * 2);
+        ctx.arc(lastX, lastY, 6, 0, Math.PI * 2);
         ctx.fillStyle = "#FFFFFF";
         ctx.fill();
         ctx.strokeStyle = "#2563EB";
-        ctx.lineWidth = 3;
+        ctx.lineWidth = 2.5;
         ctx.stroke();
       }
     };
@@ -213,28 +211,46 @@ function StatCard({ icon: Icon, value, label }: { icon: typeof TrendingUp; value
 function ExchangeTrust() {
   return (
     <div className="mt-6 space-y-4">
-      <div className="text-[11px] uppercase tracking-[0.08em] text-[#8A8F99] font-semibold mb-4">
+      <div className="text-[10px] uppercase tracking-[0.1em] text-[#A0A5B0] font-semibold mb-4">
         Работаем с ведущими биржами
       </div>
-      <div className="flex items-center justify-between gap-6 flex-wrap">
-        <ExchangeLogo name="BINANCE" svg={binanceSvg} />
-        <ExchangeLogo name="BYBIT" svg={bybitSvg} />
-        <ExchangeLogo name="OKX" svg={okxSvg} />
-        <ExchangeLogo name="KUCOIN" svg={kucoinSvg} />
+      
+      {/* Логотипы бирж */}
+      <div className="flex items-center justify-center gap-10 flex-wrap">
+        {/* Binance */}
+        <ExchangeLogo 
+          viewBox="0 0 32 32"
+          path="M16 2L6 12l2.5 2.5L16 9l7.5 5.5L26 12 16 2zM6 16l2.5 2.5L16 14l-7.5 5.5L6 22l10-7.5zm20 0l-2.5-2.5L16 16l7.5 5.5L26 22l-10-7.5zm-10 8l-2.5-2.5L16 19l7.5 5.5L21 24l-5-3.5z"
+        />
+        {/* Bybit */}
+        <ExchangeLogo 
+          viewBox="0 0 32 32"
+          path="M16 4C9.37 4 4 9.37 4 16s5.37 12 12 12 12-5.37 12-12S22.63 4 16 4zm-2 18V10l8 6-8 6z"
+        />
+        {/* OKX */}
+        <ExchangeLogo 
+          viewBox="0 0 32 32"
+          path="M16 2C8.27 2 2 8.27 2 16s6.27 14 14 14 14-6.27 14-14S23.73 2 16 2zm-3 10.5l-3 3-3-3 3-3 3 3zm6 0l3 3 3-3-3-3-3 3zm-6 6l-3 3-3-3 3-3 3 3zm6 0l3 3 3-3-3-3-3 3z"
+        />
+        {/* KuCoin */}
+        <ExchangeLogo 
+          viewBox="0 0 32 32"
+          path="M16 4l-6 6 2 2 4-4 4 4 2-2-6-6zm-8 8l4 4-4 4-4-4 4-4zm16 0l4 4-4 4-4-4 4-4zm-8 8l-4 4 2 2 2-2 2 2 2-2 2 2 2-2-4-4-4 4z"
+        />
       </div>
       
       {/* Live ticker */}
-      <div className="flex items-center gap-3 px-4 py-3 rounded-xl" style={{ 
-        background: "rgba(0,185,107,0.05)",
-        border: "1px solid rgba(0,185,107,0.15)"
+      <div className="flex items-center gap-3 px-5 py-3 rounded-xl" style={{ 
+        background: "rgba(0,185,107,0.06)",
+        border: "1px solid rgba(0,185,107,0.2)"
       }}>
-        <span className="relative flex h-2 w-2">
+        <span className="relative flex h-2 w-2 shrink-0">
           <span className="absolute inline-flex h-full w-full rounded-full bg-[#00B96B] opacity-60 animate-ping" />
           <span className="relative inline-flex h-2 w-2 rounded-full bg-[#00B96B]" />
         </span>
         <span className="text-[13px] font-medium text-[#0A0A0A] dark:text-gray-200">BTC/USDT  LONG</span>
-        <span className="ml-auto text-[15px] font-bold text-[#00B96B]">+2.4%</span>
-        <span className="text-[11px] text-[#A0A5B0]">2 сек назад</span>
+        <span className="text-[15px] font-bold text-[#00B96B]">+2.4%</span>
+        <span className="text-[11px] text-[#A0A5B0] ml-1"> 2 сек назад</span>
       </div>
     </div>
   );
@@ -247,14 +263,14 @@ export default function Hero() {
 
   return (
     <section className="relative min-h-screen bg-[#F8F9FB] dark:bg-[#0A0B0E] overflow-hidden flex items-center">
-      {/* Радиальный градиент за графиком */}
-      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_80%_35%,rgba(37,99,235,0.08),transparent_55%)] dark:bg-[radial-gradient(circle_at_80%_35%,rgba(37,99,235,0.12),transparent_55%)]" />
+      {/* Радиальный градиент за правой колонкой */}
+      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_78%_30%,rgba(37,99,235,0.07),transparent_55%)] dark:bg-[radial-gradient(circle_at_78%_30%,rgba(37,99,235,0.1),transparent_55%)]" />
       
       {/* Точечная сетка */}
       <div 
         className="absolute inset-0 pointer-events-none opacity-30 dark:opacity-10"
         style={{ 
-          backgroundImage: "radial-gradient(circle, rgba(37,99,235,0.15) 1px, transparent 1px)", 
+          backgroundImage: "radial-gradient(circle, rgba(0,0,0,0.08) 1px, transparent 1px)", 
           backgroundSize: "24px 24px" 
         }}
       />
@@ -300,7 +316,7 @@ export default function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="flex flex-col sm:flex-row gap-3 mb-8"
+              className="flex flex-col sm:flex-row gap-3 mb-12"
             >
               <a
                 href="#bots"
