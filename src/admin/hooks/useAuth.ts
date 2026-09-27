@@ -14,40 +14,39 @@ export function useAuth() {
       return;
     }
     try {
-      // TEMP: Direct table query with proper error handling
-      console.log("Checking role for user:", user.id);
-      const { data, error, status } = await supabase
+      console.log("[Auth] Checking role for:", user.id);
+      const { data, error } = await supabase
         .from("user_roles")
         .select("role")
         .eq("user_id", user.id)
         .single();
       
-      console.log("Query result:", { data, error, status });
+      console.log("[Auth] Result:", { data, error });
       
       if (error) {
-        console.error("Role query error:", error.message);
-        // Fallback: if we can't query, assume not admin
+        console.error("[Auth] Error:", error.message);
         setIsAdmin(false);
       } else {
         const isAdminRole = data?.role === "admin";
-        console.log("Role determined:", isAdminRole ? "ADMIN" : "USER");
+        console.log("[Auth] isAdmin:", isAdminRole);
         setIsAdmin(isAdminRole);
       }
     } catch (e) {
-      console.error("loadRole exception:", e);
+      console.error("[Auth] Exception:", e);
       setIsAdmin(false);
     }
     setLoading(false);
   };
 
   useEffect(() => {
+    console.log("[Auth] Initializing...");
     if (!supabase) {
       setLoading(false);
       return;
     }
 
     supabase.auth.getSession().then(async ({ data: { session } }) => {
-      console.log("Session:", session?.user?.email);
+      console.log("[Auth] Session:", session?.user?.email);
       setUser(session?.user ?? null);
       if (session?.user) {
         await loadRole();
@@ -57,7 +56,7 @@ export function useAuth() {
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      console.log("Auth state change:", session?.user?.email);
+      console.log("[Auth] State change:", session?.user?.email);
       setUser(session?.user ?? null);
       if (session?.user) {
         loadRole();
