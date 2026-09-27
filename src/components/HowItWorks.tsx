@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+﻿import { motion } from "framer-motion";
 import { UserPlus, KeyRound, Bot, TrendingUp, type LucideIcon } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 
@@ -36,11 +36,13 @@ export default function HowItWorks() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="bg-white dark:bg-gray-950 rounded-xl p-8 border border-gray-100 dark:border-gray-800 shadow-sm card-hover"
+                className="relative bg-white dark:bg-gray-950 rounded-2xl p-8 border border-gray-100 dark:border-gray-800 shadow-sm card-premium overflow-hidden"
               >
-                <div className="text-5xl font-bold text-gray-200 dark:text-gray-800 mb-6">{s.n}</div>
-                <div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-950 flex items-center justify-center mb-4">
-                  <Icon size={20} className="text-brand-blue" />
+                <div className="absolute top-6 right-6 w-11 h-11 rounded-xl flex items-center justify-center text-white text-sm font-extrabold shadow-md" style={{ background: "linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)" }}>
+                  {s.n}
+                </div>
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-5" style={{ background: "linear-gradient(135deg, rgba(59,130,246,0.12) 0%, rgba(139,92,246,0.12) 100%)" }}>
+                  <Icon size={22} className="text-brand-blue" />
                 </div>
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{s.title}</h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{s.desc}</p>

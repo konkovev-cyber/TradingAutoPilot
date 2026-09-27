@@ -192,3 +192,5 @@
 .dark .hero-bg { background: linear-gradient(180deg, #0b1220 0%, #030712 60%); }
 .bg-soft { background: linear-gradient(180deg, #ffffff 0%, #eff6ff 100%); }
 .dark .bg-soft { background: linear-gradient(180deg, #030712 0%, #0b1220 100%); }
+
+.heading-hero { font-size: clamp(1.9rem, 3.8vw, 3.1rem); font-weight: 800; line-height: 1.14; letter-spacing: -0.03em; }

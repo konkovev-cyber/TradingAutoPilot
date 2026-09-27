@@ -353,7 +353,7 @@ export default function Hero() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="heading-xl text-gray-900 dark:text-white mb-6"
+              className="heading-hero text-gray-900 dark:text-white mb-6"
             >
               <motion.span
                 className="block"
@@ -439,8 +439,7 @@ export default function Hero() {
                     <div className="w-9 h-9 rounded-lg flex items-center justify-center mb-2.5" style={{ background: "linear-gradient(135deg, rgba(59,130,246,0.12) 0%, rgba(139,92,246,0.12) 100%)" }}>
                       <Icon size={17} className="text-brand-blue" />
                     </div>
-                    <CountUp value={s.value} className="text-2xl font-extrabold text-gray-900 dark:text-white leading-none tracking-tight" />
-                    <div className="text-[11px] font-medium text-gray-500 dark:text-gray-400 mt-1.5 whitespace-nowrap overflow-hidden text-ellipsis">{s.label}</div>
+                    <CountUp value={s.value} className="text-3xl font-extrabold text-gray-900 dark:text-white leading-none tracking-tight" />
                     <div className="absolute -top-1 left-1/2 -translate-x-1/2 -translate-y-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none glass border border-blue-100/70 dark:border-blue-900 px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-900 dark:text-white shadow-md whitespace-nowrap z-20">
                       {s.label}
                     </div>
