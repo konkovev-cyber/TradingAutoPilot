@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
 
@@ -8,9 +8,27 @@ export function useAuth() {
   const [loading, setLoading] = useState(true);
 
   const loadRole = async () => {
-    if (!supabase) return;
-    const { data } = await supabase.rpc("is_admin");
-    setIsAdmin(Boolean(data));
+    if (!supabase || !user) {
+      setIsAdmin(false);
+      return;
+    }
+    try {
+      // Сначала пробуем RPC
+      const { data, error } = await supabase.rpc("is_admin");
+      if (!error && data !== null && data !== undefined) {
+        setIsAdmin(Boolean(data));
+        return;
+      }
+      // Если RPC не работает, проверяем таблицу напрямую
+      const { data: roles } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .single();
+      setIsAdmin(roles?.role === "admin");
+    } catch {
+      setIsAdmin(false);
+    }
   };
 
   useEffect(() => {
