@@ -47,10 +47,10 @@ export default function LeadForm() {
 
   if (status === "success") {
     return (
-      <section id="lead" className="section-padding relative overflow-hidden" style={{ background: "linear-gradient(180deg, #ffffff 0%, #eff6ff 100%)" }}>
+      <section id="lead" className="bg-soft section-padding relative overflow-hidden">
         <div className="blob w-[400px] h-[400px] bg-blue-400/15 -top-20 right-0 dark:hidden" aria-hidden="true" />
         <div className="max-w-3xl mx-auto px-6 lg:px-8 relative">
-          <div className="text-center p-12 bg-white rounded-3xl border border-gray-100 shadow-[0_20px_50px_-12px_rgba(15,23,42,0.12)]">
+          <div className="text-center p-12 bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-[0_20px_50px_-12px_rgba(15,23,42,0.12)]">
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <CheckCircle2 size={32} className="text-green-600" />
             </div>
@@ -66,14 +66,14 @@ export default function LeadForm() {
   const labelCls = "block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1.5";
 
   return (
-    <section id="lead" className="section-padding relative overflow-hidden" style={{ background: "linear-gradient(180deg, #ffffff 0%, #eff6ff 100%)" }}>
+    <section id="lead" className="bg-soft section-padding relative overflow-hidden">
       <div className="blob animate-float-slow w-[420px] h-[420px] bg-indigo-400/15 top-10 -left-40 dark:hidden" aria-hidden="true" />
       <div className="blob w-[320px] h-[320px] bg-blue-400/15 bottom-0 -right-24 dark:hidden" aria-hidden="true" />
 
       <div className="max-w-7xl mx-auto px-6 lg:px-8 relative">
         <form onSubmit={handleSubmit} className="grid lg:grid-cols-5 gap-8 items-stretch">
           {/* Форма  стеклянная карточка */}
-          <div className="lg:col-span-3 glass rounded-3xl border border-white/60 shadow-[0_20px_50px_-12px_rgba(15,23,42,0.12)] p-8 lg:p-10">
+          <div className="lg:col-span-3 glass rounded-3xl border border-gray-100/80 dark:border-gray-800 shadow-[0_20px_50px_-12px_rgba(15,23,42,0.12)] p-8 lg:p-10">
             <div className="flex items-center gap-3 mb-2">
               <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "linear-gradient(135deg, #3b82f6 0%, #6366f1 100%)" }}>
                 <Sparkles size={20} className="text-white" />

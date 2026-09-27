@@ -54,216 +54,263 @@ function InteractiveChart() {
   const { t } = useI18n();
   const { theme } = useTheme();
   const isDark = theme === "dark";
-  const months: string[] = t("hero.chart.months");
+  const monthsRaw = t("hero.chart.months");
+  const months: string[] = Array.isArray(monthsRaw) ? monthsRaw : ["Янв", "Фев", "Мар", "Апр", "Май", "Июн"];
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const tooltipRef = useRef<HTMLDivElement>(null);
   const [hoveredPoint, setHoveredPoint] = useState<{ x: number; y: number; value: number; label: string } | null>(null);
 
-  const drawChart = useCallback(
-    (mouseX?: number, mouseY?: number) => {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
+  // Анимационное состояние (в refs  без ререндеров каждый кадр)
+  const progressRef = useRef(0);
+  const startedRef = useRef(false);
+  const mouseRef = useRef<{ x?: number; y?: number }>({});
+  const displayLastRef = useRef(chartData[chartData.length - 1]);
+  const targetLastRef = useRef(chartData[chartData.length - 1]);
+  const lastJitterRef = useRef(0);
+  const rafRef = useRef(0);
 
-      const dpr = window.devicePixelRatio || 1;
-      const rect = canvas.getBoundingClientRect();
-      if (canvas.width !== rect.width * dpr) {
-        canvas.width = rect.width * dpr;
-        canvas.height = rect.height * dpr;
-      }
-      ctx.scale(dpr, dpr);
-      ctx.clearRect(0, 0, rect.width, rect.height);
+  const draw = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
 
-      const w = rect.width;
-      const h = rect.height;
-      const pad = { top: 24, right: 24, bottom: 36, left: 48 };
-      const cw = w - pad.left - pad.right;
-      const ch = h - pad.top - pad.bottom;
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    if (rect.width === 0) return;
+    if (canvas.width !== Math.round(rect.width * dpr)) {
+      canvas.width = Math.round(rect.width * dpr);
+      canvas.height = Math.round(rect.height * dpr);
+    }
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, rect.width, rect.height);
 
-      const minV = Math.min(...chartData) - 10;
-      const maxV = Math.max(...chartData) + 10;
+    const w = rect.width;
+    const h = rect.height;
+    const pad = { top: 24, right: 24, bottom: 36, left: 48 };
+    const cw = w - pad.left - pad.right;
+    const ch = h - pad.top - pad.bottom;
 
-      const toX = (i: number) => pad.left + (i / (chartData.length - 1)) * cw;
-      const toY = (v: number) => pad.top + ch - ((v - minV) / (maxV - minV)) * ch;
+    const data = chartData.slice();
+    data[data.length - 1] = displayLastRef.current;
 
-      const gridColor = isDark ? "#1f2937" : "#f3f4f6";
-      const labelColor = isDark ? "#6b7280" : "#9ca3af";
+    const minV = Math.min(...data) - 10;
+    const maxV = Math.max(...data) + 10;
+    const toX = (i: number) => pad.left + (i / (data.length - 1)) * cw;
+    const toY = (v: number) => pad.top + ch - ((v - minV) / (maxV - minV)) * ch;
 
-      // Grid
-      ctx.strokeStyle = gridColor;
-      ctx.lineWidth = 1;
-      for (let i = 0; i <= 5; i++) {
-        const y = pad.top + (i / 5) * ch;
-        ctx.beginPath();
-        ctx.moveTo(pad.left, y);
-        ctx.lineTo(w - pad.right, y);
-        ctx.stroke();
-        const val = Math.round(maxV - (i / 5) * (maxV - minV));
-        ctx.fillStyle = labelColor;
-        ctx.font = "11px Inter, sans-serif";
-        ctx.textAlign = "right";
-        ctx.fillText(val + "%", pad.left - 8, y + 4);
-      }
+    const gridColor = isDark ? "#1f2937" : "#eef2f7";
+    const labelColor = isDark ? "#6b7280" : "#9ca3af";
 
-      // X labels
-      ctx.textAlign = "center";
-      months.forEach((label, i) => {
-        const x = toX(Math.round((i / (months.length - 1)) * (chartData.length - 1)));
-        ctx.fillText(label, x, h - 10);
-      });
-
-      // Gradient fill
-      const grad = ctx.createLinearGradient(0, pad.top, 0, h - pad.bottom);
-      grad.addColorStop(0, "rgba(59, 130, 246, 0.12)");
-      grad.addColorStop(1, "rgba(59, 130, 246, 0)");
-
-      const strokeCurve = () => {
-        ctx.beginPath();
-        ctx.moveTo(toX(0), toY(chartData[0]));
-        for (let i = 1; i < chartData.length; i++) {
-          const xc = (toX(i) + toX(i - 1)) / 2;
-          const yc = (toY(chartData[i]) + toY(chartData[i - 1])) / 2;
-          ctx.quadraticCurveTo(toX(i - 1), toY(chartData[i - 1]), xc, yc);
-        }
-        const lastX = toX(chartData.length - 1);
-        const lastY = toY(chartData[chartData.length - 1]);
-        ctx.quadraticCurveTo(lastX, lastY, lastX, lastY);
-      };
-
-      strokeCurve();
-      const lastX = toX(chartData.length - 1);
-      const lastY = toY(chartData[chartData.length - 1]);
-      ctx.lineTo(lastX, h - pad.bottom);
-      ctx.lineTo(pad.left, h - pad.bottom);
-      ctx.closePath();
-      ctx.fillStyle = grad;
-      ctx.fill();
-
-      // Line
-      strokeCurve();
-      ctx.strokeStyle = "#3b82f6";
-      ctx.lineWidth = 2.5;
-      ctx.stroke();
-
-      // Hover crosshair
-      if (mouseX !== undefined && mouseY !== undefined) {
-        const idx = Math.round(((mouseX - pad.left) / cw) * (chartData.length - 1));
-        if (idx >= 0 && idx < chartData.length) {
-          const px = toX(idx);
-          const py = toY(chartData[idx]);
-
-          ctx.beginPath();
-          ctx.moveTo(px, pad.top);
-          ctx.lineTo(px, h - pad.bottom);
-          ctx.strokeStyle = "rgba(59, 130, 246, 0.2)";
-          ctx.lineWidth = 1;
-          ctx.setLineDash([4, 4]);
-          ctx.stroke();
-          ctx.setLineDash([]);
-
-          ctx.beginPath();
-          ctx.arc(px, py, 8, 0, Math.PI * 2);
-          ctx.fillStyle = "rgba(59, 130, 246, 0.15)";
-          ctx.fill();
-          ctx.beginPath();
-          ctx.arc(px, py, 5, 0, Math.PI * 2);
-          ctx.fillStyle = "#3b82f6";
-          ctx.fill();
-          ctx.beginPath();
-          ctx.arc(px, py, 2.5, 0, Math.PI * 2);
-          ctx.fillStyle = isDark ? "#030712" : "#ffffff";
-          ctx.fill();
-
-          const monthIdx = Math.round((idx / (chartData.length - 1)) * (months.length - 1));
-          setHoveredPoint({ x: px, y: py, value: chartData[idx], label: months[monthIdx] });
-          return;
-        }
-      }
-
-      // End dot
+    ctx.strokeStyle = gridColor;
+    ctx.lineWidth = 1;
+    for (let i = 0; i <= 5; i++) {
+      const y = pad.top + (i / 5) * ch;
       ctx.beginPath();
-      ctx.arc(lastX, lastY, 8, 0, Math.PI * 2);
-      ctx.fillStyle = "rgba(59, 130, 246, 0.15)";
+      ctx.moveTo(pad.left, y);
+      ctx.lineTo(w - pad.right, y);
+      ctx.stroke();
+      const val = Math.round(maxV - (i / 5) * (maxV - minV));
+      ctx.fillStyle = labelColor;
+      ctx.font = "11px Inter, sans-serif";
+      ctx.textAlign = "right";
+      ctx.fillText(val + "%", pad.left - 8, y + 4);
+    }
+
+    ctx.textAlign = "center";
+    months.forEach((label, i) => {
+      const x = toX(Math.round((i / (months.length - 1)) * (data.length - 1)));
+      ctx.fillText(label, x, h - 10);
+    });
+
+    const grad = ctx.createLinearGradient(0, pad.top, 0, h - pad.bottom);
+    grad.addColorStop(0, isDark ? "rgba(59, 130, 246, 0.25)" : "rgba(59, 130, 246, 0.16)");
+    grad.addColorStop(1, "rgba(59, 130, 246, 0)");
+
+    const strokeCurve = () => {
+      ctx.beginPath();
+      ctx.moveTo(toX(0), toY(data[0]));
+      for (let i = 1; i < data.length; i++) {
+        const xc = (toX(i) + toX(i - 1)) / 2;
+        const yc = (toY(data[i]) + toY(data[i - 1])) / 2;
+        ctx.quadraticCurveTo(toX(i - 1), toY(data[i - 1]), xc, yc);
+      }
+      const lastX = toX(data.length - 1);
+      const lastY = toY(data[data.length - 1]);
+      ctx.quadraticCurveTo(lastX, lastY, lastX, lastY);
+    };
+
+    const lastX = toX(data.length - 1);
+    const lastY = toY(data[data.length - 1]);
+
+    const drawing = progressRef.current < 1;
+    if (drawing) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(0, 0, pad.left + cw * progressRef.current + 2, h);
+      ctx.clip();
+    }
+
+    strokeCurve();
+    ctx.lineTo(lastX, h - pad.bottom);
+    ctx.lineTo(pad.left, h - pad.bottom);
+    ctx.closePath();
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    strokeCurve();
+    ctx.strokeStyle = "#3b82f6";
+    ctx.lineWidth = 2.5;
+    ctx.lineJoin = "round";
+    ctx.stroke();
+
+    if (!drawing) {
+      const now = performance.now();
+      const pulse = (Math.sin(now / 500) + 1) / 2;
+      const halo = 10 + pulse * 10;
+      ctx.beginPath();
+      ctx.arc(lastX, lastY, halo, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(59, 130, 246, " + (0.25 - pulse * 0.18).toFixed(2) + ")";
       ctx.fill();
       ctx.beginPath();
       ctx.arc(lastX, lastY, 5, 0, Math.PI * 2);
       ctx.fillStyle = "#3b82f6";
       ctx.fill();
+      ctx.beginPath();
+      ctx.arc(lastX, lastY, 2.5, 0, Math.PI * 2);
+      ctx.fillStyle = "#ffffff";
+      ctx.fill();
+    }
 
-      setHoveredPoint(null);
-    },
-    [isDark, months]
-  );
+    if (drawing) ctx.restore();
+
+    const mouseX = mouseRef.current.x;
+    const mouseY = mouseRef.current.y;
+    if (mouseX !== undefined && mouseY !== undefined) {
+      const idx = Math.round(((mouseX - pad.left) / cw) * (data.length - 1));
+      if (idx >= 0 && idx < data.length) {
+        const px = toX(idx);
+        const py = toY(data[idx]);
+        ctx.beginPath();
+        ctx.moveTo(px, pad.top);
+        ctx.lineTo(px, h - pad.bottom);
+        ctx.strokeStyle = "rgba(59, 130, 246, 0.2)";
+        ctx.lineWidth = 1;
+        ctx.setLineDash([4, 4]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.beginPath();
+        ctx.arc(px, py, 8, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(59, 130, 246, 0.15)";
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(px, py, 5, 0, Math.PI * 2);
+        ctx.fillStyle = "#3b82f6";
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(px, py, 2.5, 0, Math.PI * 2);
+        ctx.fillStyle = "#ffffff";
+        ctx.fill();
+      }
+    }
+  }, [isDark, months]);
 
   useEffect(() => {
-    drawChart();
-    const handleResize = () => drawChart();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [drawChart]);
+    const loop = (now: number) => {
+      if (startedRef.current && progressRef.current < 1) {
+        progressRef.current = Math.min(1, progressRef.current + 0.014);
+      }
+      if (startedRef.current && now - lastJitterRef.current > 1500) {
+        lastJitterRef.current = now;
+        const base = chartData[chartData.length - 1];
+        targetLastRef.current = base + (Math.random() * 5 - 1.5);
+      }
+      displayLastRef.current += (targetLastRef.current - displayLastRef.current) * 0.05;
+      draw();
+      rafRef.current = requestAnimationFrame(loop);
+    };
+    rafRef.current = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [draw]);
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    drawChart(e.clientX - rect.left, e.clientY - rect.top);
+  useEffect(() => {
+    const el = canvasRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) startedRef.current = true;
+      },
+      { threshold: 0.3 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    mouseRef.current = { x, y };
+
+    const pad = { top: 24, right: 24, bottom: 36, left: 48 };
+    const cw = rect.width - pad.left - pad.right;
+    const idx = Math.round(((x - pad.left) / cw) * (chartData.length - 1));
+    if (idx >= 0 && idx < chartData.length) {
+      const mIdx = Math.round((idx / (chartData.length - 1)) * (months.length - 1));
+      const pad2 = { top: 24, bottom: 36 };
+      const inner = rect.height - pad2.top - pad2.bottom;
+      const minV = Math.min(...chartData) - 10;
+      const maxV = Math.max(...chartData) + 10;
+      const yPos = pad2.top + inner - ((chartData[idx] - minV) / (maxV - minV)) * inner;
+      setHoveredPoint({
+        x: pad.left + (idx / (chartData.length - 1)) * cw,
+        y: yPos,
+        value: chartData[idx],
+        label: months[Math.min(months.length - 1, Math.max(0, mIdx))],
+      });
+    }
+  };
+
+  const onLeave = () => {
+    mouseRef.current = {};
+    setHoveredPoint(null);
   };
 
   return (
-    <div className="relative bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm p-6">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <div className="text-sm text-gray-400 dark:text-gray-500 mb-1">{t("hero.chart.portfolio")}</div>
-          <div className="text-3xl font-bold text-gray-900 dark:text-white tabular-nums">+135.0%</div>
-          <div className="flex items-center gap-1.5 mt-1">
-            <TrendingUp size={14} className="text-green-500" />
-            <span className="text-sm font-medium text-green-600 dark:text-green-400">{t("hero.chart.month")}</span>
-          </div>
-        </div>
-        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-green-50 dark:bg-green-950 border border-green-100 dark:border-green-900">
+    <div className="relative">
+      <div className="flex items-center justify-between mb-3">
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass border border-blue-100/70 dark:border-blue-900 text-xs font-semibold text-blue-700 dark:text-blue-300">
           <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-          <span className="text-xs font-semibold text-green-700 dark:text-green-400">{t("hero.chart.live")}</span>
+          LIVE
         </div>
+        <div className="text-xs text-gray-400 dark:text-gray-500">{t("hero.chart.title")}</div>
       </div>
-
-      <div className="relative">
-        <canvas
-          ref={canvasRef}
-          className="w-full h-[260px] cursor-crosshair"
-          style={{ display: "block" }}
-          onMouseMove={handleMouseMove}
-          onMouseLeave={() => drawChart()}
-        />
-
+      <div
+        className="relative bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-[0_20px_50px_-12px_rgba(15,23,42,0.12)] p-4"
+        onMouseMove={onMove}
+        onMouseLeave={onLeave}
+      >
+        <canvas ref={canvasRef} className="w-full h-[300px] block" />
         {hoveredPoint && (
           <div
-            ref={tooltipRef}
-            className="absolute pointer-events-none bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-xs rounded-lg px-3 py-2 shadow-lg transform -translate-x-1/2 -translate-y-full"
-            style={{ left: hoveredPoint.x, top: hoveredPoint.y - 12 }}
+            className="absolute pointer-events-none glass border border-blue-100/70 dark:border-blue-900 rounded-lg px-3 py-2 text-xs shadow-md z-10"
+            style={{ left: hoveredPoint.x + 12, top: hoveredPoint.y - 44 }}
           >
-            <div className="font-semibold">{hoveredPoint.label}</div>
-            <div className="text-blue-300 dark:text-blue-600 tabular-nums">{hoveredPoint.value}%</div>
+            <div className="font-bold text-gray-900 dark:text-white tabular-nums">+{hoveredPoint.value}%</div>
+            <div className="text-gray-500 dark:text-gray-400">{hoveredPoint.label}</div>
           </div>
         )}
-      </div>
-
-      <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-gray-100 dark:border-gray-800">
-        <div>
-          <div className="text-xs text-gray-400 dark:text-gray-500 mb-1">{t("hero.chart.deals")}</div>
-          <div className="text-lg font-bold text-gray-900 dark:text-white tabular-nums">1 247</div>
-        </div>
-        <div>
-          <div className="text-xs text-gray-400 dark:text-gray-500 mb-1">{t("hero.chart.win")}</div>
-          <div className="text-lg font-bold text-green-600 dark:text-green-400 tabular-nums">73.2%</div>
-        </div>
-        <div>
-          <div className="text-xs text-gray-400 dark:text-gray-500 mb-1">{t("hero.chart.drawdown")}</div>
-          <div className="text-lg font-bold text-gray-900 dark:text-white tabular-nums">-4.1%</div>
+        <div className="flex items-center justify-between mt-3 px-2">
+          <div>
+            <div className="text-xs text-gray-400 dark:text-gray-500 mb-1">{t("hero.chart.drawdown")}</div>
+            <div className="text-lg font-bold text-gray-900 dark:text-white tabular-nums">-4.1%</div>
+          </div>
         </div>
       </div>
     </div>
   );
 }
-
 const statIcons = [TrendingUp, Shield, Globe, Zap];
 
 export default function Hero() {
@@ -346,19 +393,17 @@ export default function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="grid grid-cols-2 sm:grid-cols-4 gap-6 mt-12"
+              className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-12"
             >
               {stats.map((s, i) => {
                 const Icon = statIcons[i] || TrendingUp;
                 return (
-                  <div key={i} className="flex items-start gap-3">
-                    <div className="w-9 h-9 rounded-lg bg-blue-50 dark:bg-blue-950 flex items-center justify-center shrink-0">
-                      <Icon size={18} className="text-brand-blue" />
+                  <div key={i} className="glass rounded-2xl border border-white/70 dark:border-gray-800 p-4 shadow-sm">
+                    <div className="w-9 h-9 rounded-lg flex items-center justify-center mb-2.5" style={{ background: "linear-gradient(135deg, rgba(59,130,246,0.12) 0%, rgba(139,92,246,0.12) 100%)" }}>
+                      <Icon size={17} className="text-brand-blue" />
                     </div>
-                    <div>
-                      <CountUp value={s.value} className="text-lg font-bold text-gray-900 dark:text-white leading-tight" />
-                      <div className="text-xs text-gray-400 dark:text-gray-500 leading-tight">{s.label}</div>
-                    </div>
+                    <CountUp value={s.value} className="text-2xl font-extrabold text-gray-900 dark:text-white leading-none tracking-tight" />
+                    <div className="text-[11px] font-medium text-gray-500 dark:text-gray-400 mt-1.5 whitespace-nowrap overflow-hidden text-ellipsis">{s.label}</div>
                   </div>
                 );
               })}

@@ -186,3 +186,9 @@
 }
 .animate-float { animation: float 8s ease-in-out infinite; }
 .animate-float-slow { animation: float 12s ease-in-out infinite; }
+
+/* Фоны с поддержкой тёмной темы */
+.hero-bg { background: linear-gradient(180deg, #eff6ff 0%, #ffffff 55%); }
+.dark .hero-bg { background: linear-gradient(180deg, #0b1220 0%, #030712 60%); }
+.bg-soft { background: linear-gradient(180deg, #ffffff 0%, #eff6ff 100%); }
+.dark .bg-soft { background: linear-gradient(180deg, #030712 0%, #0b1220 100%); }
