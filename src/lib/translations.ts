@@ -5,7 +5,7 @@ export const ruTranslations = {
     "faq": "FAQ"
   },
   "hero": {
-    "badge": "3 робота  BYBIT  Binance  OKX",
+    "badge": "Торговые роботы для любых бирж через API",
     "title": "Три торговых робота. Прибыль 24/7",
     "desc": "Гибрид акций и крипты, торговый пулемёт и охота за Pump & Dump. Выберите своего робота — он торгует, пока вы занимаетесь своими делами.",
     "cta1": "Смотреть роботов",
@@ -144,7 +144,7 @@ export const ruTranslations = {
 };
 export const enTranslations = {
   nav: {bots: "Bots", how: "How it works", faq: "FAQ"},
-  hero: {badge: "3 bots  BYBIT  Binance  OKX", title: "Three trading bots. Profit 24/7", desc: "Stock-crypto hybrid, trading machine and Pump & Dump hunter. Choose your bot — it trades while you live your life.", cta1: "View bots", cta2: "How it works", trust: ["No subscription, buy once", "Setup in 2 minutes", "API without withdrawal"], live: "LIVE", profit: "Profit today", stats: ["Win Rate", "Deals", "Uptime"]},
+  hero: {badge: "Trading bots for any exchange via API", title: "AI-powered trading bots. Profit 24/7", desc: "Stock-crypto hybrid, trading machine and Pump & Dump hunter. Choose your bot — it trades while you live your life.", cta1: "View bots", cta2: "How it works", trust: ["No subscription, buy once", "Setup in 2 minutes", "API without withdrawal"], live: "LIVE", profit: "Profit today", stats: ["Win Rate", "Deals", "Uptime"]},
   products: {title: "Three bots — three strategies", subtitle: "Each bot is an independent trading system. Buy once — trade without subscription fees.", detail: "More details", hit: "HIT"},
   how: {title: "How it works", subtitle: "From registration to first trade — 2 minutes.", steps: [{"n":"01","title":"Поиск отклонений","desc":"Постоянно пересчитывает лимитные ордера на открытие сделки"},{"n":"02","title":"Динамические ордера","desc":"Short и Long на акциях и крипте одновременно, диверсификация рисков"},{"n":"03","title":"Два рынка  один бот","desc":""},{"n":"04","title":"ИИ подбирает пары","desc":"Каждый лот независим  математическая точность вместо усреднения"},{"n":"05","title":"Послотная модель","desc":"Робот совершает сотни сделок в день без вашего участия"},{"n":"06","title":"Сотни сделок в день","desc":""},{"n":"07","title":"1. Поиск актива","desc":"Выставляет тейк-профит для прибыли и стоп-лосс для страховки"},{"n":"08","title":"2. TP и SL","desc":"Дожидается срабатывания сделки и получает прибыль"},{"n":"09","title":"3. Прибыль","desc":""}]},
   faq: {title: "Frequently asked questions", subtitle: "Everything you need to know before starting.", items: [
