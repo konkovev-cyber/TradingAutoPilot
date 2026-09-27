@@ -1,14 +1,22 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="ru">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Coinsofter  Торговые роботы для крипты и акций</title>
-    <meta name="description" content="CryptoSuperStock, MEGAGRID-AI, SMARTIX  три торговых робота: гибрид акций и крипты, торговый пулемёт, охота за Pump & Dump." />
+    <title>Coinsofter &#x2014; Торговые роботы для крипты и акций</title>
+    <meta name="description" content="Coinsofter &#x2014; интеллектуальные торговые роботы для криптовалют и акций. Автоматическая торговля 24/7 через API.">
     <meta name="theme-color" content="#050A14" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <script>
+      (function() {
+        const theme = localStorage.getItem("coinsofter-theme") || 
+                      (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        if (theme === "dark") document.documentElement.classList.add("dark");
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { ruTranslations, enTranslations } from './translations';
 

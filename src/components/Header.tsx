@@ -4,85 +4,168 @@ import { Menu, X, Sun, Moon, Globe } from "lucide-react";
 import { useTheme } from "@/lib/theme";
 import { useI18n } from "@/lib/i18n";
 
+const sectionIds = ["bots", "how", "faq"];
+
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [active, setActive] = useState("");
   const [mobileOpen, setMobileOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const { lang, setLang, t } = useI18n();
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
+    const onScroll = () => {
+      const h = document.documentElement.scrollHeight - window.innerHeight;
+      setProgress(h > 0 ? (window.scrollY / h) * 100 : 0);
+      setScrolled(window.scrollY > 20);
+    };
+    onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    const els = sectionIds
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => Boolean(el));
+    if (!els.length) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) setActive(e.target.id);
+        });
+      },
+      { rootMargin: "-20% 0px -70% 0px" }
+    );
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+
   const navLinks = [
-    { label: t("nav.bots"), href: "/#bots" },
-    { label: t("nav.how"), href: "/#how" },
-    { label: t("nav.faq"), href: "/#faq" },
+    { id: "bots", label: t("nav.bots"), href: "/#bots" },
+    { id: "how", label: t("nav.how"), href: "/#how" },
+    { id: "faq", label: t("nav.faq"), href: "/#faq" },
   ];
 
+  const handleAnchor = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    const id = href.split("#")[1];
+    const el = id ? document.getElementById(id) : null;
+    if (el) {
+      e.preventDefault();
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+      window.history.replaceState(null, "", href);
+      setMobileOpen(false);
+    }
+  };
+
   return (
-    <header className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? "bg-white/90 dark:bg-gray-950/90 backdrop-blur-md border-b border-gray-100 dark:border-gray-800 shadow-sm" : "bg-transparent"}`}>
-      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-brand-blue rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-xl">C</span>
+    <>
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-brand-blue focus:text-white focus:rounded-lg"
+      >
+        {t("ui.skip")}
+      </a>
+
+      <header
+        className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+          scrolled
+            ? "bg-white/90 dark:bg-gray-950/90 backdrop-blur-md border-b border-gray-100 dark:border-gray-800 shadow-sm"
+            : "bg-transparent"
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-brand-blue rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-xl">C</span>
+            </div>
+            <span className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">Coinsofter</span>
+          </Link>
+
+          <nav className="hidden md:flex items-center gap-8" aria-label="Main">
+            {navLinks.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                onClick={(e) => handleAnchor(e, link.href)}
+                className={`text-sm font-medium transition-colors ${
+                  active === link.id
+                    ? "text-brand-blue"
+                    : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                }`}
+              >
+                {link.label}
+              </a>
+            ))}
+          </nav>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={toggleTheme}
+              className="p-2.5 rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              title={theme === "dark" ? t("ui.themeLight") : t("ui.themeDark")}
+              aria-label={theme === "dark" ? t("ui.themeLight") : t("ui.themeDark")}
+            >
+              {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
+
+            <button
+              onClick={() => setLang(lang === "ru" ? "en" : "ru")}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              aria-label="Language"
+            >
+              <Globe size={16} />
+              <span>{lang === "ru" ? "RU" : "EN"}</span>
+            </button>
+
+            <a
+              href="#bots"
+              onClick={(e) => handleAnchor(e, "/#bots")}
+              className="hidden sm:inline-flex px-5 py-2.5 bg-brand-blue text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              {t("hero.cta1")}
+            </a>
+
+            <button
+              onClick={() => setMobileOpen(!mobileOpen)}
+              className="md:hidden p-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+              aria-label={t("ui.menu")}
+              aria-expanded={mobileOpen}
+            >
+              {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+            </button>
           </div>
-          <span className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">Coinsofter</span>
-        </Link>
-
-        <nav className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => (
-            <a key={link.href} href={link.href} className="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
-              {link.label}
-            </a>
-          ))}
-        </nav>
-
-        <div className="flex items-center gap-2">
-          {/* Theme toggle */}
-          <button
-            onClick={toggleTheme}
-            className="p-2.5 rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-            title={theme === "dark" ? "Светлая тема" : "Тёмная тема"}
-          >
-            {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
-          </button>
-
-          {/* Language toggle */}
-          <button
-            onClick={() => setLang(lang === "ru" ? "en" : "ru")}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-          >
-            <Globe size={16} />
-            <span>{lang === "ru" ? "RU" : "EN"}</span>
-          </button>
-
-          {/* CTA */}
-          <a href="#bots" className="hidden sm:inline-flex px-5 py-2.5 bg-brand-blue text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors">
-            {t("hero.cta1")}
-          </a>
-
-          {/* Mobile menu */}
-          <button onClick={() => setMobileOpen(!mobileOpen)} className="md:hidden p-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-            {mobileOpen ? <X size={22} /> : <Menu size={22} />}
-          </button>
         </div>
-      </div>
 
-      {mobileOpen && (
-        <div className="md:hidden bg-white dark:bg-gray-950 border-t border-gray-100 dark:border-gray-800 px-6 py-4 space-y-3">
-          {navLinks.map((link) => (
-            <a key={link.href} href={link.href} onClick={() => setMobileOpen(false)} className="block text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white py-2">
-              {link.label}
+        {mobileOpen && (
+          <div className="md:hidden bg-white dark:bg-gray-950 border-t border-gray-100 dark:border-gray-800 px-6 py-4 space-y-3">
+            {navLinks.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                onClick={(e) => handleAnchor(e, link.href)}
+                className="block text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white py-2"
+              >
+                {link.label}
+              </a>
+            ))}
+            <a
+              href="#bots"
+              onClick={(e) => handleAnchor(e, "/#bots")}
+              className="block w-full text-center px-5 py-2.5 bg-brand-blue text-white text-sm font-semibold rounded-lg"
+            >
+              {t("hero.cta1")}
             </a>
-          ))}
-          <a href="#bots" onClick={() => setMobileOpen(false)} className="block w-full text-center px-5 py-2.5 bg-brand-blue text-white text-sm font-semibold rounded-lg">
-            {t("hero.cta1")}
-          </a>
-        </div>
-      )}
-    </header>
+          </div>
+        )}
+
+        <div
+          className="absolute bottom-0 left-0 h-[2px] bg-brand-blue transition-[width] duration-150"
+          style={{ width: progress + "%" }}
+          aria-hidden="true"
+        />
+      </header>
+    </>
   );
 }

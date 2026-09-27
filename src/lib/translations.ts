@@ -4,12 +4,23 @@ export const ruTranslations = {
     "how": "Как работает",
     "faq": "FAQ"
   },
+  "ui": {
+    "themeLight": "Светлая тема",
+    "themeDark": "Тёмная тема",
+    "menu": "Меню",
+    "skip": "К основному контенту",
+    "scrollTo": "Перейти к разделу"
+  },
   "hero": {
-    "badge": "Торговые роботы для любых бирж через API",
+    "badge": "Торговые роботы с ИИ для любых бирж",
+    "title1": "Торгуйте на крипторынке",
+    "title2": "с помощью роботов",
+    "subtitle": "Боты работают на любых криптобиржах через API. Алгоритмы с искусственным интеллектом находят сделки и торгуют автоматически 24 часа в сутки.",
     "title": "Три торговых робота. Прибыль 24/7",
-    "desc": "Гибрид акций и крипты, торговый пулемёт и охота за Pump & Dump. Выберите своего робота — он торгует, пока вы занимаетесь своими делами.",
+    "desc": "Гибрид акций и крипты, торговый пулемёт и охота за Pump & Dump. Выберите своего робота \u2014 он торгует, пока вы занимаетесь своими делами.",
     "cta1": "Смотреть роботов",
     "cta2": "Как это работает",
+    "pick": "Выбрать робота",
     "trust": [
       "Без абонплаты, покупка навсегда",
       "Подключение за 2 минуты",
@@ -18,10 +29,20 @@ export const ruTranslations = {
     "live": "LIVE",
     "profit": "Прибыль за сегодня",
     "stats": [
-      "Win Rate",
-      "Сделок",
-      "Аптайм"
-    ]
+      { "value": "+96.4%", "label": "Доходность за год" },
+      { "value": "24/7", "label": "Алгоритмическая торговля" },
+      { "value": "20+", "label": "Поддерживаемых бирж" },
+      { "value": "< 1 сек", "label": "Скорость реакции" }
+    ],
+    "chart": {
+      "portfolio": "Доходность портфеля",
+      "month": "+35% за последний месяц",
+      "live": "LIVE",
+      "deals": "Всего сделок",
+      "win": "Прибыльных",
+      "drawdown": "Макс. просадка",
+      "months": ["Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"]
+    }
   },
   "products": {
     "title": "Три робота — три стратегии",
@@ -29,55 +50,55 @@ export const ruTranslations = {
     "detail": "Подробнее",
     "hit": "ХИТ"
   },
+  "compare": {
+    "title": "Сравнение роботов",
+    "subtitle": "Три стратегии \u2014 выберите свою",
+    "market": "Рынок",
+    "strategy": "Стратегия",
+    "risk": "Риск",
+    "income": "Доходность за год",
+    "pairs": "Активы",
+    "more": "Подробнее"
+  },
+  "calculator": {
+    "title": "Калькулятор доходности",
+    "subtitle": "Оцените потенциал прибыли на горизонте до года",
+    "deposit": "Стартовый депозит",
+    "term": "Срок, мес.",
+    "bot": "Робот",
+    "botAvg": "Средний по всем роботам",
+    "result": "Прогноз",
+    "profit": "Прибыль",
+    "total": "Итого",
+    "note": "Расчёт носит оценочный характер и не является гарантией будущей доходности",
+    "cta": "Запустить робота"
+  },
+  "lead": {
+    "title": "Оставить заявку",
+    "subtitle": "Подберём робота под вашу стратегию и ответим на вопросы",
+    "name": "Ваше имя",
+    "contact": "Telegram или email",
+    "bot": "Интересующий робот",
+    "botAny": "Любой робот",
+    "message": "Сообщение",
+    "submit": "Отправить заявку",
+    "success": "Заявка отправлена! Мы скоро свяжемся с вами.",
+    "error": "Не удалось отправить заявку. Напишите нам в Telegram.",
+    "privacy": "Нажимая кнопку, вы соглашаетесь на обработку персональных данных"
+  },
+  "notFound": {
+    "title": "Страница не найдена",
+    "desc": "Возможно, страница была перемещена или не существует",
+    "btn": "На главную"
+  },
   "how": {
     "title": "Как это работает",
     "subtitle": "От регистрации до первой сделки — 2 минуты.",
     "steps": [
-      {
-        "n": "01",
-        "title": "Поиск отклонений",
-        "desc": "Постоянно пересчитывает лимитные ордера на открытие сделки"
-      },
-      {
-        "n": "02",
-        "title": "Динамические ордера",
-        "desc": "Short и Long на акциях и крипте одновременно, диверсификация рисков"
-      },
-      {
-        "n": "03",
-        "title": "Два рынка  один бот",
-        "desc": ""
-      },
-      {
-        "n": "04",
-        "title": "ИИ подбирает пары",
-        "desc": "Каждый лот независим  математическая точность вместо усреднения"
-      },
-      {
-        "n": "05",
-        "title": "Послотная модель",
-        "desc": "Робот совершает сотни сделок в день без вашего участия"
-      },
-      {
-        "n": "06",
-        "title": "Сотни сделок в день",
-        "desc": ""
-      },
-      {
-        "n": "07",
-        "title": "1. Поиск актива",
-        "desc": "Выставляет тейк-профит для прибыли и стоп-лосс для страховки"
-      },
-      {
-        "n": "08",
-        "title": "2. TP и SL",
-        "desc": "Дожидается срабатывания сделки и получает прибыль"
-      },
-      {
-        "n": "09",
-        "title": "3. Прибыль",
-        "desc": ""
-      }
+      { "n": "01", "title": "Регистрация", "desc": "Создайте аккаунт за минуту \u2014 нужен только email" },
+      { "n": "02", "title": "Подключение биржи", "desc": "Добавьте API-ключ с правом торговли, но без права вывода средств" },
+      { "n": "03", "title": "Выбор робота", "desc": "Выберите стратегию из готовых шаблонов и настройте риск под свой депозит" },
+      { "n": "04", "title": "Автоторговля", "desc": "Робот торгует 24/7, а прибыль остаётся на вашей бирже" }
     ]
   },
   "faq": {
@@ -111,9 +132,10 @@ export const ruTranslations = {
     "subtitle": "Без абонентской платы и комиссий с прибыли — покупаете робота один раз, он торгует для вас круглосуточно.",
     "btn1": "Смотреть роботов",
     "btn2": "Вопросы и ответы",
-    "trust": "АПИ-ключи без права вывода  Средства остаются на вашей бирже"
+    "trust": "АПИ-ключи без права вывода \u2014 Средства остаются на вашей бирже"
   },
   "footer": {
+    "knowledge": "База знаний",
     "desc": "Торговые роботы для криптовалют и международных акций.",
     "robots": "Роботы",
     "support": "Поддержка",
@@ -122,6 +144,7 @@ export const ruTranslations = {
     "risk": "Торговля криптовалютами связана с риском. Прошлые результаты не гарантируют будущую доходность."
   },
   "botDetail": {
+    "home": "Главная",
     "back": "Все роботы",
     "about": "О роботе",
     "howEarn": "Как робот зарабатывает",
@@ -129,12 +152,13 @@ export const ruTranslations = {
     "features": "Ключевые особенности",
     "risks": "Риски",
     "pairs": "Торгуемые активы",
-    "launch": "launch",
+    "launch": "Запустить",
     "others": "Другие роботы",
     "notFound": "Робот не найден",
     "backHome": "На главную"
   },
   "contact": {
+    "writeIn": "Написать в",
     "tg": "Написать в Telegram",
     "wa": "Написать в WhatsApp",
     "up": "Наверх",
@@ -143,20 +167,142 @@ export const ruTranslations = {
   }
 };
 export const enTranslations = {
-  nav: {bots: "Bots", how: "How it works", faq: "FAQ"},
-  hero: {badge: "Trading bots for any exchange via API", title: "AI-powered trading bots. Profit 24/7", desc: "Stock-crypto hybrid, trading machine and Pump & Dump hunter. Choose your bot — it trades while you live your life.", cta1: "View bots", cta2: "How it works", trust: ["No subscription, buy once", "Setup in 2 minutes", "API without withdrawal"], live: "LIVE", profit: "Profit today", stats: ["Win Rate", "Deals", "Uptime"]},
-  products: {title: "Three bots — three strategies", subtitle: "Each bot is an independent trading system. Buy once — trade without subscription fees.", detail: "More details", hit: "HIT"},
-  how: {title: "How it works", subtitle: "From registration to first trade — 2 minutes.", steps: [{"n":"01","title":"Поиск отклонений","desc":"Постоянно пересчитывает лимитные ордера на открытие сделки"},{"n":"02","title":"Динамические ордера","desc":"Short и Long на акциях и крипте одновременно, диверсификация рисков"},{"n":"03","title":"Два рынка  один бот","desc":""},{"n":"04","title":"ИИ подбирает пары","desc":"Каждый лот независим  математическая точность вместо усреднения"},{"n":"05","title":"Послотная модель","desc":"Робот совершает сотни сделок в день без вашего участия"},{"n":"06","title":"Сотни сделок в день","desc":""},{"n":"07","title":"1. Поиск актива","desc":"Выставляет тейк-профит для прибыли и стоп-лосс для страховки"},{"n":"08","title":"2. TP и SL","desc":"Дожидается срабатывания сделки и получает прибыль"},{"n":"09","title":"3. Прибыль","desc":""}]},
-  faq: {title: "Frequently asked questions", subtitle: "Everything you need to know before starting.", items: [
-    { q: "Do I need programming skills?", a: "No. Coinsofter is a ready-made platform. Registration, exchange API key connection, bot and strategy selection from templates. Everything is configured in a couple of clicks, without a single line of code." },
-    { q: "How to connect an exchange?", a: "Go to your personal account, choose an exchange (BYBIT, Binance, OKX etc.), create an API key with trading permission but WITHOUT withdrawal rights. Copy the key and secret to Coinsofter — setup takes 1-2 minutes." },
-    { q: "Is it safe to share API keys?", a: "Yes. We require creating keys without withdrawal rights — the bot can only trade, not withdraw assets. Keys are encrypted with AES-256 standard and stored encrypted. We have no access to your funds." },
-    { q: "What is the minimum amount to start?", a: "Minimum — $10 per order. For comfortable trading we recommend starting from $200-500: the larger the capital, the more flexible the risk settings." },
-    { q: "How to withdraw profit?", a: "All funds remain on your exchange. The bot only trades — profit goes straight to your balance. Withdraw it anytime through the exchange interface, we do not hold your money." }
-  ]},
-  cta: {title: "Choose your trading bot", subtitle: "No subscription fee and no profit commission — buy the bot once, it trades for you around the clock.", btn1: "View bots", btn2: "FAQ", trust: "API keys without withdrawal  Funds stay on your exchange"},
-  footer: {desc: "Trading bots for cryptocurrencies and international stocks.", robots: "Bots", support: "Support", exchanges: "Exchanges", copyright: "© 2025 Coinsofter. All rights reserved.", risk: "Cryptocurrency trading involves risk. Past results do not guarantee future profitability."},
-  botDetail: {back: "All bots", about: "About the bot", howEarn: "How the bot earns", income: "Profitability", features: "Key features", risks: "Risks", pairs: "Traded pairs", launch: "launch", others: "Other bots", notFound: "Bot not found", backHome: "Back to home"},
-  contact: {tg: "Write on Telegram", wa: "Write on WhatsApp", up: "Back to top", close: "Close", open: "Contact us"}
+  "nav": { "bots": "Bots", "how": "How it works", "faq": "FAQ" },
+  "ui": { "themeLight": "Light theme", "themeDark": "Dark theme", "menu": "Menu", "skip": "Skip to content", "scrollTo": "Go to section" },
+  "hero": {
+    "badge": "AI-powered trading bots for any exchange",
+    "title1": "Trade crypto",
+    "title2": "with smart robots",
+    "subtitle": "Bots work on any crypto exchange via API. AI algorithms find trades and trade automatically 24 hours a day.",
+    "title": "Three trading bots. Profit 24/7",
+    "desc": "Stock-crypto hybrid, trading machine and Pump & Dump hunter. Choose your bot \u2014 it trades while you live your life.",
+    "cta1": "View bots",
+    "cta2": "How it works",
+    "pick": "Choose a bot",
+    "trust": ["No subscription, buy once", "Setup in 2 minutes", "API without withdrawal"],
+    "live": "LIVE",
+    "profit": "Profit today",
+    "stats": [
+      { "value": "+96.4%", "label": "Annual return" },
+      { "value": "24/7", "label": "Algorithmic trading" },
+      { "value": "20+", "label": "Supported exchanges" },
+      { "value": "< 1 sec", "label": "Reaction speed" }
+    ],
+    "chart": {
+      "portfolio": "Portfolio return",
+      "month": "+35% in the last month",
+      "live": "LIVE",
+      "deals": "Total trades",
+      "win": "Profitable",
+      "drawdown": "Max drawdown",
+      "months": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    }
+  },
+  "products": {
+    "title": "Three bots \u2014 three strategies",
+    "subtitle": "Each bot is an independent trading system. Buy once \u2014 trade without subscription fees.",
+    "detail": "More details",
+    "hit": "HIT"
+  },
+  "compare": {
+    "title": "Bot comparison",
+    "subtitle": "Three strategies \u2014 pick yours",
+    "market": "Market",
+    "strategy": "Strategy",
+    "risk": "Risk",
+    "income": "Annual return",
+    "pairs": "Assets",
+    "more": "More details"
+  },
+  "calculator": {
+    "title": "Profit calculator",
+    "subtitle": "Estimate your profit potential over up to a year",
+    "deposit": "Starting deposit",
+    "term": "Term, months",
+    "bot": "Bot",
+    "botAvg": "Average across bots",
+    "result": "Forecast",
+    "profit": "Profit",
+    "total": "Total",
+    "note": "This estimate is for information only and is not a guarantee of future returns",
+    "cta": "Launch the bot"
+  },
+  "how": {
+    "title": "How it works",
+    "subtitle": "From registration to the first trade \u2014 2 minutes.",
+    "steps": [
+      { "n": "01", "title": "Registration", "desc": "Create an account in a minute \u2014 all you need is an email" },
+      { "n": "02", "title": "Exchange connection", "desc": "Add an API key with trading rights but without withdrawal rights" },
+      { "n": "03", "title": "Bot selection", "desc": "Pick a strategy from templates and tune the risk to your deposit" },
+      { "n": "04", "title": "Auto trading", "desc": "The bot trades 24/7 while profit stays on your exchange" }
+    ]
+  },
+  "faq": {
+    "title": "Frequently asked questions",
+    "subtitle": "Everything you need to know before starting.",
+    "items": [
+      { "q": "Do I need programming skills?", "a": "No. Coinsofter is a ready-made platform. Registration, exchange API key connection, bot and strategy selection from templates. Everything is configured in a couple of clicks, without a single line of code." },
+      { "q": "How to connect an exchange?", "a": "Go to your personal account, choose an exchange (BYBIT, Binance, OKX etc.), create an API key with trading permission but WITHOUT withdrawal rights. Copy the key and secret to Coinsofter \u2014 setup takes 1-2 minutes." },
+      { "q": "Is it safe to share API keys?", "a": "Yes. We require creating keys without withdrawal rights \u2014 the bot can only trade, not withdraw assets. Keys are encrypted with AES-256 standard and stored encrypted. We have no access to your funds." },
+      { "q": "What is the minimum amount to start?", "a": "Minimum \u2014 $10 per order. For comfortable trading we recommend starting from $200-500: the larger the capital, the more flexible the risk settings." },
+      { "q": "How to withdraw profit?", "a": "All funds remain on your exchange. The bot only trades \u2014 profit goes straight to your balance. Withdraw it anytime through the exchange interface, we do not hold your money." }
+    ]
+  },
+  "cta": {
+    "title": "Choose your trading bot",
+    "subtitle": "No subscription fee and no profit commission \u2014 buy the bot once, it trades for you around the clock.",
+    "btn1": "View bots",
+    "btn2": "Questions and answers",
+    "trust": "API keys without withdrawal rights. Funds stay on your exchange"
+  },
+  "lead": {
+    "title": "Leave a request",
+    "subtitle": "We will pick a bot for your strategy and answer any questions",
+    "name": "Your name",
+    "contact": "Telegram or email",
+    "bot": "Bot of interest",
+    "botAny": "Any bot",
+    "message": "Message",
+    "submit": "Send request",
+    "success": "Request sent! We will contact you soon.",
+    "error": "Something went wrong. Please write us on Telegram.",
+    "privacy": "By clicking the button you agree to the processing of personal data"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "desc": "The page may have been moved or does not exist",
+    "btn": "Back to home"
+  },
+  "footer": {
+    "desc": "Trading bots for cryptocurrencies and international stocks.",
+    "robots": "Bots",
+    "support": "Support",
+    "knowledge": "Knowledge base",
+    "exchanges": "Exchanges",
+    "copyright": "\u00A9 2025 Coinsofter. All rights reserved.",
+    "risk": "Cryptocurrency trading involves risk. Past results do not guarantee future profitability."
+  },
+  "botDetail": {
+    "home": "Home",
+    "back": "All bots",
+    "about": "About the bot",
+    "howEarn": "How the bot earns",
+    "income": "Profitability",
+    "features": "Key features",
+    "risks": "Risks",
+    "pairs": "Traded pairs",
+    "launch": "Launch",
+    "others": "Other bots",
+    "notFound": "Bot not found",
+    "backHome": "Back to home"
+  },
+  "contact": {
+    "writeIn": "Write on",
+    "tg": "Write on Telegram",
+    "wa": "Write on WhatsApp",
+    "up": "Back to top",
+    "close": "Close",
+    "open": "Contact us"
+  }
 };
 export type Translations = typeof ruTranslations;
