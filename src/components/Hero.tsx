@@ -284,7 +284,7 @@ function InteractiveChart() {
           <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
           LIVE
         </div>
-        <div className="text-xs text-gray-400 dark:text-gray-500">{t("hero.chart.title")}</div>
+
       </div>
       <div
         className="relative bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-[0_20px_50px_-12px_rgba(15,23,42,0.12)] p-4"
@@ -355,8 +355,45 @@ export default function Hero() {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="heading-xl text-gray-900 dark:text-white mb-6"
             >
-              {c("hero", "title1", t("hero.title1"))}{" "}
-              <span className="text-gradient">{c("hero", "title2", t("hero.title2"))}</span>
+              <motion.span
+                className="block"
+                initial={{ opacity: 0, y: 26 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.55, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
+              >
+                {c("hero", "title1", t("hero.title1"))}
+              </motion.span>
+              <motion.span
+                className="relative inline-block"
+                initial={{ opacity: 0, y: 26 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.55, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <span className="text-gradient">{c("hero", "title2", t("hero.title2"))}</span>
+                <motion.svg
+                  className="absolute -bottom-1.5 left-0 w-full h-[10px] overflow-visible"
+                  viewBox="0 0 200 10"
+                  preserveAspectRatio="none"
+                  aria-hidden="true"
+                >
+                  <defs>
+                    <linearGradient id="swooshGrad" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor="#3b82f6" />
+                      <stop offset="100%" stopColor="#8b5cf6" />
+                    </linearGradient>
+                  </defs>
+                  <motion.path
+                    d="M2 7.5 C 55 1.5, 145 1.5, 198 7"
+                    fill="none"
+                    stroke="url(#swooshGrad)"
+                    strokeWidth="3.5"
+                    strokeLinecap="round"
+                    initial={{ pathLength: 0, opacity: 0 }}
+                    animate={{ pathLength: 1, opacity: 1 }}
+                    transition={{ delay: 0.75, duration: 0.8, ease: "easeOut" }}
+                  />
+                </motion.svg>
+              </motion.span>
             </motion.h1>
 
             <motion.p
@@ -398,12 +435,15 @@ export default function Hero() {
               {stats.map((s, i) => {
                 const Icon = statIcons[i] || TrendingUp;
                 return (
-                  <div key={i} className="glass rounded-2xl border border-white/70 dark:border-gray-800 p-4 shadow-sm">
+                  <div key={i} className="group relative glass rounded-2xl border border-white/70 dark:border-gray-800 p-4 shadow-sm">
                     <div className="w-9 h-9 rounded-lg flex items-center justify-center mb-2.5" style={{ background: "linear-gradient(135deg, rgba(59,130,246,0.12) 0%, rgba(139,92,246,0.12) 100%)" }}>
                       <Icon size={17} className="text-brand-blue" />
                     </div>
                     <CountUp value={s.value} className="text-2xl font-extrabold text-gray-900 dark:text-white leading-none tracking-tight" />
                     <div className="text-[11px] font-medium text-gray-500 dark:text-gray-400 mt-1.5 whitespace-nowrap overflow-hidden text-ellipsis">{s.label}</div>
+                    <div className="absolute -top-1 left-1/2 -translate-x-1/2 -translate-y-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none glass border border-blue-100/70 dark:border-blue-900 px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-900 dark:text-white shadow-md whitespace-nowrap z-20">
+                      {s.label}
+                    </div>
                   </div>
                 );
               })}
