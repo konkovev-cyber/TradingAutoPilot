@@ -1,7 +1,8 @@
-﻿import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, TrendingUp, Shield, Zap, Globe } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
+import { useContent } from "@/lib/site-content";
 import { useTheme } from "@/lib/theme";
 
 const chartData = [
@@ -267,6 +268,7 @@ const statIcons = [TrendingUp, Shield, Globe, Zap];
 
 export default function Hero() {
   const { t } = useI18n();
+  const c = useContent();
   const stats: { value: string; label: string }[] = t("hero.stats");
 
   return (
@@ -287,7 +289,7 @@ export default function Hero() {
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 dark:bg-blue-950 border border-blue-100 dark:border-blue-900 mb-8"
             >
               <span className="w-2 h-2 rounded-full bg-brand-blue animate-pulse" />
-              <span className="text-sm font-medium text-blue-700 dark:text-blue-300">{t("hero.badge")}</span>
+              <span className="text-sm font-medium text-blue-700 dark:text-blue-300">{c("hero", "badge", t("hero.badge"))}</span>
             </motion.div>
 
             <motion.h1
@@ -296,8 +298,8 @@ export default function Hero() {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="heading-xl text-gray-900 dark:text-white mb-6"
             >
-              {t("hero.title1")}{" "}
-              <span className="text-brand-blue">{t("hero.title2")}</span>
+              {c("hero", "title1", t("hero.title1"))}{" "}
+              <span className="text-brand-blue">{c("hero", "title2", t("hero.title2"))}</span>
             </motion.h1>
 
             <motion.p
@@ -306,7 +308,7 @@ export default function Hero() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-lg text-gray-500 dark:text-gray-400 max-w-xl mb-10 leading-relaxed"
             >
-              {t("hero.subtitle")}
+              {c("hero", "subtitle", t("hero.subtitle"))}
             </motion.p>
 
             <motion.div
@@ -319,14 +321,14 @@ export default function Hero() {
                 href="#bots"
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-brand-blue text-white font-semibold rounded-xl hover:bg-blue-700 transition-all shadow-sm hover:shadow-md"
               >
-                {t("hero.pick")}
+                {c("hero", "pick", t("hero.pick"))}
                 <ArrowRight size={18} />
               </a>
               <a
                 href="#how"
                 className="inline-flex items-center justify-center px-8 py-4 text-gray-600 dark:text-gray-300 font-medium hover:text-gray-900 dark:hover:text-white transition-colors border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800"
               >
-                {t("hero.cta2")}
+                {c("hero", "cta2", t("hero.cta2"))}
               </a>
             </motion.div>
 

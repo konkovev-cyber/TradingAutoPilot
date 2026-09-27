@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Menu, X, Sun, Moon, Globe } from "lucide-react";
 import { useTheme } from "@/lib/theme";
 import { useI18n } from "@/lib/i18n";
+import { useContent } from "@/lib/site-content";
 import { useSections } from "@/lib/sections";
 
 export default function Header() {
@@ -13,17 +14,18 @@ export default function Header() {
   const { theme, toggleTheme } = useTheme();
   const { lang, setLang, t } = useI18n();
   const { sections } = useSections();
+  const c = useContent();
 
   const navMap: Record<string, { href: string; label: string }> = {
-    products: { href: "/#bots", label: t("nav.bots") },
-    how: { href: "/#how", label: t("nav.how") },
-    faq: { href: "/#faq", label: t("nav.faq") },
+    products: { href: "/#bots", label: c("nav", "bots", t("nav.bots")) },
+    how: { href: "/#how", label: c("nav", "how", t("nav.how")) },
+    faq: { href: "/#faq", label: c("nav", "faq", t("nav.faq")) },
   };
   const enabledKeys = new Set(sections.filter((s) => s.enabled).map((s) => s.key));
   const navLinks = Object.entries(navMap)
     .filter(([key]) => enabledKeys.has(key))
     .map(([key, v]) => ({ id: key, ...v }));
-  const navLinkIds = navLinks.map((l) => l.id);
+  const navKey = navLinks.map((l) => l.id).join(",");
 
   useEffect(() => {
     const onScroll = () => {
@@ -37,7 +39,7 @@ export default function Header() {
   }, []);
 
   useEffect(() => {
-    const els = navLinkIds
+    const els = navKey.split(",")
       .map((id) => document.getElementById(id))
       .filter((el): el is HTMLElement => Boolean(el));
     if (!els.length) return;
@@ -51,7 +53,7 @@ export default function Header() {
     );
     els.forEach((el) => io.observe(el));
     return () => io.disconnect();
-  }, [navLinkIds.join(",")]);
+  }, [navKey]);
 
   const handleAnchor = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     const id = href.split("#")[1];

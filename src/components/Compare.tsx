@@ -1,14 +1,16 @@
-﻿import { bots, type BotData } from "@/data/bots";
+﻿import { useBots } from "@/lib/use-bots";
+import type { BotData } from "@/data/bots";
 import { useI18n } from "@/lib/i18n";
 
 export default function Compare() {
   const { t } = useI18n();
+  const bots = useBots();
 
   const rows: { id: string; label: string; get: (b: BotData) => string }[] = [
     { id: "market", label: t("compare.market"), get: (b) => b.market },
     { id: "strategy", label: t("compare.strategy"), get: (b) => b.strategy },
     { id: "risk", label: t("compare.risk"), get: (b) => b.risk },
-    { id: "income", label: t("compare.income"), get: (b) => b.returns[2].value },
+    { id: "income", label: t("compare.income"), get: (b) => b.returns[2]?.value ?? "" },
     { id: "pairs", label: t("compare.pairs"), get: (b) => b.pairs },
   ];
 

@@ -6,6 +6,8 @@ import { Save, Plus, Trash2, ChevronDown, Braces, Check } from "lucide-react";
 type Json = any;
 
 const SECTION_LABELS: Record<string, string> = {
+  meta: "SEO и мета-данные",
+  nav: "Меню в шапке",
   hero: "Hero / Главная",
   cta: "CTA / Призыв к действию",
   stats: "Статистика",
@@ -18,25 +20,29 @@ const SECTION_LABELS: Record<string, string> = {
 };
 
 const TEXT_FIELDS: Record<string, { key: string; label: string; multiline?: boolean }[]> = {
+  meta: [
+    { key: "title", label: "Title (заголовок вкладки браузера)", multiline: true },
+    { key: "description", label: "Description (описание для поисковиков)", multiline: true },
+  ],
+  nav: [
+    { key: "bots", label: "Пункт меню Роботы" },
+    { key: "how", label: "Пункт меню Как работает" },
+    { key: "faq", label: "Пункт меню FAQ" },
+  ],
   hero: [
-    { key: "title", label: "Заголовок" },
-    { key: "description", label: "Описание", multiline: true },
-    { key: "primary_cta", label: "Главная кнопка" },
-    { key: "secondary_cta", label: "Вторая кнопка" },
-    { key: "earned_label", label: "Подпись Уже заработано" },
+    { key: "badge", label: "Плашка над заголовком" },
+    { key: "title1", label: "Заголовок  начало" },
+    { key: "title2", label: "Заголовок  выделенная часть" },
+    { key: "subtitle", label: "Подзаголовок", multiline: true },
+    { key: "pick", label: "Кнопка Выбрать робота" },
+    { key: "cta2", label: "Вторая кнопка" },
   ],
   cta: [
     { key: "title", label: "Заголовок" },
     { key: "subtitle", label: "Подзаголовок", multiline: true },
-    { key: "button", label: "Кнопка" },
-  ],
-  stats: [
-    { key: "users", label: "Пользователи \u2014 значение" },
-    { key: "users_label", label: "Пользователи \u2014 подпись" },
-    { key: "volume", label: "Объём торгов \u2014 значение" },
-    { key: "volume_label", label: "Объём торгов \u2014 подпись" },
-    { key: "uptime", label: "Uptime \u2014 значение" },
-    { key: "uptime_label", label: "Uptime \u2014 подпись" },
+    { key: "btn1", label: "Первая кнопка" },
+    { key: "btn2", label: "Вторая кнопка" },
+    { key: "trust", label: "Строка доверия под кнопками" },
   ],
 };
 

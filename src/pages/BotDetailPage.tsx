@@ -1,8 +1,8 @@
-import { useEffect } from "react";
+﻿import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, Check, AlertTriangle, Share2 } from "lucide-react";
-import { getBot, bots } from "@/data/bots";
+import { useBots } from "@/lib/use-bots";
 import Header from "@/components/Header";
 import FloatingContact from "@/components/FloatingContact";
 import { useI18n } from "@/lib/i18n";
@@ -11,7 +11,8 @@ import { useSeo } from "@/lib/seo";
 export default function BotDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const { t } = useI18n();
-  const bot = getBot(slug || "");
+  const bots = useBots();
+  const bot = bots.find((b) => b.slug === slug) ?? null;
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -95,6 +96,7 @@ export default function BotDetailPage() {
                     <h3 className="heading-md text-gray-900 dark:text-white mb-4">{t("botDetail.about")}</h3>
                     <p className="text-gray-500 dark:text-gray-400 leading-relaxed">{bot.fullDesc}</p>
                   </div>
+                  {bot.howItWorks.length > 0 && (
 
                   <div>
                     <h3 className="heading-md text-gray-900 dark:text-white mb-6">{t("botDetail.howEarn")}</h3>
@@ -115,15 +117,16 @@ export default function BotDetailPage() {
                       ))}
                     </div>
                   </div>
+                  )}
                 </div>
 
                 <div className="lg:col-span-2 space-y-6">
                   <div className="bg-white dark:bg-gray-900 rounded-xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm">
                     <h3 className="font-bold text-gray-900 dark:text-white mb-4">{t("botDetail.income")}</h3>
                     <div className="space-y-3">
-                      {bot.returns.map((r) => (
+                      {bot.returns.map((r, ri) => (
                         <div
-                          key={r.period}
+                          key={ri}
                           className="flex items-center justify-between px-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-800"
                         >
                           <span className="text-sm text-gray-500 dark:text-gray-400">{r.period}</span>

@@ -1,6 +1,6 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { Users, MessageSquare, TrendingUp, Clock } from "lucide-react";
+import { Users, MessageSquare, TrendingUp, Clock, Eye } from "lucide-react";
 import { Link } from "react-router-dom";
 
 interface Lead {
@@ -15,10 +15,11 @@ interface Stats {
   newLeads: number;
   botsCount: number;
   todayLeads: number;
+  views7d: number;
 }
 
 export default function AdminDashboard() {
-  const [stats, setStats] = useState<Stats>({ totalLeads: 0, newLeads: 0, botsCount: 3, todayLeads: 0 });
+  const [stats, setStats] = useState<Stats>({ totalLeads: 0, newLeads: 0, botsCount: 3, todayLeads: 0, views7d: 0 });
   const [recentLeads, setRecentLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -32,13 +33,15 @@ export default function AdminDashboard() {
       supabase.from("leads").select("id").eq("status", "new"),
       supabase.from("leads").select("id").gte("created_at", new Date(Date.now() - 24*60*60*1000).toISOString()),
       supabase.from("leads").select("*").order("created_at", { ascending: false }).limit(5),
+      supabase.from("page_views").select("id").gte("created_at", new Date(Date.now() - 7*24*60*60*1000).toISOString()),
     ])
-      .then(([all, newRes, todayRes, recent]) => {
+      .then(([all, newRes, todayRes, recent, views]) => {
         setStats({
           totalLeads: all.data?.length ?? 0,
           newLeads: newRes.data?.length ?? 0,
           botsCount: 3,
           todayLeads: todayRes.data?.length ?? 0,
+          views7d: views.data?.length ?? 0,
         });
         setRecentLeads(recent.data ?? []);
         setLoading(false);
@@ -51,6 +54,7 @@ export default function AdminDashboard() {
     { label: "Новые заявки", hint: "Ещё не обработаны", value: stats.newLeads.toString(), icon: MessageSquare, color: "green" },
     { label: "За сутки", hint: "Пришли за последние 24 часа", value: stats.todayLeads.toString(), icon: Clock, color: "purple" },
     { label: "Роботы", hint: "Опубликовано на сайте", value: stats.botsCount.toString(), icon: TrendingUp, color: "orange" },
+    { label: "Просмотры", hint: "За последние 7 дней", value: stats.views7d.toString(), icon: Eye, color: "pink" },
   ];
 
   if (loading) return <div className="text-white">Загрузка...</div>;
