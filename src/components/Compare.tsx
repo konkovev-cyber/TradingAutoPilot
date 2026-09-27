@@ -17,9 +17,9 @@ export default function Compare() {
   return (
     <section id="compare" className="py-24 bg-white dark:bg-gray-950 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white mb-4">{t("compare.title")}</h2>
-          <p className="text-lg text-gray-500 dark:text-gray-400">{t("compare.subtitle")}</p>
+        <div className="text-center mb-14">
+          <h2 className="heading-lg text-gray-900 dark:text-white mb-4">{t("compare.title")}</h2>
+          <p className="text-base md:text-lg text-gray-500 dark:text-gray-500 font-normal">{t("compare.subtitle")}</p>
         </div>
 
         <div className="overflow-x-auto rounded-2xl border border-gray-100 dark:border-gray-800 shadow-soft">
@@ -59,3 +59,4 @@ export default function Compare() {
     </section>
   );
 }
+

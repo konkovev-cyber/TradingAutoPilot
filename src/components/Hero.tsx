@@ -400,7 +400,7 @@ export default function Hero() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-lg text-gray-500 dark:text-gray-400 max-w-xl mb-10 leading-relaxed"
+              className="text-base sm:text-lg text-gray-500/80 dark:text-gray-500 max-w-xl mb-12 leading-relaxed"
             >
               {c("hero", "subtitle", t("hero.subtitle"))}
             </motion.p>
@@ -430,22 +430,38 @@ export default function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-12"
+              className="mt-12 rounded-2xl border border-white/70 dark:border-gray-800 p-5 sm:p-6 shadow-sm"
+              style={{ background: "rgba(255,255,255,0.05)" }}
             >
-              {stats.map((s, i) => {
-                const Icon = statIcons[i] || TrendingUp;
-                return (
-                  <div key={i} className="group relative glass rounded-2xl border border-white/70 dark:border-gray-800 p-4 shadow-sm">
-                    <div className="w-9 h-9 rounded-lg flex items-center justify-center mb-2.5" style={{ background: "linear-gradient(135deg, rgba(59,130,246,0.12) 0%, rgba(139,92,246,0.12) 100%)" }}>
-                      <Icon size={17} className="text-brand-blue" />
+              <div className="flex flex-col md:flex-row items-stretch gap-6 md:gap-8">
+                {/* главная метрика  результат */}
+                {stats[0] && (
+                  <div className="flex items-center gap-4 md:pr-8 md:border-r border-gray-200/60 dark:border-gray-700/60">
+                    <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0" style={{ background: "rgba(0,255,150,0.12)" }}>
+                      <TrendingUp size={20} className="text-emerald-500" />
                     </div>
-                    <CountUp value={s.value} className="text-3xl font-extrabold text-gray-900 dark:text-white leading-none tracking-tight" />
-                    <div className="absolute -top-1 left-1/2 -translate-x-1/2 -translate-y-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none glass border border-blue-100/70 dark:border-blue-900 px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-900 dark:text-white shadow-md whitespace-nowrap z-20">
-                      {s.label}
+                    <div>
+                      <CountUp value={stats[0].value} className="text-4xl font-extrabold text-emerald-500 leading-none tracking-tight tabular-nums" />
+                      <div className="text-xs text-gray-500 dark:text-gray-400 mt-1.5">{stats[0].label}</div>
                     </div>
                   </div>
-                );
-              })}
+                )}
+                {/* второстепенные метрики */}
+                <div className="grid grid-cols-3 gap-4 flex-1 items-center">
+                  {stats.slice(1).map((s, i) => {
+                    const Icon = statIcons[i + 1] || Shield;
+                    return (
+                      <div key={i} className="group relative flex items-center gap-2.5">
+                        <Icon size={16} className="text-gray-400 dark:text-gray-500 shrink-0" />
+                        <div className="min-w-0">
+                          <CountUp value={s.value} className="text-base sm:text-lg font-bold text-gray-800 dark:text-gray-200 leading-tight tabular-nums" />
+                          <div className="text-[11px] text-gray-400 dark:text-gray-500 leading-tight mt-0.5">{s.label}</div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             </motion.div>
           </div>
 
@@ -461,3 +477,4 @@ export default function Hero() {
     </section>
   );
 }
+

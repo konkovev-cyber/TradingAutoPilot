@@ -20,10 +20,10 @@ export default function HowItWorks() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-16"
+          className="text-center mb-14"
         >
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-gray-900 dark:text-white mb-4">{t("how.title")}</h2>
-          <p className="text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">{t("how.subtitle")}</p>
+          <h2 className="heading-lg text-gray-900 dark:text-white mb-4">{t("how.title")}</h2>
+          <p className="text-base md:text-lg text-gray-500 dark:text-gray-500 font-normal max-w-2xl mx-auto">{t("how.subtitle")}</p>
         </motion.div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -54,3 +54,4 @@ export default function HowItWorks() {
     </section>
   );
 }
+

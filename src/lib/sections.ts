@@ -10,13 +10,14 @@ export interface SiteSection {
 
 export const DEFAULT_SECTIONS: SiteSection[] = [
   { key: "hero", title: "Шапка с графиком (Hero)", enabled: true, position: 1 },
-  { key: "products", title: "Карточки роботов", enabled: true, position: 2 },
-  { key: "compare", title: "Сравнение роботов", enabled: true, position: 3 },
-  { key: "calculator", title: "Калькулятор доходности", enabled: true, position: 4 },
-  { key: "how", title: "Как это работает", enabled: true, position: 5 },
-  { key: "faq", title: "Частые вопросы", enabled: true, position: 6 },
-  { key: "lead", title: "Форма заявки", enabled: true, position: 7 },
-  { key: "cta", title: "Призыв к действию (CTA)", enabled: true, position: 8 },
+  { key: "trust", title: "Островок доверия", enabled: true, position: 2 },
+  { key: "products", title: "Карточки роботов", enabled: true, position: 3 },
+  { key: "compare", title: "Сравнение роботов", enabled: true, position: 4 },
+  { key: "calculator", title: "Калькулятор доходности", enabled: true, position: 5 },
+  { key: "how", title: "Как это работает", enabled: true, position: 6 },
+  { key: "faq", title: "Частые вопросы", enabled: true, position: 7 },
+  { key: "lead", title: "Форма заявки", enabled: true, position: 8 },
+  { key: "cta", title: "Призыв к действию (CTA)", enabled: true, position: 9 },
 ];
 
 export async function fetchSections(): Promise<SiteSection[]> {

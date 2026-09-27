@@ -1,4 +1,4 @@
-@tailwind base;
+﻿@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
@@ -44,6 +44,7 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
+    line-height: 1.6;
     transition: background-color 0.3s ease, color 0.3s ease;
   }
   h1, h2, h3, h4 { letter-spacing: -0.025em; }
@@ -110,7 +111,7 @@
   }
 }
 
-/* ============ Премиум дизайн-система (апгрейд) ============ */
+/* ============ РџСЂРµРјРёСѓРј РґРёР·Р°Р№РЅ-СЃРёСЃС‚РµРјР° (Р°РїРіСЂРµР№Рґ) ============ */
 :root {
   --shadow-lg: 0 20px 50px -12px rgba(15, 23, 42, 0.15);
   --shadow-glow: 0 8px 30px -6px rgba(59, 130, 246, 0.45);
@@ -187,10 +188,10 @@
 .animate-float { animation: float 8s ease-in-out infinite; }
 .animate-float-slow { animation: float 12s ease-in-out infinite; }
 
-/* Фоны с поддержкой тёмной темы */
+/* Р¤РѕРЅС‹ СЃ РїРѕРґРґРµСЂР¶РєРѕР№ С‚С‘РјРЅРѕР№ С‚РµРјС‹ */
 .hero-bg { background: linear-gradient(180deg, #eff6ff 0%, #ffffff 55%); }
 .dark .hero-bg { background: linear-gradient(180deg, #0b1220 0%, #030712 60%); }
 .bg-soft { background: linear-gradient(180deg, #ffffff 0%, #eff6ff 100%); }
 .dark .bg-soft { background: linear-gradient(180deg, #030712 0%, #0b1220 100%); }
 
-.heading-hero { font-size: clamp(1.9rem, 3.8vw, 3.1rem); font-weight: 800; line-height: 1.14; letter-spacing: -0.03em; }
+.heading-hero { font-size: clamp(2.4rem, 4.8vw, 4rem); font-weight: 800; line-height: 1.12; letter-spacing: -0.03em; }

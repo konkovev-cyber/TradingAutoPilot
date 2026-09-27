@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
@@ -17,7 +17,7 @@ export default function FAQ() {
           transition={{ duration: 0.5 }}
           className="text-center mb-12"
         >
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-gray-900 dark:text-white mb-4">{t("faq.title")}</h2>
+          <h2 className="heading-lg text-gray-900 dark:text-white mb-4">{t("faq.title")}</h2>
           <p className="text-lg text-gray-500 dark:text-gray-400">{t("faq.subtitle")}</p>
         </motion.div>
 
@@ -60,3 +60,4 @@ export default function FAQ() {
     </section>
   );
 }
+
