@@ -11,9 +11,6 @@ CREATE UNIQUE INDEX IF NOT EXISTS user_roles_user_id_key ON user_roles(user_id);
 
 ALTER TABLE user_roles ENABLE ROW LEVEL SECURITY;
 
-DROP POLICY IF EXISTS "admin_read_user_roles" ON user_roles;
-CREATE POLICY "admin_read_user_roles" ON user_roles FOR SELECT TO authenticated USING (is_admin());
-
 -- is_admin(): SECURITY DEFINER so it works inside RLS policies
 CREATE OR REPLACE FUNCTION is_admin()
 RETURNS BOOLEAN
@@ -25,6 +22,11 @@ AS $$
     SELECT 1 FROM user_roles WHERE user_id = auth.uid() AND role = 'admin'
   );
 $$;
+
+DROP POLICY IF EXISTS "admin_read_user_roles" ON user_roles;
+CREATE POLICY "admin_read_user_roles" ON user_roles FOR SELECT TO authenticated USING (is_admin());
+
+
 
 -- site_content: only admins can edit
 DROP POLICY IF EXISTS "auth_insert_site_content" ON site_content;

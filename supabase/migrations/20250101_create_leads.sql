@@ -3,9 +3,9 @@ CREATE TABLE IF NOT EXISTS leads (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   name text NOT NULL,
   contact text NOT NULL,
-  bot text DEFAULT '\''any'\''::text,
+  bot text DEFAULT 'any'::text,
   message text,
-  status text DEFAULT '\''new'\'' NOT NULL CHECK (status IN ('\''new'\'', '\''read'\'', '\''replied'\'', '\''converted'\'')),
+  status text DEFAULT 'new' NOT NULL CHECK (status IN ('new', 'read', 'replied', 'converted')),
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now()
 );
