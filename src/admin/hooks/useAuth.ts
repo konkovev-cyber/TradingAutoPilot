@@ -2,7 +2,7 @@
 import { supabase } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
 
-export function useAuth() {
+export function useAuth() { // v2
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
