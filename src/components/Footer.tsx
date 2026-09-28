@@ -21,11 +21,11 @@ const mainExchanges = [
   { name: "BYBIT", Icon: BybitIcon },
   { name: "Binance", Icon: BinanceIcon },
   { name: "OKX", Icon: OkxIcon },
-  { name: "BingX", Icon: BingxIcon },
-  { name: "MEXC", Icon: MexcIcon },
 ];
 
 const moreExchanges = [
+  { name: "BingX", Icon: BingxIcon },
+  { name: "MEXC", Icon: MexcIcon },
   { name: "Gate.io", Icon: GateIcon },
   { name: "HTX", Icon: HtxIcon },
   { name: "Bitget", Icon: BitgetIcon },
@@ -101,7 +101,7 @@ export default function Footer() {
 
         <div className="border-t border-gray-100 dark:border-gray-800 pt-8 flex flex-col sm:flex-row justify-between items-center gap-3">
           <p className="text-xs text-gray-400 dark:text-gray-500">{t("footer.copyright")}</p>
-          <p className="text-xs text-gray-400 dark:text-gray-500 max-w-xl sm:text-right">{t("footer.risk")}</p>
+          <p className="text-xs text-gray-400 dark:text-gray-500 max-w-xl sm:text-right whitespace-pre-line">{t("footer.risk")}</p>
         </div>
       </div>
     </footer>

@@ -143,8 +143,8 @@ export const ruTranslations = {
     "robots": "Роботы",
     "support": "Поддержка",
     "exchanges": "Биржи",
-    "copyright": "© 2025 Trading Auto Pilot. All rights reserved.",
-    "risk": "Торговля криптовалютами связана с риском. Прошлые результаты не гарантируют будущую доходность."
+    "copyright": "© 2026 Trading Auto Pilot. All rights reserved.",
+    "risk": "Торговля криптовалютами связана с риском.\nПрошлые результаты не гарантируют будущую доходность."
   },
   "botDetail": {
     "home": "Главная",
@@ -285,8 +285,8 @@ export const enTranslations = {
     "support": "Support",
     "knowledge": "Knowledge base",
     "exchanges": "Exchanges",
-    "copyright": "\u00A9 2025 Trading Auto Pilot. All rights reserved.",
-    "risk": "Cryptocurrency trading involves risk. Past results do not guarantee future profitability."
+    "copyright": "© 2026 Trading Auto Pilot. All rights reserved.",
+    "risk": "Cryptocurrency trading involves risk.\nPast results do not guarantee future profitability."
   },
   "botDetail": {
     "home": "Home",
