@@ -307,7 +307,7 @@ export function TradingTerminal() {
                   />
                 )}
 
-                {TOOLTIPS.map(({ index, label, color }, i) => {
+                {!isMobile && TOOLTIPS.map(({ index, label, color }, i) => {
                   const p = CRYPTO_POINTS[index];
                   const w = label.length * 5.6 + 18;
                   return (
@@ -344,19 +344,21 @@ export function TradingTerminal() {
                 <circle cx={lastCrypto.x} cy={lastCrypto.y} r="4.2" fill={pulseColor} />
                 <circle cx={lastStock.x} cy={lastStock.y} r="4" fill="#60A5FA" opacity="0.85" />
 
-                {MONTHS.map((month, index) => (
-                  <text
-                    key={month}
-                    x={24 + (572 / 11) * index}
-                    y="245"
-                    textAnchor="middle"
-                    fill="#5C6675"
-                    fontSize="9"
-                    fontWeight="500"
-                  >
-                    {month}
-                  </text>
-                ))}
+                {MONTHS.map((month, index) =>
+                  isMobile && index % 2 !== 0 ? null : (
+                    <text
+                      key={month}
+                      x={24 + (572 / 11) * index}
+                      y="245"
+                      textAnchor="middle"
+                      fill="#5C6675"
+                      fontSize="9"
+                      fontWeight="500"
+                    >
+                      {month}
+                    </text>
+                  )
+                )}
               </svg>
             </div>
 

@@ -1,14 +1,39 @@
 ﻿import { Link } from "react-router-dom";
 import { bots } from "@/data/bots";
 import { useI18n } from "@/lib/i18n";
-import { BingxIcon, BinanceIcon, BybitIcon, MexcIcon, OkxIcon } from "./ExchangeIcons";
+import {
+  BingxIcon,
+  BinanceIcon,
+  BitfinexIcon,
+  BitgetIcon,
+  BybitIcon,
+  CoinbaseIcon,
+  GateIcon,
+  HtxIcon,
+  KrakenIcon,
+  KucoinIcon,
+  MexcIcon,
+  OkxIcon,
+  WhitebitIcon,
+} from "./ExchangeIcons";
 
-const exchanges = [
+const mainExchanges = [
   { name: "BYBIT", Icon: BybitIcon },
   { name: "Binance", Icon: BinanceIcon },
   { name: "OKX", Icon: OkxIcon },
   { name: "BingX", Icon: BingxIcon },
   { name: "MEXC", Icon: MexcIcon },
+];
+
+const moreExchanges = [
+  { name: "Gate.io", Icon: GateIcon },
+  { name: "HTX", Icon: HtxIcon },
+  { name: "Bitget", Icon: BitgetIcon },
+  { name: "KuCoin", Icon: KucoinIcon },
+  { name: "Bitfinex", Icon: BitfinexIcon },
+  { name: "Kraken", Icon: KrakenIcon },
+  { name: "Coinbase", Icon: CoinbaseIcon },
+  { name: "WhiteBIT", Icon: WhitebitIcon },
 ];
 
 export default function Footer() {
@@ -53,7 +78,7 @@ export default function Footer() {
           <div>
             <h4 className="font-bold text-gray-900 dark:text-white mb-4 text-sm">{t("footer.exchanges")}</h4>
             <div className="flex flex-wrap gap-1.5">
-              {exchanges.map(({ name, Icon }) => (
+              {mainExchanges.map(({ name, Icon }) => (
                 <span
                   key={name}
                   className="inline-flex items-center gap-1.5 text-[11px] text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 px-2.5 py-1 rounded-md border border-gray-100 dark:border-gray-700 transition-colors hover:text-gray-900 dark:hover:text-white"
@@ -63,6 +88,19 @@ export default function Footer() {
                 </span>
               ))}
             </div>
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {moreExchanges.map(({ name, Icon }) => (
+                <span
+                  key={name}
+                  title={name}
+                  aria-label={name}
+                  className="flex h-7 w-7 items-center justify-center rounded-md border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-500 transition-colors hover:text-gray-900 dark:hover:text-white"
+                >
+                  <Icon className="h-3.5 w-3.5" />
+                </span>
+              ))}
+            </div>
+            <p className="mt-2 text-[10px] text-gray-400 dark:text-gray-500">и ещё 8 бирж — всего 20+ площадок</p>
           </div>
         </div>
 
