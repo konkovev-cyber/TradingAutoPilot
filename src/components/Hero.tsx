@@ -1,17 +1,10 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ArrowRight, BookOpen, Gauge, ShieldCheck, Sparkles, TrendingUp, Zap } from "lucide-react";
-import { useI18n } from "@/lib/i18n";
+import { ArrowRight, BookOpen, Sparkles, Zap } from "lucide-react";import { useI18n } from "@/lib/i18n";
 import { useBots } from "@/lib/use-bots";
 import type { BotData } from "@/data/bots";
 import { TradingTerminal } from "./HeroTerminal";
 import { MetricsStrip } from "./HeroMetrics";
-
-const botIcons: Record<string, typeof Gauge> = {
-  cryptosuperstock: Gauge,
-  "megagrid-ai": TrendingUp,
-  smartix: ShieldCheck,
-};
 
 function headlineReturn(bot: BotData) {
   const last = bot.returns[bot.returns.length - 1];
@@ -34,7 +27,6 @@ export default function Hero() {
           "Three autonomous bots trade on 20+ exchanges via API. No subscription fee and no profit commission — buy the bot once, it trades for you around the clock.",
         primary: "Calculate profit",
         secondary: "How it works",
-        chipsLabel: "Live strategies",
         trust: ["Buy once — no subscriptions", "API without withdrawal rights", "Setup in 2 minutes"],
       }
     : {
@@ -46,7 +38,6 @@ export default function Hero() {
           "Три автономных робота торгуют на 20+ биржах через API. Без абонентской платы и комиссий с прибыли: покупаете робота один раз — он торгует для вас круглосуточно.",
         primary: "Рассчитать прибыль",
         secondary: "Как это работает",
-        chipsLabel: "Стратегии в работе",
         trust: ["Покупка один раз — без подписок", "API без права вывода", "Настройка за 2 минуты"],
       };
 
@@ -170,69 +161,6 @@ export default function Hero() {
                 </motion.div>
               </AnimatePresence>
             </motion.div>
-
-            {chips.length > 0 && (
-              <motion.div {...enter(0.18)} className="mb-4">
-                <div className="mb-2.5 flex items-center justify-between">
-                  <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-400 dark:text-slate-500">
-                    {copy.chipsLabel}
-                  </div>
-                  <div className="flex items-center gap-0.5">
-                    {chips.map((bot, index) => (
-                      <button
-                        key={bot.slug}
-                        type="button"
-                        aria-label={`${bot.name}: показать описание`}
-                        onClick={() => setActiveBotIndex(index)}
-                        className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-full"
-                      >
-                        <span
-                          className={`h-1.5 rounded-full transition-all duration-300 ${
-                            index === activeBotIndex % chips.length
-                              ? "w-5 bg-emerald-500"
-                              : "w-1.5 bg-slate-300 group-hover:bg-slate-400 dark:bg-slate-700 dark:group-hover:bg-slate-500"
-                          }`}
-                        />
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <div className="flex flex-wrap items-center gap-2.5">
-                  {chips.map((bot, index) => {
-                    const Icon = botIcons[bot.slug] ?? TrendingUp;
-                    const active = index === activeBotIndex % chips.length;
-                    return (
-                      <div key={bot.slug} className="group relative">
-                        <button
-                          type="button"
-                          aria-label={`${bot.name}: показать описание`}
-                          onClick={() => setActiveBotIndex(index)}
-                          className={`flex h-11 w-11 cursor-pointer items-center justify-center rounded-xl border transition-all duration-200 hover:-translate-y-0.5 ${
-                            active
-                              ? "border-transparent"
-                              : "border-black/[0.08] hover:border-black/[0.16] dark:border-white/[0.12] dark:hover:border-white/25"
-                          }`}
-                          style={
-                            active
-                              ? { background: `linear-gradient(135deg, ${bot.color}45, ${bot.color}14)`, boxShadow: `0 10px 26px -12px ${bot.color}99` }
-                              : { background: `linear-gradient(135deg, ${bot.color}1f, ${bot.color}0a)` }
-                          }
-                        >
-                          <Icon size={18} style={{ color: bot.color }} />
-                        </button>
-                        <div className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-2 -translate-x-1/2 whitespace-nowrap rounded-xl border border-black/[0.08] bg-white/95 px-3 py-2 opacity-0 shadow-[0_14px_34px_-14px_rgba(15,23,42,0.35)] backdrop-blur-xl transition-opacity duration-200 group-hover:opacity-100 dark:border-white/[0.12] dark:bg-[#111C29]/95">
-                          <span className="flex items-center gap-2">
-                            <span className="h-2 w-2 rounded-full" style={{ backgroundColor: bot.color, boxShadow: `0 0 8px ${bot.color}` }} />
-                            <span className="text-[11px] font-semibold text-[#0B0F14] dark:text-white">{bot.name}</span>
-                            <span className="text-[11px] font-bold tabular-nums text-emerald-500">{headlineReturn(bot)}</span>
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </motion.div>
-            )}
 
             <motion.div {...enter(0.24)} className="mb-3 flex flex-col gap-2.5 sm:flex-row">
               <a
