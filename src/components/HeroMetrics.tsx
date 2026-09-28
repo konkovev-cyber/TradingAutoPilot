@@ -36,7 +36,7 @@ export function MetricsStrip() {
               key={metric.value}
               whileHover={{ y: -2 }}
               transition={{ type: "spring", stiffness: 350, damping: 24 }}
-              className="group relative flex min-h-[106px] items-center gap-3 px-4 py-5 transition-colors hover:bg-black/[0.025] dark:hover:bg-white/[0.035] sm:gap-4 sm:px-6"
+              className="group relative flex min-h-[88px] items-center gap-3 px-4 py-4 transition-colors hover:bg-black/[0.025] dark:hover:bg-white/[0.035] sm:gap-4 sm:px-6"
             >
               <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#10B981]/15 bg-[#10B981]/10 text-[#10B981] transition-all duration-300 group-hover:scale-110 group-hover:border-[#10B981]/30 group-hover:bg-[#10B981]/15 group-hover:shadow-[0_0_24px_rgba(16,185,129,0.18)] sm:h-11 sm:w-11">
                 <Icon size={19} strokeWidth={1.8} />

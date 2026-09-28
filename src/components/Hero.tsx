@@ -1,4 +1,5 @@
-import { motion, useReducedMotion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, BookOpen, ShieldCheck, Zap } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { useBots } from "@/lib/use-bots";
@@ -44,6 +45,16 @@ export default function Hero() {
       };
 
   const chips = bots.filter((b) => b.name && b.shortDesc).slice(0, 3);
+  const [activeBotIndex, setActiveBotIndex] = useState(0);
+  const activeBot = chips.length > 0 ? chips[activeBotIndex % chips.length] : null;
+
+  useEffect(() => {
+    if (reduceMotion || chips.length < 2) return;
+    const timer = window.setInterval(() => {
+      setActiveBotIndex((index) => (index + 1) % chips.length);
+    }, 5200);
+    return () => window.clearInterval(timer);
+  }, [chips.length, reduceMotion]);
 
   const enter = (delay: number) => ({
     initial: { opacity: 0, y: 16 },
@@ -56,7 +67,7 @@ export default function Hero() {
   });
 
   return (
-    <section className="hero relative isolate flex min-h-[100svh] w-full flex-col overflow-hidden bg-[#F8FAFC] pb-8 pt-20 dark:bg-[#080D16] md:pt-24">
+    <section className="hero relative isolate flex min-h-[100svh] w-full flex-col overflow-hidden bg-[#F8FAFC] pb-5 pt-20 dark:bg-[#080D16] md:pt-20">
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
         <div
           className="absolute inset-0 opacity-[0.035] dark:opacity-[0.06]"
@@ -83,7 +94,7 @@ export default function Hero() {
       </div>
 
       <div className="relative mx-auto flex w-full max-w-[1440px] flex-1 flex-col px-6 lg:px-10 xl:px-14 2xl:px-16">
-        <motion.div {...enter(0)} className="mb-5 flex shrink-0 flex-wrap items-center gap-3">
+        <motion.div {...enter(0)} className="mb-3 flex shrink-0 flex-wrap items-center gap-3">
           <div className="flex items-center gap-2 rounded-full border border-black/[0.08] bg-white/90 px-3.5 py-1.5 shadow-sm backdrop-blur dark:border-white/[0.12] dark:bg-white/[0.06]">
             <span className="relative flex h-1.5 w-1.5">
               <motion.span
@@ -102,34 +113,83 @@ export default function Hero() {
           </span>
         </motion.div>
 
-        <div className="grid flex-1 items-center gap-10 lg:grid-cols-12 xl:gap-12">
+        <div className="grid flex-1 items-center gap-7 lg:grid-cols-12 xl:gap-9">
           <div className="relative z-10 lg:col-span-5">
             <motion.h1
               {...enter(0.06)}
-              className="mb-4 max-w-[540px] text-balance text-[34px] font-bold leading-[1.08] tracking-[-0.03em] text-[#0B0F14] dark:text-white sm:text-[42px] lg:text-[42px] xl:text-[50px]"
+              className="mb-3 max-w-[540px] text-balance text-[34px] font-bold leading-[1.04] tracking-[-0.03em] text-[#0B0F14] dark:text-white sm:text-[40px] lg:text-[40px] xl:text-[48px]"
             >
               {copy.titleLead}{" "}
               <span className="hero-accent">{copy.titleAccent}</span>
             </motion.h1>
 
-            <motion.p
-              {...enter(0.12)}
-              className="mb-6 max-w-[520px] text-[15px] leading-[1.6] text-[#4B5563] dark:text-slate-400 lg:text-[16px]"
-            >
-              {copy.description}
-            </motion.p>
+            <motion.div {...enter(0.12)} className="mb-4 min-h-[106px] max-w-[520px]">
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={activeBot?.slug ?? "default"}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: reduceMotion ? 0 : 0.3 }}
+                >
+                  {activeBot ? (
+                    <>
+                      <div className="mb-2 flex items-center gap-2">
+                        <span
+                          className="h-2 w-2 rounded-full"
+                          style={{ backgroundColor: activeBot.color, boxShadow: `0 0 9px ${activeBot.color}` }}
+                        />
+                        <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">
+                          {activeBot.name}
+                        </span>
+                        <span className="text-[11px] font-bold tabular-nums text-emerald-500">
+                          {headlineReturn(activeBot)}
+                        </span>
+                      </div>
+                      <p className="text-[15px] leading-[1.6] text-[#4B5563] dark:text-slate-400 lg:text-[16px]">
+                        {activeBot.shortDesc}
+                      </p>
+                    </>
+                  ) : (
+                    <p className="text-[15px] leading-[1.6] text-[#4B5563] dark:text-slate-400 lg:text-[16px]">
+                      {copy.description}
+                    </p>
+                  )}
+                </motion.div>
+              </AnimatePresence>
+            </motion.div>
 
             {chips.length > 0 && (
-              <motion.div {...enter(0.18)} className="mb-6">
-                <div className="mb-2.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-400 dark:text-slate-500">
-                  {copy.chipsLabel}
+              <motion.div {...enter(0.18)} className="mb-4">
+                <div className="mb-2.5 flex items-center justify-between">
+                  <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-400 dark:text-slate-500">
+                    {copy.chipsLabel}
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    {chips.map((bot, index) => (
+                      <button
+                        key={bot.slug}
+                        type="button"
+                        aria-label={`${bot.name}: показать описание`}
+                        onClick={() => setActiveBotIndex(index)}
+                        className={`h-1.5 rounded-full transition-all duration-300 ${
+                          index === activeBotIndex % chips.length ? "w-7 bg-emerald-500" : "w-1.5 bg-slate-300 dark:bg-slate-700"
+                        }`}
+                      />
+                    ))}
+                  </div>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {chips.map((bot) => (
-                    <a
+                  {chips.map((bot, index) => (
+                    <button
                       key={bot.slug}
-                      href="#bots"
-                      className="group flex items-center gap-2 rounded-xl border border-black/[0.07] bg-white/80 px-3 py-2 backdrop-blur transition-all duration-200 hover:-translate-y-0.5 hover:border-black/[0.14] hover:shadow-[0_10px_26px_-12px_rgba(15,23,42,0.35)] dark:border-white/[0.1] dark:bg-white/[0.05] dark:hover:border-white/20"
+                      type="button"
+                      onClick={() => setActiveBotIndex(index)}
+                      className={`group flex items-center gap-2 rounded-xl border px-3 py-2 text-left backdrop-blur transition-all duration-200 hover:-translate-y-0.5 ${
+                        index === activeBotIndex % chips.length
+                          ? "border-emerald-400/50 bg-emerald-50/90 shadow-[0_8px_24px_-14px_rgba(16,185,129,0.7)] dark:border-emerald-400/40 dark:bg-emerald-400/10"
+                          : "border-black/[0.07] bg-white/80 hover:border-black/[0.14] hover:shadow-[0_10px_26px_-12px_rgba(15,23,42,0.35)] dark:border-white/[0.1] dark:bg-white/[0.05] dark:hover:border-white/20"
+                      }`}
                     >
                       <span
                         className="h-2 w-2 shrink-0 rounded-full"
@@ -141,16 +201,16 @@ export default function Hero() {
                       <span className="text-[11.5px] font-bold tabular-nums text-emerald-500">
                         {headlineReturn(bot)}
                       </span>
-                    </a>
+                    </button>
                   ))}
                 </div>
               </motion.div>
             )}
 
-            <motion.div {...enter(0.24)} className="mb-5 flex flex-col gap-3 sm:flex-row">
+            <motion.div {...enter(0.24)} className="mb-3 flex flex-col gap-2.5 sm:flex-row">
               <a
                 href="#bots"
-                className="group inline-flex h-[50px] items-center justify-center gap-2 rounded-xl bg-emerald-500 px-7 text-[14px] font-semibold text-white shadow-[0_12px_32px_-12px_rgba(16,185,129,0.75)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-emerald-600 hover:shadow-[0_18px_38px_-12px_rgba(16,185,129,0.85)]"
+                className="group inline-flex h-[46px] items-center justify-center gap-2 rounded-xl bg-emerald-500 px-7 text-[14px] font-semibold text-white shadow-[0_12px_32px_-12px_rgba(16,185,129,0.75)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-emerald-600 hover:shadow-[0_18px_38px_-12px_rgba(16,185,129,0.85)]"
               >
                 {copy.primary}
                 <ArrowRight
@@ -161,7 +221,7 @@ export default function Hero() {
               </a>
               <a
                 href="#how"
-                className="inline-flex h-[50px] items-center justify-center rounded-xl border border-black/10 px-7 text-[14px] font-medium text-[#0B0F14] transition-colors hover:bg-black/[0.03] dark:border-white/15 dark:text-white dark:hover:bg-white/[0.06]"
+                className="inline-flex h-[46px] items-center justify-center rounded-xl border border-black/10 px-7 text-[14px] font-medium text-[#0B0F14] transition-colors hover:bg-black/[0.03] dark:border-white/15 dark:text-white dark:hover:bg-white/[0.06]"
               >
                 <BookOpen size={16} className="mr-2 opacity-50" />
                 {copy.secondary}
@@ -189,7 +249,7 @@ export default function Hero() {
           </div>
         </div>
 
-        <div className="mt-6 shrink-0">
+        <div className="mt-4 shrink-0">
           <MetricsStrip />
         </div>
       </div>
