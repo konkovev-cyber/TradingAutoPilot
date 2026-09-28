@@ -44,10 +44,7 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-10 mb-12">
           <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <img src="/logo.png" alt="Trading Auto Pilot" className="h-9 w-auto rounded-lg" />
-              <span className="text-lg font-bold text-gray-900 dark:text-white">Trading Auto Pilot</span>
-            </div>
+            <img src="/logo.png" alt="Trading Auto Pilot" className="h-11 w-auto" />
             <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{t("footer.desc")}</p>
           </div>
 

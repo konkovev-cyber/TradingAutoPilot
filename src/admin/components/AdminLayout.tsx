@@ -38,9 +38,7 @@ export default function AdminLayout() {
       >
         <div className="p-6 border-b border-gray-800">
           <Link to="/" className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-brand-blue rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-xl">C</span>
-            </div>
+            <img src="/logo.png" alt="Trading Auto Pilot" className="h-10 w-auto" />
             <div>
               <div className="text-white font-bold">Trading Auto Pilot</div>
               <div className="text-xs text-gray-500">Панель управления</div>

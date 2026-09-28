@@ -1,12 +1,33 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-labelledby="favicon-title">
+  <title id="favicon-title">TAP</title>
   <defs>
-    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#00FFB2"/>
-      <stop offset="100%" stop-color="#00D4FF"/>
+    <linearGradient id="f-frame" x1="10" y1="6" x2="54" y2="58" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#19C5FF" />
+      <stop offset="1" stop-color="#00F08B" />
     </linearGradient>
+    <linearGradient id="f-blue" x1="12" y1="14" x2="38" y2="50" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#19C5FF" />
+      <stop offset="1" stop-color="#1986FF" />
+    </linearGradient>
+    <linearGradient id="f-green" x1="22" y1="48" x2="54" y2="12" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#00D98A" />
+      <stop offset="1" stop-color="#72FF9B" />
+    </linearGradient>
+    <filter id="f-glow">
+      <feGaussianBlur stdDeviation="1.5" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
   </defs>
-  <rect width="64" height="64" rx="14" fill="#0A0E17"/>
-  <path d="M16 40 L24 28 L32 34 L40 20 L48 26" stroke="url(#g)" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="48" cy="26" r="4" fill="#00FFB2"/>
-  <circle cx="16" cy="40" r="3" fill="#00D4FF" opacity="0.6"/>
+  <rect x="2" y="2" width="60" height="60" rx="16" fill="#07111C" stroke="url(#f-frame)" stroke-opacity=".32" stroke-width="1.2" />
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round" filter="url(#f-glow)">
+    <path d="M10 16h21M20.5 16v32" stroke="url(#f-blue)" stroke-width="3.6" />
+    <path d="M25 48 33 18l9 30M28 37h11" stroke="url(#f-blue)" stroke-width="3.6" />
+    <path d="M40 18h6.5c10 0 10 15.3 0 15.3H40v14.7" stroke="url(#f-blue)" stroke-width="3.6" />
+    <path d="m20 46 11-11 6 5 16-27" stroke="url(#f-green)" stroke-width="4" />
+    <path d="m53 13 1 13M54 13 40 17" stroke="url(#f-green)" stroke-width="4" />
+  </g>
+  <circle cx="54" cy="13" r="2" fill="#72FF9B" />
 </svg>
