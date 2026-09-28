@@ -40,7 +40,7 @@ export function TradingTerminal() {
       <motion.div
         aria-hidden="true"
         className="absolute -inset-5 rounded-[36px] bg-[radial-gradient(ellipse_at_center,rgba(0,185,107,0.18),rgba(37,99,235,0.08)_38%,transparent_72%)] blur-2xl"
-        animate={{ opacity: [0.55, 0.85, 0.55], scale: [0.98, 1.02, 0.98] }}
+        animate={{ opacity: [0.55, 0.85, 0.55] }}
         transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
       />
 
@@ -64,10 +64,8 @@ export function TradingTerminal() {
             </div>
           </div>
 
-          <motion.div
-            animate={{ boxShadow: ["0 0 0 rgba(0,185,107,0)", "0 0 22px rgba(0,185,107,0.18)", "0 0 0 rgba(0,185,107,0)"] }}
-            transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-            className="flex shrink-0 items-center gap-1.5 rounded-md border border-[#00B96B]/20 bg-[rgba(0,185,107,0.1)] px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-[#00D084]"
+          <div
+            className="flex shrink-0 items-center gap-1.5 rounded-md border border-[#00B96B]/25 bg-[rgba(0,185,107,0.12)] px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-[#00D084] shadow-[0_0_18px_rgba(0,185,107,0.12)]"
           >
             <span className="relative flex h-1.5 w-1.5">
               <motion.span
@@ -78,7 +76,7 @@ export function TradingTerminal() {
               <span className="relative h-1.5 w-1.5 rounded-full bg-[#00D084]" />
             </span>
             LIVE
-          </motion.div>
+          </div>
         </header>
 
         <div className="relative z-10 min-h-0 flex-1" role="img" aria-label="График доходности портфеля с двумя просадками и тремя отметками сделок">
@@ -132,18 +130,6 @@ export function TradingTerminal() {
               transition={{ duration: 1.8, delay: 0.35, ease: "easeOut" }}
             />
 
-            <motion.line
-              x1="20"
-              x2="20"
-              y1="24"
-              y2="220"
-              stroke="#75F5C1"
-              strokeWidth="1"
-              opacity="0"
-              animate={{ x1: [20, 580], x2: [20, 580], opacity: [0, 0.35, 0] }}
-              transition={{ duration: 4.5, delay: 1.2, repeat: Infinity, ease: "easeInOut" }}
-            />
-
             {markers.map(({ x, y, label, color, background }, index) => (
               <motion.g
                 key={`${label}-${x}`}
@@ -161,10 +147,11 @@ export function TradingTerminal() {
             <motion.circle
               cx="580"
               cy="30"
+              r="9"
               fill="none"
               stroke="#00D084"
               strokeWidth="1"
-              animate={{ r: [8, 15, 8], opacity: [0.5, 0, 0.5] }}
+              animate={{ opacity: [0.5, 0, 0.5] }}
               transition={{ duration: 2.2, repeat: Infinity, ease: "easeOut" }}
             />
             <circle cx="580" cy="30" r="6" fill="#00D084" opacity="0.22" />

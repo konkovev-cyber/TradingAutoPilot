@@ -65,15 +65,10 @@ export default function Hero() {
           className="absolute inset-0 opacity-[0.03] dark:opacity-[0.07]"
           style={{ backgroundImage: "radial-gradient(circle, #0B0F14 1px, transparent 1px)", backgroundSize: "24px 24px" }}
         />
-        <motion.div
-          className="absolute -right-40 -top-48 h-[760px] w-[760px] rounded-full bg-[radial-gradient(circle,rgba(16,185,129,0.16),rgba(37,99,235,0.08)_35%,transparent_70%)] blur-3xl dark:opacity-90"
-          animate={{ x: [0, -28, 0], y: [0, 24, 0], scale: [1, 1.06, 1] }}
-          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute -bottom-64 left-1/3 h-[560px] w-[560px] rounded-full bg-[radial-gradient(circle,rgba(16,185,129,0.09),transparent_68%)] blur-3xl dark:opacity-90"
-          animate={{ x: [0, 35, 0], opacity: [0.55, 0.9, 0.55] }}
-          transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
+        <div className="hero-blob absolute -right-40 -top-48 h-[760px] w-[760px] rounded-full bg-[radial-gradient(circle,rgba(16,185,129,0.16),rgba(37,99,235,0.08)_35%,transparent_70%)] blur-3xl" />
+        <div
+          className="hero-blob absolute -bottom-64 left-1/3 h-[560px] w-[560px] rounded-full bg-[radial-gradient(circle,rgba(16,185,129,0.09),transparent_68%)] blur-3xl"
+          style={{ animationDelay: "-7s" }}
         />
       </div>
 
@@ -84,7 +79,7 @@ export default function Hero() {
           transition={{ duration: 0.45 }}
           className="mb-6 flex shrink-0 items-center gap-3"
         >
-          <div className="flex items-center gap-2 rounded-full border border-black/[0.08] bg-white/80 px-3.5 py-1.5 shadow-sm backdrop-blur-md dark:border-white/[0.12] dark:bg-white/[0.06]">
+          <div className="flex items-center gap-2 rounded-full border border-black/[0.08] bg-white/90 px-3.5 py-1.5 shadow-sm dark:border-white/[0.12] dark:bg-white/[0.06]">
             <span className="relative flex h-1.5 w-1.5">
               <motion.span
                 animate={{ scale: [1, 2.4, 1], opacity: [0.65, 0, 0.65] }}
@@ -140,8 +135,8 @@ export default function Hero() {
                             <Fragment key={`${current.slug}-${i}`}>
                               <motion.span
                                 className="inline-block"
-                                initial={{ opacity: 0, y: 10, filter: "blur(6px)" }}
-                                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
                                 transition={{
                                   duration: reduceMotion ? 0 : 0.45,
                                   delay: reduceMotion ? 0 : 0.05 + i * 0.022,
