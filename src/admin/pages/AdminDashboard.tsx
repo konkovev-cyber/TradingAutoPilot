@@ -7,6 +7,7 @@ interface Lead {
   id: string;
   name: string;
   contact: string;
+  bot: string;
   message: string | null;
   status: string;
   created_at: string;
@@ -47,6 +48,7 @@ function statusStyle(status: string): string {
 export default function AdminDashboard() {
   const [stats, setStats] = useState<Stats>({ totalLeads: 0, newLeads: 0, botsCount: null, todayLeads: 0, views7d: 0, viewsTotal: null });
   const [recentLeads, setRecentLeads] = useState<Lead[]>([]);
+  const [allLeads, setAllLeads] = useState<Lead[]>([]);
   const [viewsChart, setViewsChart] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -104,6 +106,7 @@ try {
       views7d: views.length,
       viewsTotal: totalViewsRes.count,
     });
+    setAllLeads(leads);
     setRecentLeads(leads.slice(0, 5));
     setError(null);
 } catch (e) {
@@ -242,6 +245,82 @@ ON CONFLICT (user_id) DO UPDATE SET role = 'admin';`}
             ))}
           </div>
         )}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
+          <div className="mb-4">
+            <h2 className="text-xl font-bold text-white">Воронка обработки заявок</h2>
+            <p className="text-gray-500 text-xs mt-0.5">Сколько заявок на каждом этапе</p>
+          </div>
+          {allLeads.length === 0 ? (
+            <div className="text-gray-500 text-center py-8">Пока нет заявок.</div>
+          ) : (
+            <div className="space-y-3">
+              {(["new", "read", "replied", "converted"] as const).map((status) => {
+                const count = allLeads.filter((l) => l.status === status).length;
+                const pct = Math.round((count / allLeads.length) * 100);
+                return (
+                  <div key={status}>
+                    <div className="flex items-center justify-between text-sm mb-1">
+                      <span className="flex items-center gap-2 text-gray-300">
+                        <span className={`h-2 w-2 rounded-full ${statusStyle(status).split(" ")[0].replace("bg-", "bg-")}`} />
+                        {STATUS_LABELS[status]}
+                      </span>
+                      <span className="text-gray-400 tabular-nums text-sm">
+                        {count} · {pct}%
+                      </span>
+                    </div>
+                    <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full rounded-full transition-all duration-500 ${statusStyle(status).split(" ")[0].replace("/10", "")}`}
+                        style={{ width: `${Math.max(2, pct)}%`, opacity: 0.7 }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+              <div className="pt-2 border-t border-gray-800 text-xs text-gray-500">
+                Конверсия в покупку: {allLeads.length > 0 ? Math.round((allLeads.filter((l) => l.status === "converted").length / allLeads.length) * 100) : 0}% от всех заявок
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
+          <div className="mb-4">
+            <h2 className="text-xl font-bold text-white">Заявки по роботам</h2>
+            <p className="text-gray-500 text-xs mt-0.5">Какой робот интересует чаще всего</p>
+          </div>
+          {(() => {
+            const byBot = new Map<string, number>();
+            allLeads.forEach((l) => {
+              const key = l.bot && l.bot.trim() !== "" ? l.bot : "не указан";
+              byBot.set(key, (byBot.get(key) ?? 0) + 1);
+            });
+            const rows = [...byBot.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
+            const max = Math.max(1, ...rows.map(([, c]) => c));
+            if (rows.length === 0) return <div className="text-gray-500 text-center py-8">Пока нет заявок.</div>;
+            return (
+              <div className="space-y-3">
+                {rows.map(([bot, count]) => (
+                  <div key={bot}>
+                    <div className="flex items-center justify-between text-sm mb-1">
+                      <span className="text-gray-300 truncate pr-2">{bot}</span>
+                      <span className="text-gray-400 tabular-nums shrink-0">{count}</span>
+                    </div>
+                    <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+                      <div
+                        className="h-full rounded-full bg-brand-blue transition-all duration-500"
+                        style={{ width: `${Math.max(4, (count / max) * 100)}%`, opacity: 0.7 }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            );
+          })()}
+        </div>
       </div>
 
       <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">

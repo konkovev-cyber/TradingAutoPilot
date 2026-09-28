@@ -129,7 +129,7 @@ export default function Header() {
             <a
               href="#bots"
               onClick={(e) => handleAnchor(e, "/#bots")}
-              className="hidden sm:inline-flex px-5 py-2.5 border border-[#2563EB]/30 bg-transparent text-[#2563EB] text-sm font-semibold rounded-lg hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-colors"
+              className="hidden sm:inline-flex px-5 py-2.5 border border-blue-500/40 bg-blue-500/10 text-blue-600 dark:text-blue-200 dark:border-blue-300/30 dark:bg-blue-400/10 text-sm font-semibold rounded-lg hover:bg-blue-500/20 dark:hover:bg-blue-400/20 transition-colors cursor-pointer"
             >
               {c("nav", "cta", lang === "en" ? "View bots" : "Смотреть роботов")}
             </a>
@@ -160,7 +160,7 @@ export default function Header() {
             <a
               href="#bots"
               onClick={(e) => handleAnchor(e, "/#bots")}
-              className="block w-full text-center px-5 py-2.5 border border-[#2563EB]/30 bg-transparent text-[#2563EB] text-sm font-semibold rounded-lg"
+              className="block w-full text-center px-5 py-2.5 border border-blue-500/40 bg-blue-500/10 text-blue-600 dark:text-blue-200 dark:border-blue-300/30 dark:bg-blue-400/10 text-sm font-semibold rounded-lg cursor-pointer"
             >
               {c("nav", "cta", lang === "en" ? "View bots" : "Смотреть роботов")}
             </a>

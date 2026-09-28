@@ -19,6 +19,8 @@ interface Bot {
   pairs: string;
   color: string;
   image_url: string | null;
+  difficulty?: string;
+  difficulty_tone?: string;
   features?: Json;
   returns?: Json;
   how_it_works?: Json;
@@ -28,9 +30,16 @@ interface Bot {
 type ReturnRow = { period: string; value: string };
 type StepRow = { title: string; desc: string };
 
+const DIFFICULTIES = [
+  { label: "Для новичков", tone: "starter" },
+  { label: "Для продвинутых", tone: "advanced" },
+  { label: "Высокий риск / высокая награда", tone: "aggressive" },
+] as const;
+
 const initialBot: Bot = {
   slug: "", name: "", slogan: "", shortDesc: "", badge: "",
-  market: "", strategy: "", risk: "", pairs: "", color: "#3b82f6", image_url: null
+  market: "", strategy: "", risk: "", pairs: "", color: "#3b82f6", image_url: null,
+  difficulty: "", difficulty_tone: ""
 };
 
 export default function AdminBots() {
@@ -172,6 +181,44 @@ export default function AdminBots() {
           <input placeholder="Слоган  короткая фраза под названием" value={editing.slogan} onChange={(e) => setEditing({ ...editing, slogan: e.target.value })} className={`${inputCls} w-full`} />
           <textarea placeholder="Краткое описание  1-2 предложения" value={editing.shortDesc} onChange={(e) => setEditing({ ...editing, shortDesc: e.target.value })} className={`${inputCls} w-full`} rows={3} />
           <input placeholder="Риск  описание уровня риска" value={editing.risk} onChange={(e) => setEditing({ ...editing, risk: e.target.value })} className={`${inputCls} w-full`} />
+
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Уровень сложности (бейдж на карточке)</label>
+              <select
+                value={editing.difficulty ?? ""}
+                onChange={(e) => {
+                  const d = DIFFICULTIES.find((x) => x.label === e.target.value);
+                  setEditing({ ...editing, difficulty: e.target.value, difficulty_tone: d?.tone ?? "" });
+                }}
+                className={`${inputCls} w-full appearance-none cursor-pointer`}
+                aria-label="Уровень сложности"
+              >
+                <option value="">Не указан</option>
+                {DIFFICULTIES.map((d) => (
+                  <option key={d.tone} value={d.label}>{d.label}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Цвет робота (точки, иконки, чипы)</label>
+              <div className="flex items-center gap-3">
+                <input
+                  type="color"
+                  value={/^#[0-9a-fA-F]{6}$/.test(editing.color) ? editing.color : "#3b82f6"}
+                  onChange={(e) => setEditing({ ...editing, color: e.target.value })}
+                  className="h-10 w-14 rounded-lg border border-gray-700 bg-gray-800 cursor-pointer"
+                  aria-label="Цвет робота"
+                />
+                <input
+                  value={editing.color}
+                  onChange={(e) => setEditing({ ...editing, color: e.target.value })}
+                  placeholder="#3b82f6"
+                  className={inputCls + " flex-1"}
+                />
+              </div>
+            </div>
+          </div>
 
           <div className="grid md:grid-cols-3 gap-4">
             <div>

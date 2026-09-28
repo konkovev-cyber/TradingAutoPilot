@@ -51,6 +51,8 @@ function toBotData(row: Json): BotData {
     color,
     colorDim: stat?.colorDim ?? "rgba(59, 130, 246, 0.12)",
     imageUrl: row?.image_url ? String(row.image_url) : undefined,
+    difficulty: String(row?.difficulty ?? stat?.difficulty ?? ""),
+    difficultyTone: (String(row?.difficulty_tone ?? stat?.difficultyTone ?? "starter") as BotData["difficultyTone"]),
   };
 }
 
