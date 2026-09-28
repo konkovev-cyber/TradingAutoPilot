@@ -144,9 +144,9 @@ export default function AdminSettings() {
     return (
       <div className="space-y-3">
         <FieldInput label="Title (заголовок вкладки)" value={String(d.title ?? "")}
-          onChange={(v) => updateData("meta", { ...d, title: v })} multiline placeholder="Coinsofter  Торговые роботы..." />
+          onChange={(v) => updateData("meta", { ...d, title: v })} multiline placeholder="Trading Auto Pilot  Торговые роботы..." />
         <FieldInput label="Description (описание для поисковиков)" value={String(d.description ?? "")}
-          onChange={(v) => updateData("meta", { ...d, description: v })} multiline placeholder="Coinsofter  интеллектуальные торговые роботы..." />
+          onChange={(v) => updateData("meta", { ...d, description: v })} multiline placeholder="Trading Auto Pilot  интеллектуальные торговые роботы..." />
       </div>
     );
   };

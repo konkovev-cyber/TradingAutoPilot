@@ -1,6 +1,6 @@
 import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from "framer-motion";
 import { Activity, Bot, BrainCircuit, Globe2, ShieldCheck, Sparkles, TrendingUp, Zap } from "lucide-react";
-import { useCallback, useId, useMemo, useRef } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 
 interface Pt { x: number; y: number }
 
@@ -38,7 +38,6 @@ const CRYPTO_POINTS: Pt[] = [
 
 const TOOLTIPS = [
   { index: 4, label: "+4.2%", color: "#34D399" },
-  { index: 7, label: "Long: BTC/USDT", color: "#60A5FA" },
   { index: 10, label: "AI Rebalance", color: "#C084FC" },
 ] as const;
 
@@ -69,6 +68,17 @@ export function TradingTerminal() {
   const reduceMotion = useReducedMotion();
   const id = useId().replace(/:/g, "");
   const wrapRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
+  const motionOn = !reduceMotion && !isMobile;
 
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
@@ -78,14 +88,14 @@ export function TradingTerminal() {
 
   const handleMove = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
-      if (reduceMotion) return;
+      if (!motionOn) return;
       const el = wrapRef.current;
       if (!el) return;
       const r = el.getBoundingClientRect();
       mx.set((e.clientX - r.left) / r.width - 0.5);
       my.set((e.clientY - r.top) / r.height - 0.5);
     },
-    [mx, my, reduceMotion]
+    [mx, my, motionOn]
   );
 
   const handleLeave = useCallback(() => {
@@ -119,7 +129,7 @@ export function TradingTerminal() {
         className="absolute -inset-10 rounded-[64px] blur-3xl"
         style={{
           background:
-            "radial-gradient(ellipse at 32% 24%, rgba(16,185,129,0.28), transparent 58%), radial-gradient(ellipse at 78% 84%, rgba(99,102,241,0.24), transparent 58%)",
+            "radial-gradient(ellipse at 32% 24%, rgba(16,185,129,0.34), transparent 58%), radial-gradient(ellipse at 78% 84%, rgba(99,102,241,0.32), transparent 58%)",
         }}
       />
 
@@ -130,14 +140,14 @@ export function TradingTerminal() {
         className="relative"
       >
         <motion.div
-          animate={reduceMotion ? undefined : { y: [0, -14, 0] }}
+          animate={motionOn ? { y: [0, -14, 0] } : undefined}
           transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
         >
           <motion.div
-            style={reduceMotion ? undefined : { rotateX, rotateY, transformStyle: "preserve-3d" }}
+            style={motionOn ? { rotateX, rotateY, transformStyle: "preserve-3d" } : undefined}
             className="relative"
           >
-            <div className="relative overflow-hidden rounded-[28px] border border-white/[0.14] bg-[#0B0C15]/70 shadow-[0_50px_120px_-40px_rgba(2,6,23,0.95)] backdrop-blur-xl">
+            <div className="relative overflow-hidden rounded-[28px] border border-white/[0.14] bg-[#0B0C15] shadow-[0_30px_90px_-30px_rgba(79,70,229,0.45)]">
               <div
                 aria-hidden="true"
                 className="pointer-events-none absolute inset-0"
@@ -202,10 +212,6 @@ export function TradingTerminal() {
                       <feGaussianBlur stdDeviation="5" />
                     </filter>
                   </defs>
-
-                  {[64, 124, 184].map((y) => (
-                    <line key={y} x1="24" x2="596" y1={y} y2={y} stroke="rgba(255,255,255,0.05)" strokeWidth="1" strokeDasharray="4 7" />
-                  ))}
 
                   <path d={stockArea} fill={`url(#${stockAreaId})`} />
                   <path d={cryptoArea} fill={`url(#${cryptoAreaId})`} />
@@ -341,7 +347,7 @@ export function TradingTerminal() {
               </footer>
             </div>
 
-            {!reduceMotion && (
+            {motionOn && (
               <div style={{ transform: "translateZ(60px)" }} className="pointer-events-none absolute inset-0">
                 <motion.div
                   initial={{ opacity: 0, y: 12 }}
