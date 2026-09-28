@@ -213,3 +213,31 @@
   min-height: 100vh;
   min-height: 100svh;
 }
+
+/* Акцентная часть заголовка hero: зелёный градиент с бегущим бликом */
+.hero-accent {
+  background: linear-gradient(105deg, #00B96B 0%, #34D399 30%, #00D084 50%, #34D399 70%, #00B96B 100%);
+  background-size: 220% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  filter: drop-shadow(0 0 22px rgba(0, 185, 107, 0.28));
+  animation: hero-accent-shimmer 10s linear infinite;
+}
+
+@keyframes hero-accent-shimmer {
+  from { background-position: 0% center; }
+  to { background-position: 220% center; }
+}
+
+/* Прогресс авто-ротации описаний роботов (совпадает с таймером 5.5s) */
+.hero-progress {
+  transform-origin: left center;
+  animation: hero-progress-fill 5.5s linear forwards;
+}
+
+@keyframes hero-progress-fill {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
