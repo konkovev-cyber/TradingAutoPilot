@@ -1,5 +1,6 @@
 ﻿import { useState } from "react";
 import { useI18n } from "@/lib/i18n";
+import { bots } from "@/data/bots";
 
 export default function Calculator() {
   const { t } = useI18n();
@@ -7,8 +8,11 @@ export default function Calculator() {
   const [term, setTerm] = useState(6);
   const [botIdx, setBotIdx] = useState(0);
 
-  const botReturns = [0.712, 0.964, 1.182]; // Annual returns for 3 bots
-  const annualRate = botReturns[botIdx];
+  const botReturns = bots.map((b) => {
+    const last = b.returns[b.returns.length - 1];
+    return parseFloat(last?.value.replace(/[+%]/g, "")) ?? 0;
+  });
+  const annualRate = botReturns[botIdx] ?? 0;
   const monthlyRate = Math.pow(1 + annualRate, 1/12) - 1;
   const finalAmount = deposit * Math.pow(1 + monthlyRate, term);
   const profit = finalAmount - deposit;
@@ -48,17 +52,17 @@ export default function Calculator() {
             <div>
               <label className="text-sm font-medium text-gray-700 dark:text-gray-300 block mb-4">{t("calculator.bot")}</label>
               <div className="grid grid-cols-3 gap-2">
-                {["CryptoSuperStock", "MEGAGRID", "SMARTIX"].map((name, i) => (
+                {bots.map((bot, i) => (
                   <button
-                    key={name}
+                    key={bot.slug}
                     onClick={() => setBotIdx(i)}
-                    className={`py-2 px-3 text-xs font-semibold rounded-lg border transition-all ${
-                      botIdx === i 
-                      ? "bg-brand-blue text-white border-brand-blue" 
+                    className={`py-2 px-1.5 text-[10px] font-semibold rounded-lg border transition-all text-center break-words leading-tight ${
+                      botIdx === i
+                      ? "bg-brand-blue text-white border-brand-blue"
                       : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:border-brand-blue"
                     }`}
                   >
-                    {name}
+                    {bot.name}
                   </button>
                 ))}
               </div>
