@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Trading Auto Pilot &#x2014; Торговые роботы для крипты и акций</title>
     <meta name="description" content="Trading Auto Pilot &#x2014; интеллектуальные торговые роботы для криптовалют и акций. Автоматическая торговля 24/7 через API.">
-    <meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#080D16" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)" />
     <meta property="og:site_name" content="Trading Auto Pilot" />
     <meta property="og:locale" content="ru_RU" />
     <meta property="og:type" content="website" />
@@ -27,7 +27,7 @@
       (function() {
         try {
           var theme = localStorage.getItem("coinsofter-theme");
-          if (theme !== "dark" && theme !== "light") theme = "light";
+          if (theme !== "dark" && theme !== "light") theme = "dark";
           if (theme === "dark") document.documentElement.classList.add("dark");
           document.documentElement.setAttribute("data-theme", theme);
         } catch (e) {}

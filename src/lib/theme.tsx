@@ -12,7 +12,7 @@ const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 function getInitialTheme(): Theme {
   const saved = localStorage.getItem("coinsofter-theme");
   if (saved === "dark" || saved === "light") return saved;
-  return "light"; // светлая тема по умолчанию
+  return "dark"; // тёмная тема по умолчанию
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
