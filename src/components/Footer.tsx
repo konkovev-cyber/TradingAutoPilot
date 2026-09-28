@@ -1,36 +1,14 @@
 ﻿import { Link } from "react-router-dom";
 import { bots } from "@/data/bots";
 import { useI18n } from "@/lib/i18n";
-import {
-  BingxIcon,
-  BinanceIcon,
-  BitfinexIcon,
-  BitgetIcon,
-  BybitIcon,
-  CoinbaseIcon,
-  GateIcon,
-  HtxIcon,
-  KrakenIcon,
-  KucoinIcon,
-  MexcIcon,
-  OkxIcon,
-  WhitebitIcon,
-} from "./ExchangeIcons";
+import { BingxIcon, BinanceIcon, BybitIcon, MexcIcon, OkxIcon } from "./ExchangeIcons";
 
 const exchanges = [
   { name: "BYBIT", Icon: BybitIcon },
   { name: "Binance", Icon: BinanceIcon },
   { name: "OKX", Icon: OkxIcon },
   { name: "BingX", Icon: BingxIcon },
-  { name: "Gate.io", Icon: GateIcon },
-  { name: "HTX", Icon: HtxIcon },
-  { name: "Bitget", Icon: BitgetIcon },
-  { name: "KuCoin", Icon: KucoinIcon },
-  { name: "Bitfinex", Icon: BitfinexIcon },
-  { name: "Kraken", Icon: KrakenIcon },
   { name: "MEXC", Icon: MexcIcon },
-  { name: "Coinbase", Icon: CoinbaseIcon },
-  { name: "WhiteBIT", Icon: WhitebitIcon },
 ];
 
 export default function Footer() {
