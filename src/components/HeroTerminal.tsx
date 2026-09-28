@@ -1,28 +1,28 @@
-import { motion } from "framer-motion";
+﻿import { motion } from "framer-motion";
 import { useId } from "react";
 
 const months = ["Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"];
 
 // Иллюстративная кривая: данные статичны и не являются историей торгов.
 const curve = [
-  "M 20 240",
-  "C 38 239, 45 214, 60 220",
-  "C 76 225, 85 239, 100 235",
-  "C 122 230, 130 202, 150 200",
-  "C 170 197, 180 186, 200 180",
-  "C 226 170, 232 134, 250 130",
-  "C 268 127, 280 163, 300 165",
-  "C 322 165, 340 125, 360 120",
-  "C 385 116, 397 94, 420 90",
-  "C 445 84, 458 64, 480 60",
-  "C 505 54, 515 49, 540 45",
-  "C 558 42, 569 34, 580 30",
+  "M 20 220",
+  "C 38 219, 45 196, 60 202",
+  "C 76 207, 85 218, 100 216",
+  "C 122 211, 130 189, 150 184",
+  "C 170 181, 180 171, 200 166",
+  "C 226 157, 232 121, 250 120",
+  "C 268 117, 280 148, 300 152",
+  "C 322 152, 340 117, 360 111",
+  "C 385 107, 397 81, 420 84",
+  "C 445 78, 458 52, 480 57",
+  "C 505 51, 515 39, 540 34",
+  "C 558 31, 569 30, 580 30",
 ].join(" ");
 
 const markers = [
-  { x: 150, y: 200, label: "▲ BUY", color: "#00B96B", background: "rgba(0,185,107,0.25)" },
-  { x: 300, y: 165, label: "▼ SELL", color: "#FF5A5F", background: "rgba(255,77,77,0.25)" },
-  { x: 480, y: 60, label: "▲ BUY", color: "#00B96B", background: "rgba(0,185,107,0.25)" },
+  { x: 150, y: 184, label: " BUY", color: "#00B96B", background: "rgba(0,185,107,0.25)" },
+  { x: 300, y: 152, label: " SELL", color: "#FF5A5F", background: "rgba(255,77,77,0.25)" },
+  { x: 480, y: 57, label: " BUY", color: "#00B96B", background: "rgba(0,185,107,0.25)" },
 ] as const;
 
 export function TradingTerminal() {
@@ -44,7 +44,7 @@ export function TradingTerminal() {
         transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
       />
 
-      <div className="relative box-border flex h-[440px] min-w-0 flex-col gap-1 overflow-hidden rounded-[24px] border border-white/[0.12] bg-[#0F141C] p-5 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.55)] sm:p-7">
+      <div className="relative box-border flex h-[440px] min-w-0 flex-col overflow-hidden rounded-[24px] border border-white/[0.12] bg-[#0F141C] p-6 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.55)]">
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 rounded-[24px] opacity-90"
@@ -55,9 +55,9 @@ export function TradingTerminal() {
         />
         <div aria-hidden="true" className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-[#00B96B]/70 to-transparent" />
 
-        <header className="relative z-10 flex h-[52px] shrink-0 items-center justify-between border-b border-white/[0.08]">
+        <header className="relative z-10 flex h-[44px] shrink-0 items-center justify-between border-b border-white/[0.08]">
           <div className="min-w-0">
-            <p className="mb-1 text-[10px] font-medium uppercase tracking-[1px] text-[#8A8F99]">Доходность портфеля</p>
+            <p className="mb-0.5 text-[10px] font-medium uppercase tracking-[1px] text-[#8A8F99]">Доходность портфеля</p>
             <div className="flex items-baseline gap-2.5">
               <span className="text-[28px] font-bold leading-none tabular-nums text-[#00D084]">+96.4%</span>
               <span className="text-xs font-normal text-[#8A8F99]">за год</span>
@@ -81,17 +81,17 @@ export function TradingTerminal() {
           </motion.div>
         </header>
 
-        <div className="relative z-10 h-[280px] min-h-0 shrink-0" role="img" aria-label="График доходности портфеля с двумя просадками и тремя отметками сделок">
+        <div className="relative z-10 min-h-0 flex-1 pt-4" role="img" aria-label="График доходности портфеля с двумя просадками и тремя отметками сделок">
           <motion.div
             initial={{ opacity: 0, x: -8 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.8, duration: 0.5 }}
-            className="absolute left-0 top-3 z-10 hidden text-[10px] font-normal text-[#8A8F99] sm:block"
+            className="absolute left-0 top-4 z-10 hidden text-[10px] font-normal text-[#8A8F99] sm:block"
           >
-            Бэктест · 2024
+            Бэктест  2024
           </motion.div>
 
-          <svg className="block h-[280px] w-full" viewBox="0 0 600 300" preserveAspectRatio="none" aria-hidden="true">
+          <svg className="block h-full w-full" viewBox="0 0 600 240" preserveAspectRatio="none" aria-hidden="true">
             <defs>
               <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="#00B96B" stopOpacity="0.3" />
@@ -102,11 +102,11 @@ export function TradingTerminal() {
               </filter>
             </defs>
 
-            {[60, 120, 180, 240].map((y) => (
+            {[80, 160].map((y) => (
               <line key={y} x1="20" x2="580" y1={y} y2={y} stroke="rgba(255,255,255,0.02)" strokeWidth="1" />
             ))}
 
-            <path d={`${curve} L 580 300 L 20 300 Z`} fill={`url(#${gradientId})`} />
+            <path d={`${curve} L 580 240 L 20 240 Z`} fill={`url(#${gradientId})`} />
             <motion.path
               d={curve}
               fill="none"
@@ -136,7 +136,7 @@ export function TradingTerminal() {
               x1="20"
               x2="20"
               y1="24"
-              y2="262"
+              y2="220"
               stroke="#75F5C1"
               strokeWidth="1"
               opacity="0"
@@ -171,19 +171,20 @@ export function TradingTerminal() {
             <circle cx="580" cy="30" r="4" fill="#00D084" />
 
             {months.map((month, index) => (
-              <text key={month} x={20 + (560 / 11) * index} y="288" textAnchor="middle" fill="#8A8F99" fontSize="10">
+              <text key={month} x={20 + (560 / 11) * index} y="235" textAnchor="middle" fill="#8A8F99" fontSize="10">
                 {month}
               </text>
             ))}
           </svg>
         </div>
 
-        <footer className="relative z-10 flex h-[24px] shrink-0 items-center justify-between gap-2 text-[#8A8F99]">
-          <span className="whitespace-nowrap text-[10px] sm:text-[11px]">Макс. просадка −4.1% · Аптайм 99.9%</span>
+        <footer className="relative z-10 flex h-[28px] shrink-0 items-center justify-between gap-2 text-[#8A8F99]">
+          <span className="whitespace-nowrap text-[10px] sm:text-[11px]">
+            <span className="sm:hidden">4.1%  Аптайм 99.9%</span>
+            <span className="hidden sm:inline">Макс. просадка 4.1%  Аптайм 99.9%</span>
+          </span>
+          <span className="whitespace-nowrap text-right text-[9px] italic text-white/40 sm:text-[10px]">Demo  данные симулированы</span>
         </footer>
-        <div className="relative z-10 flex h-[14px] shrink-0 items-center justify-end text-right text-[10px] italic text-white/40">
-          Demo · данные симулированы
-        </div>
       </div>
     </motion.div>
   );
