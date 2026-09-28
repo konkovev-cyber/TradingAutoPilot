@@ -206,20 +206,3 @@
   margin-left: auto;
   margin-right: auto;
 }
-
-.hero {
-  min-height: 520px;   /* гарантия, что hero не схлопнется */
-  padding-top: 72px;   /* шапка (64px) + 8px воздуха */
-  padding-bottom: 40px; /* низ hero -> верх метрик = 40px */
-}
-
-.metrics {
-  margin-top: 0;       /* отступ уже задан padding-bottom hero */
-  margin-bottom: 0;
-}
-
-.robots {
-  margin-top: 0;       /* отступ задаётся только padding'ом */
-  padding-top: 80px;   /* метрики -> заголовок Три робота = 80px */
-  padding-bottom: 96px; /* низ секции -> верх следующей = 96px */
-}

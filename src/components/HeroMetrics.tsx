@@ -25,7 +25,7 @@ export function MetricsStrip() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.65, delay: 0.5 }}
-      className="metrics relative mx-auto w-full max-w-[1440px] px-6 lg:px-10 xl:px-14 2xl:px-16"
+      className="metrics relative w-full"
     >
       <div className="w-full overflow-hidden rounded-2xl border border-black/[0.06] bg-white/80 shadow-[0_18px_50px_rgba(15,23,42,0.08)] backdrop-blur-xl dark:border-white/[0.1] dark:bg-[#101722]/85 dark:shadow-[0_22px_65px_rgba(0,0,0,0.28)]">
         <div className="grid grid-cols-2 divide-x divide-y divide-black/[0.06] dark:divide-white/[0.08] lg:grid-cols-4 lg:divide-y-0">

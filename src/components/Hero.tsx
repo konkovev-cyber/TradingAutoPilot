@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, BookOpen, ShieldCheck, Zap } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { TradingTerminal } from "./HeroTerminal";
+import { MetricsStrip } from "./HeroMetrics";
 
 export default function Hero() {
   const { lang } = useI18n();
@@ -27,7 +28,7 @@ export default function Hero() {
       };
 
   return (
-    <section className="hero relative isolate box-border block min-h-[520px] w-full overflow-hidden bg-[#F8FAFC] pb-10 pt-[72px] dark:bg-[#080D16]">
+    <section className="hero relative isolate box-border block min-h-[520px] w-full overflow-hidden bg-[#F8FAFC] pb-12 pt-20 dark:bg-[#080D16] md:pt-24">
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
         <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.07]" style={{ backgroundImage: "radial-gradient(circle, #0B0F14 1px, transparent 1px)", backgroundSize: "24px 24px" }} />
         <motion.div
@@ -105,6 +106,10 @@ export default function Hero() {
           <div className="relative min-w-0">
             <TradingTerminal />
           </div>
+        </div>
+
+        <div className="mt-8">
+          <MetricsStrip />
         </div>
 
       </div>

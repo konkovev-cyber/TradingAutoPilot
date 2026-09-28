@@ -15,7 +15,7 @@ export default function Products() {
   const bots = useBots();
 
   return (
-    <section id="bots" className="robots relative block w-full bg-white transition-colors duration-300 dark:bg-gray-950">
+    <section id="bots" className="robots relative block w-full bg-white py-16 transition-colors duration-300 dark:bg-gray-950 md:py-20">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
