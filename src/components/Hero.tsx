@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ArrowRight, BookOpen, Sparkles, Zap } from "lucide-react";import { useI18n } from "@/lib/i18n";
+import { ArrowRight, BookOpen, ShieldCheck, Sparkles, Zap } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
 import { useBots } from "@/lib/use-bots";
 import type { BotData } from "@/data/bots";
 import { TradingTerminal } from "./HeroTerminal";
