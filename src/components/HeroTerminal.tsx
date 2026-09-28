@@ -1,5 +1,5 @@
 import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from "framer-motion";
-import { Activity, Bot, Globe2, Pause, Play, ShieldCheck, TrendingUp, Zap } from "lucide-react";
+import { Activity, Bot, Globe2, ShieldCheck, TrendingUp, Zap } from "lucide-react";
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { useTheme } from "@/lib/theme";
 
@@ -38,8 +38,8 @@ const CRYPTO_POINTS: Pt[] = [
 ];
 
 const TOOLTIPS = [
-  { index: 4, label: "+4.2%", color: "#34D399" },
-  { index: 10, label: "AI Rebalance", color: "#C084FC" },
+  { index: 4, label: "+4.2% сделка", color: "#34D399" },
+  { index: 10, label: "ИИ перестроил портфель", color: "#C084FC" },
 ] as const;
 
 function smoothPath(points: Pt[]): string {
@@ -72,7 +72,6 @@ export function TradingTerminal() {
   const id = useId().replace(/:/g, "");
   const wrapRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
-  const [paused, setPaused] = useState(false);
   const { theme } = useTheme();
 
   useEffect(() => {
@@ -84,14 +83,14 @@ export function TradingTerminal() {
   }, []);
 
   const motionOn = !reduceMotion && !isMobile;
-  const decorOn = motionOn && !paused;
+  const decorOn = motionOn;
   const pulseColor = theme === "dark" ? "#00E58F" : "#0080FF";
 
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
-  const springCfg = { stiffness: 90, damping: 18, mass: 0.6 };
-  const rotateY = useSpring(useTransform(mx, [-0.5, 0.5], [-10, 10]), springCfg);
-  const rotateX = useSpring(useTransform(my, [-0.5, 0.5], [6, -5]), springCfg);
+  const springCfg = { stiffness: 120, damping: 16, mass: 0.5 };
+  const rotateY = useSpring(useTransform(mx, [-0.5, 0.5], [-16, 16]), springCfg);
+  const rotateX = useSpring(useTransform(my, [-0.5, 0.5], [10, -8]), springCfg);
 
   const handleMove = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
@@ -155,10 +154,10 @@ export function TradingTerminal() {
             className="relative"
           >
             <div
-              className="absolute -top-3 right-0 z-20 flex items-center gap-2"
+              className="pointer-events-none absolute -top-3 right-0 z-20"
               style={{ transform: "translateZ(50px)" }}
             >
-              <div className={`${chipCls} pointer-events-none !py-1.5`}>
+              <div className={`${chipCls} !py-1.5`}>
                 <span className="relative flex h-1.5 w-1.5">
                   <motion.span
                     animate={decorOn ? { scale: [1, 2.5, 1], opacity: [0.8, 0, 0.8] } : undefined}
@@ -168,22 +167,9 @@ export function TradingTerminal() {
                   <span className="relative h-1.5 w-1.5 rounded-full bg-emerald-500" />
                 </span>
                 <span className="text-[9px] font-bold uppercase tracking-[0.14em] text-slate-600 dark:text-emerald-300">
-                  AI CORE ACTIVE
+                  ИИ торгует 24/7
                 </span>
               </div>
-              <button
-                type="button"
-                aria-label={paused ? "Возобновить анимацию графика" : "Приостановить анимацию графика"}
-                aria-pressed={paused}
-                onClick={() => setPaused((p) => !p)}
-                className={`${chipCls} cursor-pointer !px-2.5 transition-all duration-200 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/60`}
-              >
-                {paused ? (
-                  <Play size={14} className="text-emerald-500" />
-                ) : (
-                  <Pause size={14} className="text-slate-500 dark:text-slate-300" />
-                )}
-              </button>
             </div>
 
             <div
@@ -195,7 +181,7 @@ export function TradingTerminal() {
                   <TrendingUp size={14} />
                 </span>
                 <span>
-                  <span className="block text-[9px] font-bold tracking-[0.08em] text-slate-500 dark:text-slate-300">SHARES</span>
+                  <span className="block text-[9px] font-bold tracking-[0.08em] text-slate-500 dark:text-slate-300">АКЦИИ</span>
                   <span className="block text-[10px] font-semibold text-slate-700 dark:text-white">+71.2% за год</span>
                 </span>
               </div>
@@ -210,8 +196,8 @@ export function TradingTerminal() {
                   <ShieldCheck size={14} />
                 </span>
                 <span>
-                  <span className="block text-[9px] font-bold tracking-[0.08em] text-slate-500 dark:text-slate-300">RISK GUARD</span>
-                  <span className="block text-[10px] font-semibold text-slate-700 dark:text-white">Защищено</span>
+                  <span className="block text-[9px] font-bold tracking-[0.08em] text-slate-500 dark:text-slate-300">СТОП-ЛОСС</span>
+                  <span className="block text-[10px] font-semibold text-slate-700 dark:text-white">Защита средств</span>
                 </span>
               </div>
             </div>
@@ -393,15 +379,14 @@ export function TradingTerminal() {
                   <span className="text-[10px] text-slate-500 dark:text-slate-400">портфель за год</span>
                 </span>
                 <span className="hidden items-center gap-1 text-[10px] font-medium text-emerald-500 md:flex">
-                  <Zap size={12} /> 24/7
+                  <Zap size={12} /> Автопилот 24/7
                 </span>
               </div>
             </div>
 
-            {!motionOn && null}
             <div className="pointer-events-none absolute inset-x-0 bottom-2 hidden justify-center sm:flex">
               <span className="flex items-center gap-2 text-[9px] text-slate-400 dark:text-slate-500">
-                <Activity size={11} className="text-emerald-500" /> Наведи курсор — график оживёт
+                <Activity size={11} className="text-emerald-500" /> Двигайте мышкой — график наклоняется
               </span>
             </div>
           </motion.div>
