@@ -2,7 +2,6 @@ import { motion } from "framer-motion";
 import { ArrowRight, BookOpen, ShieldCheck, Zap } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { TradingTerminal } from "./HeroTerminal";
-import { MetricsStrip } from "./HeroMetrics";
 
 export default function Hero() {
   const { lang } = useI18n();
@@ -28,7 +27,7 @@ export default function Hero() {
       };
 
   return (
-    <section className="relative isolate box-border flex items-start overflow-hidden bg-[#F8FAFC] pb-10 pt-20 dark:bg-[#080D16] md:pt-20">
+    <section className="hero relative isolate box-border block min-h-[520px] w-full overflow-hidden bg-[#F8FAFC] pb-10 pt-[72px] dark:bg-[#080D16]">
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
         <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.07]" style={{ backgroundImage: "radial-gradient(circle, #0B0F14 1px, transparent 1px)", backgroundSize: "24px 24px" }} />
         <motion.div
@@ -60,7 +59,7 @@ export default function Hero() {
           <span className="hidden text-[10px] font-medium text-slate-400 dark:text-slate-500 sm:block">{copy.markets}</span>
         </motion.div>
 
-        <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] xl:gap-12">
+        <div className="hero__inner grid items-start gap-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] xl:gap-14">
           <div className="relative z-10">
             <motion.h1
               initial={{ opacity: 0, y: 18 }}
@@ -108,9 +107,6 @@ export default function Hero() {
           </div>
         </div>
 
-        <div className="mt-8">
-          <MetricsStrip />
-        </div>
       </div>
     </section>
   );

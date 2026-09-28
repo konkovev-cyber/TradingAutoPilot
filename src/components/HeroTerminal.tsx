@@ -1,4 +1,4 @@
-﻿import { motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { useId } from "react";
 
 const months = ["Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"];
@@ -55,7 +55,7 @@ export function TradingTerminal() {
         />
         <div aria-hidden="true" className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-[#00B96B]/70 to-transparent" />
 
-        <header className="relative z-10 flex h-[44px] shrink-0 items-center justify-between border-b border-white/[0.08]">
+        <header className="relative z-10 mb-4 flex h-[56px] shrink-0 items-center justify-between border-b border-white/[0.08]">
           <div className="min-w-0">
             <p className="mb-0.5 text-[10px] font-medium uppercase tracking-[1px] text-[#8A8F99]">Доходность портфеля</p>
             <div className="flex items-baseline gap-2.5">
@@ -81,7 +81,7 @@ export function TradingTerminal() {
           </motion.div>
         </header>
 
-        <div className="relative z-10 min-h-0 flex-1 pt-4" role="img" aria-label="График доходности портфеля с двумя просадками и тремя отметками сделок">
+        <div className="relative z-10 min-h-0 flex-1" role="img" aria-label="График доходности портфеля с двумя просадками и тремя отметками сделок">
           <motion.div
             initial={{ opacity: 0, x: -8 }}
             animate={{ opacity: 1, x: 0 }}
@@ -178,7 +178,7 @@ export function TradingTerminal() {
           </svg>
         </div>
 
-        <footer className="relative z-10 flex h-[28px] shrink-0 items-center justify-between gap-2 text-[#8A8F99]">
+        <footer className="relative z-10 mt-3 flex h-[32px] shrink-0 items-center justify-between gap-2 text-[#8A8F99]">
           <span className="whitespace-nowrap text-[10px] sm:text-[11px]">
             <span className="sm:hidden">4.1%  Аптайм 99.9%</span>
             <span className="hidden sm:inline">Макс. просадка 4.1%  Аптайм 99.9%</span>

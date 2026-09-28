@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
 import Hero from "@/components/Hero";
+import { MetricsStrip } from "@/components/HeroMetrics";
 
 import Products from "@/components/Products";
 import Compare from "@/components/Compare";
@@ -20,6 +21,7 @@ import { useI18n } from "@/lib/i18n";
 
 const componentMap: Record<string, ComponentType> = {
   hero: Hero,
+  trust: MetricsStrip,
 
   products: Products,
   compare: Compare,

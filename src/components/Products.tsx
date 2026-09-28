@@ -15,14 +15,14 @@ export default function Products() {
   const bots = useBots();
 
   return (
-    <section id="bots" className="pb-16 pt-14 md:pb-20 md:pt-14 bg-white dark:bg-gray-950 transition-colors duration-300">
+    <section id="bots" className="robots relative block w-full bg-white transition-colors duration-300 dark:bg-gray-950">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-12"
+          className="mb-12 text-center"
         >
           <h2 className="heading-lg text-gray-900 dark:text-white mb-4">
             {t("products.title")}
