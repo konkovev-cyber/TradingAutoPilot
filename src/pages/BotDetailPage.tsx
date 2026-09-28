@@ -1,7 +1,7 @@
-﻿import { useEffect } from "react";
+﻿import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Check, AlertTriangle, Share2 } from "lucide-react";
+import { ArrowLeft, Check, AlertTriangle, Share2, Copy } from "lucide-react";
 import { useBots } from "@/lib/use-bots";
 import Header from "@/components/Header";
 import FloatingContact from "@/components/FloatingContact";
@@ -13,6 +13,9 @@ export default function BotDetailPage() {
   const { t } = useI18n();
   const bots = useBots();
   const bot = bots.find((b) => b.slug === slug) ?? null;
+  const [copied, setCopied] = useState(false);
+
+  const isTouch = typeof window !== "undefined" && ("ontouchstart" in window || navigator.maxTouchPoints > 0);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -35,7 +38,7 @@ export default function BotDetailPage() {
 
   const share = async () => {
     const url = window.location.href;
-    if (navigator.share) {
+    if (isTouch && navigator.share) {
       try {
         await navigator.share({ title: bot ? bot.name : "Trading Auto Pilot", url });
       } catch {
@@ -44,6 +47,8 @@ export default function BotDetailPage() {
     } else {
       try {
         await navigator.clipboard.writeText(url);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
       } catch {
         // clipboard unavailable
       }
@@ -67,7 +72,8 @@ export default function BotDetailPage() {
               className="inline-flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
               aria-label="Share"
             >
-              <Share2 size={16} /> Share
+              {copied ? <Check size={16} /> : <Share2 size={16} />}
+              {copied ? "Скопировано" : "Поделиться"}
             </button>
           </div>
 
