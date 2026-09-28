@@ -1,8 +1,37 @@
 ﻿import { Link } from "react-router-dom";
 import { bots } from "@/data/bots";
 import { useI18n } from "@/lib/i18n";
+import {
+  BingxIcon,
+  BinanceIcon,
+  BitfinexIcon,
+  BitgetIcon,
+  BybitIcon,
+  CoinbaseIcon,
+  GateIcon,
+  HtxIcon,
+  KrakenIcon,
+  KucoinIcon,
+  MexcIcon,
+  OkxIcon,
+  WhitebitIcon,
+} from "./ExchangeIcons";
 
-const exchanges = ["BYBIT", "Binance", "OKX", "BingX", "Gate.io", "HTX", "Bitget", "KuCoin", "Bitfinex", "Kraken", "MEXC", "Coinbase", "WhiteBIT"];
+const exchanges = [
+  { name: "BYBIT", Icon: BybitIcon },
+  { name: "Binance", Icon: BinanceIcon },
+  { name: "OKX", Icon: OkxIcon },
+  { name: "BingX", Icon: BingxIcon },
+  { name: "Gate.io", Icon: GateIcon },
+  { name: "HTX", Icon: HtxIcon },
+  { name: "Bitget", Icon: BitgetIcon },
+  { name: "KuCoin", Icon: KucoinIcon },
+  { name: "Bitfinex", Icon: BitfinexIcon },
+  { name: "Kraken", Icon: KrakenIcon },
+  { name: "MEXC", Icon: MexcIcon },
+  { name: "Coinbase", Icon: CoinbaseIcon },
+  { name: "WhiteBIT", Icon: WhitebitIcon },
+];
 
 export default function Footer() {
   const { t } = useI18n();
@@ -46,9 +75,13 @@ export default function Footer() {
           <div>
             <h4 className="font-bold text-gray-900 dark:text-white mb-4 text-sm">{t("footer.exchanges")}</h4>
             <div className="flex flex-wrap gap-1.5">
-              {exchanges.map((e) => (
-                <span key={e} className="text-[11px] text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 px-2.5 py-1 rounded-md border border-gray-100 dark:border-gray-700">
-                  {e}
+              {exchanges.map(({ name, Icon }) => (
+                <span
+                  key={name}
+                  className="inline-flex items-center gap-1.5 text-[11px] text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 px-2.5 py-1 rounded-md border border-gray-100 dark:border-gray-700 transition-colors hover:text-gray-900 dark:hover:text-white"
+                >
+                  <Icon className="h-3.5 w-3.5 shrink-0" />
+                  {name}
                 </span>
               ))}
             </div>
