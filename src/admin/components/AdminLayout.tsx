@@ -42,7 +42,7 @@ export default function AdminLayout() {
               <span className="text-white font-bold text-xl">C</span>
             </div>
             <div>
-              <div className="text-white font-bold">Coinsofter</div>
+              <div className="text-white font-bold">Trading Auto Pilot</div>
               <div className="text-xs text-gray-500">Панель управления</div>
             </div>
           </Link>

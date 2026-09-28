@@ -45,10 +45,24 @@ export default function Products() {
                 className="group relative bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-6 sm:p-7 shadow-soft card-premium flex flex-col"
               >
                 {/* Бейдж над названием  единый формат */}
-                <div className="mb-4">
+                <div className="mb-4 flex flex-wrap items-center gap-2">
                   <span className="inline-block text-[11px] uppercase tracking-wider font-semibold px-2.5 py-1 rounded-md" style={{ background: bot.colorDim, color: bot.color === "#00FFB2" ? "#00c98d" : bot.color }}>
                     {bot.badge}
                   </span>
+                  {bot.difficulty && (
+                    <span
+                      className="inline-block text-[10px] uppercase tracking-wider font-semibold px-2.5 py-1 rounded-md border"
+                      style={
+                        bot.difficultyTone === "starter"
+                          ? { background: "rgba(16,185,129,0.10)", borderColor: "rgba(16,185,129,0.32)", color: "#059669" }
+                          : bot.difficultyTone === "advanced"
+                            ? { background: "rgba(245,158,11,0.10)", borderColor: "rgba(245,158,11,0.32)", color: "#B45309" }
+                            : { background: "rgba(244,63,94,0.10)", borderColor: "rgba(244,63,94,0.32)", color: "#E11D48" }
+                      }
+                    >
+                      {bot.difficulty}
+                    </span>
+                  )}
                 </div>
 
                 <div className="flex items-center gap-4 mb-5">
@@ -74,7 +88,7 @@ export default function Products() {
                 <div className="grid grid-cols-3 gap-2.5 mb-6">
                   {bot.returns.map((r, ri) => (
                     <div key={ri} className="rounded-lg px-2 py-2.5 text-center border" style={{ background: "rgba(0,255,150,0.08)", borderColor: "rgba(0,255,150,0.18)" }}>
-                      <div className="text-[13px] font-bold text-emerald-500 tabular-nums leading-tight">{r.value}</div>
+                      <div className="text-[13px] font-bold text-emerald-500 tabular-nums leading-tight">{r.value}<span className="text-emerald-500/60">*</span></div>
                       <div className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5 leading-tight">{r.period}</div>
                     </div>
                   ))}
@@ -91,6 +105,10 @@ export default function Products() {
             );
           })}
         </div>
+
+        <p className="mt-10 max-w-3xl mx-auto text-center text-[11px] leading-relaxed text-gray-400 dark:text-gray-500">
+          * Историческая доходность не гарантирует будущих результатов. Торговля на бирже связана с риском, возможна просадка депозита. Показатели приведены за прошлые периоды и не являются обещанием дохода.
+        </p>
       </div>
     </section>
   );

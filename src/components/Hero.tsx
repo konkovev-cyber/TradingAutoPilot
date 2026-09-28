@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ArrowRight, BookOpen, ShieldCheck, Zap } from "lucide-react";
+import { ArrowRight, BookOpen, ShieldCheck, Sparkles, Zap } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { useBots } from "@/lib/use-bots";
 import type { BotData } from "@/data/bots";
@@ -20,28 +20,28 @@ export default function Hero() {
 
   const copy = isEnglish
     ? {
-        badge: "Autonomous trading system",
+        badge: "Buy once — no monthly subscriptions",
         markets: "Crypto + Stocks",
-        titleLead: "Trade global markets.",
-        titleAccent: "With one bot.",
+        titleLead: "Automate stock and crypto trading.",
+        titleAccent: "Lifetime access, no subscriptions.",
         description:
-          "CryptoSuperStock reads price deviations, computes entry levels and works through limit orders. Crypto and international stocks inside one automated system.",
-        primary: "Choose a bot",
+          "Three autonomous bots trade on 20+ exchanges via API. No subscription fee and no profit commission — buy the bot once, it trades for you around the clock.",
+        primary: "Calculate profit",
         secondary: "How it works",
         chipsLabel: "Live strategies",
-        trust: ["API without withdrawal rights", "Setup in 2 minutes"],
+        trust: ["Buy once — no subscriptions", "API without withdrawal rights", "Setup in 2 minutes"],
       }
     : {
-        badge: "Автономная торговая система",
+        badge: "Покупка один раз — никаких абонплат",
         markets: "Crypto + Stocks",
-        titleLead: "Торгуйте мировыми рынками.",
-        titleAccent: "Одним роботом.",
+        titleLead: "Автоматизируйте торговлю акциями и криптой.",
+        titleAccent: "Пожизненный доступ без подписок.",
         description:
-          "CryptoSuperStock анализирует отклонения цены, рассчитывает уровни входа и работает через лимитные ордера. Криптовалюты и международные акции в одной автоматической системе.",
-        primary: "Выбрать робота",
+          "Три автономных робота торгуют на 20+ биржах через API. Без абонентской платы и комиссий с прибыли: покупаете робота один раз — он торгует для вас круглосуточно.",
+        primary: "Рассчитать прибыль",
         secondary: "Как это работает",
         chipsLabel: "Стратегии в работе",
-        trust: ["API без права вывода", "Настройка за 2 минуты"],
+        trust: ["Покупка один раз — без подписок", "API без права вывода", "Настройка за 2 минуты"],
       };
 
   const chips = bots.filter((b) => b.name && b.shortDesc).slice(0, 3);
@@ -209,7 +209,7 @@ export default function Hero() {
 
             <motion.div {...enter(0.24)} className="mb-3 flex flex-col gap-2.5 sm:flex-row">
               <a
-                href="#bots"
+                href="#calculator"
                 className="group inline-flex h-[46px] items-center justify-center gap-2 rounded-xl bg-emerald-500 px-7 text-[14px] font-semibold text-white shadow-[0_12px_32px_-12px_rgba(16,185,129,0.75)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-emerald-600 hover:shadow-[0_18px_38px_-12px_rgba(16,185,129,0.85)]"
               >
                 {copy.primary}
@@ -228,19 +228,19 @@ export default function Hero() {
               </a>
             </motion.div>
 
-            <motion.div {...enter(0.3)} className="flex flex-wrap gap-5">
-              {[
-                { icon: ShieldCheck, text: copy.trust[0] },
-                { icon: Zap, text: copy.trust[1] },
-              ].map((item) => (
-                <div
-                  key={item.text}
-                  className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400"
-                >
-                  <item.icon size={13} className="text-emerald-500" />
-                  <span>{item.text}</span>
-                </div>
-              ))}
+            <motion.div {...enter(0.3)} className="flex flex-wrap gap-x-5 gap-y-2">
+              {copy.trust.map((text, i) => {
+                const Icon = [Sparkles, ShieldCheck, Zap][i % 3];
+                return (
+                  <div
+                    key={text}
+                    className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400"
+                  >
+                    <Icon size={13} className="text-emerald-500" />
+                    <span>{text}</span>
+                  </div>
+                );
+              })}
             </motion.div>
           </div>
 

@@ -16,7 +16,7 @@ export default function Footer() {
               <div className="w-8 h-8 bg-brand-blue rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-lg">C</span>
               </div>
-              <span className="text-lg font-bold text-gray-900 dark:text-white">Coinsofter</span>
+              <span className="text-lg font-bold text-gray-900 dark:text-white">Trading Auto Pilot</span>
             </div>
             <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{t("footer.desc")}</p>
           </div>

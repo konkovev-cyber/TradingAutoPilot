@@ -87,7 +87,7 @@ export default function Header() {
             <div className="w-8 h-8 bg-brand-blue rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-xl">C</span>
             </div>
-            <span className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">Coinsofter</span>
+            <span className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">Trading Auto Pilot</span>
           </Link>
 
           <nav className="hidden md:flex items-center gap-8" aria-label="Main">

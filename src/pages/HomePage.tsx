@@ -36,12 +36,12 @@ export default function HomePage() {
   const c = useContent();
 
   useSeo({
-    title: c("meta", "title", t("hero.title") + " \u2014 Coinsofter"),
+    title: c("meta", "title", "Торговые боты для криптобирж и акций | Trading Auto Pilot (без подписки)"),
     description: c("meta", "description", t("hero.desc")),
     jsonLd: {
       "@context": "https://schema.org",
       "@type": "WebPage",
-      "name": "Coinsofter",
+      "name": "Trading Auto Pilot",
       "description": c("meta", "description", t("hero.desc"))
     }
   });

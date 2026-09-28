@@ -19,8 +19,8 @@ export default function BotDetailPage() {
   }, [slug]);
 
   useSeo({
-    title: bot ? bot.name + " \u2014 Coinsofter" : "Coinsofter",
-    description: bot ? bot.shortDesc : "Coinsofter trading bots",
+    title: bot ? bot.name + " \u2014 Trading Auto Pilot" : "Trading Auto Pilot",
+    description: bot ? bot.shortDesc : "Trading Auto Pilot trading bots",
     jsonLd: bot
       ? {
           "@context": "https://schema.org",
@@ -37,7 +37,7 @@ export default function BotDetailPage() {
     const url = window.location.href;
     if (navigator.share) {
       try {
-        await navigator.share({ title: bot ? bot.name : "Coinsofter", url });
+        await navigator.share({ title: bot ? bot.name : "Trading Auto Pilot", url });
       } catch {
         // user cancelled
       }

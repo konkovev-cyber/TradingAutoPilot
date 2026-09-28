@@ -17,7 +17,7 @@ export const ruTranslations = {
     "title2": "на автопилоте",
     "subtitle": "Боты на ИИ торгуют на 20+ биржах через API. Средняя доходность портфеля — +96.4% за год. Работают 24/7.",
     "title": "Три торговых робота. Прибыль 24/7",
-    "desc": "Гибрид акций и крипты, торговый пулемёт и охота за Pump & Dump. Выберите своего робота \u2014 он торгует, пока вы занимаетесь своими делами.",
+    "desc": "Гибрид акций и крипты, высокочастотная сетка и охота за импульсами. Выберите своего робота \u2014 он торгует, пока вы занимаетесь своими делами.",
     "cta1": "Смотреть роботов",
     "cta2": "Как это работает",
     "pick": "Выбрать робота",
@@ -73,7 +73,7 @@ export const ruTranslations = {
     "result": "Прогноз",
     "profit": "Прибыль",
     "total": "Итого",
-    "note": "Расчёт носит оценочный характер и не является гарантией будущей доходности",
+    "note": "Внимание: торговля на бирже несёт риски. Калькулятор показывает математическое ожидание на основе истории, но не является гарантией прибыли.",
     "cta": "Запустить робота"
   },
   "lead": {
@@ -110,11 +110,11 @@ export const ruTranslations = {
     "items": [
       {
         "q": "Нужны ли навыки программирования?",
-        "a": "Нет. Coinsofter — готовая платформа. Регистрация, подключение АПИ-ключа биржи, выбор робота и стратегии из шаблонов. Всё настраивается в пару кликов, без единой строчки кода."
+        "a": "Нет. Trading Auto Pilot — готовая платформа. Регистрация, подключение АПИ-ключа биржи, выбор робота и стратегии из шаблонов. Всё настраивается в пару кликов, без единой строчки кода."
       },
       {
         "q": "Как подключить биржу?",
-        "a": "Зайдите в личный кабинет, выберите биржу (BYBIT, Binance, OKX и др.), создайте АПИ-ключ с правом на торговлю, но БЕЗ права вывода средств. Скопируйте ключ и секрет в Coinsofter — подключение занимает 1-2 минуты."
+        "a": "Зайдите в личный кабинет, выберите биржу (BYBIT, Binance, OKX и др.), создайте АПИ-ключ с правом на торговлю, но БЕЗ права вывода средств. Скопируйте ключ и секрет в Trading Auto Pilot — подключение занимает 1-2 минуты."
       },
       {
         "q": "Безопасно ли передавать АПИ-ключи?",
@@ -143,7 +143,7 @@ export const ruTranslations = {
     "robots": "Роботы",
     "support": "Поддержка",
     "exchanges": "Биржи",
-    "copyright": "© 2025 Coinsofter. All rights reserved.",
+    "copyright": "© 2025 Trading Auto Pilot. All rights reserved.",
     "risk": "Торговля криптовалютами связана с риском. Прошлые результаты не гарантируют будущую доходность."
   },
   "botDetail": {
@@ -178,7 +178,7 @@ export const enTranslations = {
     "title2": "on autopilot",
     "subtitle": "AI-powered bots trade on 20+ exchanges via API. Average portfolio return is +96.4% per year. They work 24/7.",
     "title": "Three trading bots. Profit 24/7",
-    "desc": "Stock-crypto hybrid, trading machine and Pump & Dump hunter. Choose your bot \u2014 it trades while you live your life.",
+    "desc": "Stock-crypto hybrid, high-frequency grid and impulse hunter. Choose your bot \u2014 it trades while you live your life.",
     "cta1": "View bots",
     "cta2": "How it works",
     "pick": "Choose a bot",
@@ -230,7 +230,7 @@ export const enTranslations = {
     "result": "Forecast",
     "profit": "Profit",
     "total": "Total",
-    "note": "This estimate is for information only and is not a guarantee of future returns",
+    "note": "Warning: exchange trading carries risk. The calculator shows the mathematical expectation based on history, not a guarantee of profit.",
     "cta": "Launch the bot"
   },
   "how": {
@@ -247,8 +247,8 @@ export const enTranslations = {
     "title": "Frequently asked questions",
     "subtitle": "Everything you need to know before starting.",
     "items": [
-      { "q": "Do I need programming skills?", "a": "No. Coinsofter is a ready-made platform. Registration, exchange API key connection, bot and strategy selection from templates. Everything is configured in a couple of clicks, without a single line of code." },
-      { "q": "How to connect an exchange?", "a": "Go to your personal account, choose an exchange (BYBIT, Binance, OKX etc.), create an API key with trading permission but WITHOUT withdrawal rights. Copy the key and secret to Coinsofter \u2014 setup takes 1-2 minutes." },
+      { "q": "Do I need programming skills?", "a": "No. Trading Auto Pilot is a ready-made platform. Registration, exchange API key connection, bot and strategy selection from templates. Everything is configured in a couple of clicks, without a single line of code." },
+      { "q": "How to connect an exchange?", "a": "Go to your personal account, choose an exchange (BYBIT, Binance, OKX etc.), create an API key with trading permission but WITHOUT withdrawal rights. Copy the key and secret to Trading Auto Pilot \u2014 setup takes 1-2 minutes." },
       { "q": "Is it safe to share API keys?", "a": "Yes. We require creating keys without withdrawal rights \u2014 the bot can only trade, not withdraw assets. Keys are encrypted with AES-256 standard and stored encrypted. We have no access to your funds." },
       { "q": "What is the minimum amount to start?", "a": "Minimum \u2014 $10 per order. For comfortable trading we recommend starting from $200-500: the larger the capital, the more flexible the risk settings." },
       { "q": "How to withdraw profit?", "a": "All funds remain on your exchange. The bot only trades \u2014 profit goes straight to your balance. Withdraw it anytime through the exchange interface, we do not hold your money." }
@@ -285,7 +285,7 @@ export const enTranslations = {
     "support": "Support",
     "knowledge": "Knowledge base",
     "exchanges": "Exchanges",
-    "copyright": "\u00A9 2025 Coinsofter. All rights reserved.",
+    "copyright": "\u00A9 2025 Trading Auto Pilot. All rights reserved.",
     "risk": "Cryptocurrency trading involves risk. Past results do not guarantee future profitability."
   },
   "botDetail": {

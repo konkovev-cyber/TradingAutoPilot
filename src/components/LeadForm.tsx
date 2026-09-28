@@ -4,7 +4,7 @@ import { useI18n } from "@/lib/i18n";
 import { getSupabase, supabaseUrl } from "@/lib/supabase";
 
 export default function LeadForm() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [form, setForm] = useState({ name: "", contact: "", bot: "any", message: "" });
 
@@ -121,12 +121,17 @@ export default function LeadForm() {
                     <option value="any">{t("lead.botAny")}</option>
                     <option value="cryptosuperstock">CryptoSuperStock</option>
                     <option value="megagrid-ai">MEGAGRID-AI</option>
-                    <option value="smartix">SMARTIX: PUMP DUMP</option>
+                    <option value="smartix">SMARTIX: Импульсный трейдер</option>
                   </select>
                 </div>
               </div>
               <div>
-                <label className={labelCls}>{t("lead.message")}</label>
+                <label className={labelCls}>
+                  {t("lead.message")}{" "}
+                  <span className="font-normal normal-case tracking-normal text-gray-400">
+                    {lang === "en" ? "(optional)" : "(необязательно)"}
+                  </span>
+                </label>
                 <div className="relative">
                   <MessageSquareText size={18} className="absolute left-4 top-4 text-gray-400 pointer-events-none" />
                   <textarea
