@@ -45,9 +45,7 @@ export default function Footer() {
         <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-10 mb-12">
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-brand-blue rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">C</span>
-              </div>
+              <img src="/logo.png" alt="Trading Auto Pilot" className="h-9 w-auto rounded-lg" />
               <span className="text-lg font-bold text-gray-900 dark:text-white">Trading Auto Pilot</span>
             </div>
             <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{t("footer.desc")}</p>
