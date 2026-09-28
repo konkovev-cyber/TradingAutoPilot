@@ -23,7 +23,7 @@ export default function Compare() {
         </div>
 
         <div className="overflow-x-auto rounded-2xl border border-gray-100 dark:border-gray-800 shadow-soft">
-          <table className="w-full border-collapse bg-white dark:bg-gray-900">
+          <table className="w-full min-w-[720px] border-collapse bg-white dark:bg-gray-900">
             <thead>
               <tr className="bg-gray-50 dark:bg-gray-800">
                 <th className="p-6 text-left text-sm font-bold text-gray-900 dark:text-white border-b border-gray-100 dark:border-gray-800">
@@ -34,14 +34,17 @@ export default function Compare() {
                     key={bot.slug}
                     className="p-6 text-center text-sm font-bold text-gray-900 dark:text-white border-b border-gray-100 dark:border-gray-800"
                   >
-                    {bot.name}
+                    <span className="inline-flex items-center justify-center gap-2">
+                      <span className="h-2 w-2 rounded-full" style={{ backgroundColor: bot.color }} />
+                      {bot.name}
+                    </span>
                   </th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {rows.map((row) => (
-                <tr key={row.id} className="border-b border-gray-100 dark:border-gray-800 last:border-0">
+                <tr key={row.id} className="border-b border-gray-100 transition-colors last:border-0 hover:bg-emerald-50/40 dark:border-gray-800 dark:hover:bg-emerald-900/20">
                   <td className="p-6 text-sm font-medium text-gray-500 dark:text-gray-400 bg-gray-50/50 dark:bg-gray-800/50 whitespace-nowrap">
                     {row.label}
                   </td>

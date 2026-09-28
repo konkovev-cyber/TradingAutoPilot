@@ -20,8 +20,11 @@ export default function CTA() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="bg-white dark:bg-gray-950 rounded-2xl p-12 sm:p-16 border border-gray-100 dark:border-gray-800 shadow-sm"
+          className="relative overflow-hidden rounded-2xl border border-white/60 bg-white/70 p-12 shadow-[0_20px_60px_-16px_rgba(15,23,42,0.16)] backdrop-blur-xl sm:p-16 dark:border-white/[0.08] dark:bg-gray-950/70 dark:shadow-[0_24px_70px_-20px_rgba(0,0,0,0.6)]"
         >
+          <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full bg-emerald-400/10 blur-3xl" />
+          <div aria-hidden="true" className="pointer-events-none absolute -left-16 bottom-0 h-48 w-56 rounded-full bg-indigo-400/10 blur-3xl" />
+          <div aria-hidden="true" className="pointer-events-none absolute inset-x-16 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent" />
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-gray-900 dark:text-white mb-5">
             {c("cta", "title", t("cta.title"))}
           </h2>

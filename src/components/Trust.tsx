@@ -22,11 +22,13 @@ export default function Trust() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: i * 0.08 }}
-                className="flex items-center gap-3.5 rounded-xl px-5 py-4 border border-gray-100 dark:border-gray-800"
-                style={{ background: "rgba(255,255,255,0.03)" }}
+                className="flex items-center gap-3.5 rounded-xl border border-white/60 bg-white/70 px-5 py-4 shadow-[0_10px_30px_-14px_rgba(15,23,42,0.12)] backdrop-blur-xl transition-all duration-200 hover:-translate-y-0.5 hover:border-emerald-300/40 hover:shadow-[0_16px_40px_-14px_rgba(16,185,129,0.25)] dark:border-white/[0.08] dark:bg-white/[0.06]"
               >
-                <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style={{ background: "rgba(0,255,150,0.08)" }}>
-                  <Icon size={18} className="text-emerald-500" />
+                <div
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#10B981]/20 text-[#10B981]"
+                  style={{ background: "linear-gradient(135deg, rgba(16,185,129,0.2), rgba(59,130,246,0.1))" }}
+                >
+                  <Icon size={18} />
                 </div>
                 <div className="min-w-0">
                   <div className="text-sm font-semibold text-gray-800 dark:text-gray-200 leading-snug">{p.title}</div>

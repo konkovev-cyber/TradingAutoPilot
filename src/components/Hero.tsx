@@ -22,8 +22,8 @@ export default function Hero() {
     ? {
         badge: "Buy once — no monthly subscriptions",
         markets: "Crypto + Stocks",
-        titleLead: "Automate stock and crypto trading.",
-        titleAccent: "Lifetime access, no subscriptions.",
+        titleLead: "Automate stock and crypto trading",
+        titleAccent: "Lifetime access, no subscriptions",
         description:
           "Three autonomous bots trade on 20+ exchanges via API. No subscription fee and no profit commission — buy the bot once, it trades for you around the clock.",
         primary: "Calculate profit",
@@ -34,8 +34,8 @@ export default function Hero() {
     : {
         badge: "Покупка один раз — никаких абонплат",
         markets: "Crypto + Stocks",
-        titleLead: "Автоматизируйте торговлю акциями и криптой.",
-        titleAccent: "Пожизненный доступ без подписок.",
+        titleLead: "Автоматизируйте торговлю акциями и криптой",
+        titleAccent: "Пожизненный доступ без подписок",
         description:
           "Три автономных робота торгуют на 20+ биржах через API. Без абонентской платы и комиссий с прибыли: покупаете робота один раз — он торгует для вас круглосуточно.",
         primary: "Рассчитать прибыль",
@@ -60,7 +60,7 @@ export default function Hero() {
     initial: { opacity: 0, y: 16 },
     animate: { opacity: 1, y: 0 },
     transition: {
-      duration: reduceMotion ? 0 : 0.5,
+      duration: reduceMotion ? 0 : 0.42,
       delay: reduceMotion ? 0 : delay,
       ease: "easeOut" as const,
     },
@@ -117,11 +117,17 @@ export default function Hero() {
           <div className="relative z-10 lg:col-span-5">
             <motion.h1
               {...enter(0.06)}
-              className="mb-3 max-w-[540px] text-balance text-[34px] font-bold leading-[1.04] tracking-[-0.03em] text-[#0B0F14] dark:text-white sm:text-[40px] lg:text-[40px] xl:text-[48px]"
+              className="mb-2.5 max-w-[600px] text-balance text-[32px] font-bold leading-[1.15] tracking-[-0.02em] text-[#0B0F14] dark:text-white sm:text-[38px] lg:text-[42px] xl:text-[46px]"
             >
-              {copy.titleLead}{" "}
-              <span className="hero-accent">{copy.titleAccent}</span>
+              {copy.titleLead}
             </motion.h1>
+
+            <motion.div
+              {...enter(0.1)}
+              className="hero-accent mb-4 text-[21px] font-semibold leading-[1.25] tracking-[-0.01em] sm:text-[23px] lg:text-[25px]"
+            >
+              {copy.titleAccent}
+            </motion.div>
 
             <motion.div {...enter(0.12)} className="mb-4 min-h-[106px] max-w-[520px]">
               <AnimatePresence mode="wait" initial={false}>
@@ -172,7 +178,7 @@ export default function Hero() {
                         type="button"
                         aria-label={`${bot.name}: показать описание`}
                         onClick={() => setActiveBotIndex(index)}
-                        className={`h-1.5 rounded-full transition-all duration-300 ${
+                        className={`h-1.5 cursor-pointer rounded-full transition-all duration-300 ${
                           index === activeBotIndex % chips.length ? "w-7 bg-emerald-500" : "w-1.5 bg-slate-300 dark:bg-slate-700"
                         }`}
                       />
@@ -185,7 +191,7 @@ export default function Hero() {
                       key={bot.slug}
                       type="button"
                       onClick={() => setActiveBotIndex(index)}
-                      className={`group flex items-center gap-2 rounded-xl border px-3 py-2 text-left backdrop-blur transition-all duration-200 hover:-translate-y-0.5 ${
+                      className={`group flex cursor-pointer items-center gap-2 rounded-xl border px-3 py-2 text-left backdrop-blur transition-all duration-200 hover:-translate-y-0.5 ${
                         index === activeBotIndex % chips.length
                           ? "border-emerald-400/50 bg-emerald-50/90 shadow-[0_8px_24px_-14px_rgba(16,185,129,0.7)] dark:border-emerald-400/40 dark:bg-emerald-400/10"
                           : "border-black/[0.07] bg-white/80 hover:border-black/[0.14] hover:shadow-[0_10px_26px_-12px_rgba(15,23,42,0.35)] dark:border-white/[0.1] dark:bg-white/[0.05] dark:hover:border-white/20"

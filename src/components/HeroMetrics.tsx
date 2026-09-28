@@ -27,7 +27,7 @@ export function MetricsStrip() {
       transition={{ duration: 0.65, delay: 0.5 }}
       className="metrics relative w-full"
     >
-      <div className="w-full overflow-hidden rounded-2xl border border-black/[0.06] bg-white/90 shadow-[0_18px_50px_rgba(15,23,42,0.08)] dark:border-white/[0.1] dark:bg-[#101722]/90 dark:shadow-[0_22px_65px_rgba(0,0,0,0.28)]">
+      <div className="w-full overflow-hidden rounded-2xl border border-white/60 bg-white/70 shadow-[0_18px_50px_-12px_rgba(15,23,42,0.14)] backdrop-blur-xl dark:border-white/[0.08] dark:bg-[#101722]/70 dark:shadow-[0_22px_65px_-16px_rgba(0,0,0,0.5)]">
         <div className="grid grid-cols-2 divide-x divide-y divide-black/[0.06] dark:divide-white/[0.08] lg:grid-cols-4 lg:divide-y-0">
         {metrics.map((metric, index) => {
           const Icon = icons[index];
@@ -38,7 +38,10 @@ export function MetricsStrip() {
               transition={{ type: "spring", stiffness: 350, damping: 24 }}
               className="group relative flex min-h-[88px] items-center gap-3 px-4 py-4 transition-colors hover:bg-black/[0.025] dark:hover:bg-white/[0.035] sm:gap-4 sm:px-6"
             >
-              <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#10B981]/15 bg-[#10B981]/10 text-[#10B981] transition-all duration-300 group-hover:scale-110 group-hover:border-[#10B981]/30 group-hover:bg-[#10B981]/15 group-hover:shadow-[0_0_24px_rgba(16,185,129,0.18)] sm:h-11 sm:w-11">
+              <div
+                className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#10B981]/25 text-[#10B981] transition-all duration-300 group-hover:scale-110 group-hover:shadow-[0_0_28px_rgba(16,185,129,0.35)] sm:h-11 sm:w-11"
+                style={{ background: "linear-gradient(135deg, rgba(16,185,129,0.22), rgba(59,130,246,0.12))" }}
+              >
                 <Icon size={19} strokeWidth={1.8} />
                 <span className="absolute inset-0 rounded-xl border border-[#10B981]/30 opacity-0 transition-opacity duration-300 group-hover:animate-ping group-hover:opacity-60" />
               </div>
