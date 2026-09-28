@@ -89,7 +89,7 @@ export default function Products() {
                   {bot.returns.map((r, ri) => (
                     <div key={ri} className="rounded-lg px-2 py-2.5 text-center border" style={{ background: "rgba(0,255,150,0.08)", borderColor: "rgba(0,255,150,0.18)" }}>
                       <div className="text-[13px] font-bold text-emerald-500 tabular-nums leading-tight">{r.value}<span className="text-emerald-500/60">*</span></div>
-                      <div className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5 leading-tight">{r.period}</div>
+                      <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5 leading-tight">{r.period}</div>
                     </div>
                   ))}
                 </div>
@@ -106,7 +106,7 @@ export default function Products() {
           })}
         </div>
 
-        <p className="mt-10 max-w-3xl mx-auto text-center text-[11px] leading-relaxed text-gray-400 dark:text-gray-500">
+        <p className="mt-10 max-w-3xl mx-auto text-center text-[11px] leading-relaxed text-gray-500 dark:text-gray-400">
           * Историческая доходность не гарантирует будущих результатов. Торговля на бирже связана с риском, возможна просадка депозита. Показатели приведены за прошлые периоды и не являются обещанием дохода.
         </p>
       </div>

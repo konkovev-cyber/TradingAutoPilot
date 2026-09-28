@@ -1,11 +1,17 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ArrowRight, BookOpen, ShieldCheck, Sparkles, Zap } from "lucide-react";
+import { ArrowRight, BookOpen, Gauge, ShieldCheck, Sparkles, TrendingUp, Zap } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { useBots } from "@/lib/use-bots";
 import type { BotData } from "@/data/bots";
 import { TradingTerminal } from "./HeroTerminal";
 import { MetricsStrip } from "./HeroMetrics";
+
+const botIcons: Record<string, typeof Gauge> = {
+  cryptosuperstock: Gauge,
+  "megagrid-ai": TrendingUp,
+  smartix: ShieldCheck,
+};
 
 function headlineReturn(bot: BotData) {
   const last = bot.returns[bot.returns.length - 1];
@@ -171,44 +177,59 @@ export default function Hero() {
                   <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-400 dark:text-slate-500">
                     {copy.chipsLabel}
                   </div>
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-0.5">
                     {chips.map((bot, index) => (
                       <button
                         key={bot.slug}
                         type="button"
                         aria-label={`${bot.name}: показать описание`}
                         onClick={() => setActiveBotIndex(index)}
-                        className={`h-1.5 cursor-pointer rounded-full transition-all duration-300 ${
-                          index === activeBotIndex % chips.length ? "w-7 bg-emerald-500" : "w-1.5 bg-slate-300 dark:bg-slate-700"
-                        }`}
-                      />
+                        className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-full"
+                      >
+                        <span
+                          className={`h-1.5 rounded-full transition-all duration-300 ${
+                            index === activeBotIndex % chips.length
+                              ? "w-5 bg-emerald-500"
+                              : "w-1.5 bg-slate-300 group-hover:bg-slate-400 dark:bg-slate-700 dark:group-hover:bg-slate-500"
+                          }`}
+                        />
+                      </button>
                     ))}
                   </div>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {chips.map((bot, index) => (
-                    <button
-                      key={bot.slug}
-                      type="button"
-                      onClick={() => setActiveBotIndex(index)}
-                      className={`group flex cursor-pointer items-center gap-2 rounded-xl border px-3 py-2 text-left backdrop-blur transition-all duration-200 hover:-translate-y-0.5 ${
-                        index === activeBotIndex % chips.length
-                          ? "border-emerald-400/50 bg-emerald-50/90 shadow-[0_8px_24px_-14px_rgba(16,185,129,0.7)] dark:border-emerald-400/40 dark:bg-emerald-400/10"
-                          : "border-black/[0.07] bg-white/80 hover:border-black/[0.14] hover:shadow-[0_10px_26px_-12px_rgba(15,23,42,0.35)] dark:border-white/[0.1] dark:bg-white/[0.05] dark:hover:border-white/20"
-                      }`}
-                    >
-                      <span
-                        className="h-2 w-2 shrink-0 rounded-full"
-                        style={{ backgroundColor: bot.color, boxShadow: `0 0 8px ${bot.color}` }}
-                      />
-                      <span className="text-[11.5px] font-semibold text-[#0B0F14] dark:text-white">
-                        {bot.name}
-                      </span>
-                      <span className="text-[11.5px] font-bold tabular-nums text-emerald-500">
-                        {headlineReturn(bot)}
-                      </span>
-                    </button>
-                  ))}
+                <div className="flex flex-wrap items-center gap-2.5">
+                  {chips.map((bot, index) => {
+                    const Icon = botIcons[bot.slug] ?? TrendingUp;
+                    const active = index === activeBotIndex % chips.length;
+                    return (
+                      <div key={bot.slug} className="group relative">
+                        <button
+                          type="button"
+                          aria-label={`${bot.name}: показать описание`}
+                          onClick={() => setActiveBotIndex(index)}
+                          className={`flex h-11 w-11 cursor-pointer items-center justify-center rounded-xl border transition-all duration-200 hover:-translate-y-0.5 ${
+                            active
+                              ? "border-transparent"
+                              : "border-black/[0.08] hover:border-black/[0.16] dark:border-white/[0.12] dark:hover:border-white/25"
+                          }`}
+                          style={
+                            active
+                              ? { background: `linear-gradient(135deg, ${bot.color}45, ${bot.color}14)`, boxShadow: `0 10px 26px -12px ${bot.color}99` }
+                              : { background: `linear-gradient(135deg, ${bot.color}1f, ${bot.color}0a)` }
+                          }
+                        >
+                          <Icon size={18} style={{ color: bot.color }} />
+                        </button>
+                        <div className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-2 -translate-x-1/2 whitespace-nowrap rounded-xl border border-black/[0.08] bg-white/95 px-3 py-2 opacity-0 shadow-[0_14px_34px_-14px_rgba(15,23,42,0.35)] backdrop-blur-xl transition-opacity duration-200 group-hover:opacity-100 dark:border-white/[0.12] dark:bg-[#111C29]/95">
+                          <span className="flex items-center gap-2">
+                            <span className="h-2 w-2 rounded-full" style={{ backgroundColor: bot.color, boxShadow: `0 0 8px ${bot.color}` }} />
+                            <span className="text-[11px] font-semibold text-[#0B0F14] dark:text-white">{bot.name}</span>
+                            <span className="text-[11px] font-bold tabular-nums text-emerald-500">{headlineReturn(bot)}</span>
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </motion.div>
             )}

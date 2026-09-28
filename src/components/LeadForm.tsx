@@ -87,7 +87,9 @@ export default function LeadForm() {
 
             <div className="space-y-5">
               <div>
-                <label className={labelCls}>{t("lead.name")}</label>
+                <label className={labelCls}>
+                  {t("lead.name")} <span aria-hidden="true" className="text-red-500">*</span>
+                </label>
                 <div className="relative">
                   <User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
                   <input
@@ -99,7 +101,9 @@ export default function LeadForm() {
                 </div>
               </div>
               <div>
-                <label className={labelCls}>{t("lead.contact")}</label>
+                <label className={labelCls}>
+                  {t("lead.contact")} <span aria-hidden="true" className="text-red-500">*</span>
+                </label>
                 <div className="relative">
                   <AtSign size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
                   <input

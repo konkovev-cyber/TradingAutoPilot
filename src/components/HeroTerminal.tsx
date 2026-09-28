@@ -1,6 +1,7 @@
 import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from "framer-motion";
-import { Activity, Bot, BrainCircuit, Globe2, ShieldCheck, Sparkles, TrendingUp, Zap } from "lucide-react";
+import { Activity, Bot, Globe2, Pause, Play, ShieldCheck, TrendingUp, Zap } from "lucide-react";
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
+import { useTheme } from "@/lib/theme";
 
 interface Pt { x: number; y: number }
 
@@ -41,11 +42,6 @@ const TOOLTIPS = [
   { index: 10, label: "AI Rebalance", color: "#C084FC" },
 ] as const;
 
-const ORBIT_ITEMS = [
-  { label: "20+ бирж", value: "Подключено", icon: Globe2, color: "#60A5FA" },
-  { label: "RISK GUARD", value: "Защищено", icon: ShieldCheck, color: "#34D399" },
-] as const;
-
 function smoothPath(points: Pt[]): string {
   if (points.length < 2) return "";
   let d = `M ${points[0].x} ${points[0].y}`;
@@ -64,11 +60,20 @@ function smoothPath(points: Pt[]): string {
   return d;
 }
 
+const chipCls =
+  "flex items-center gap-2 rounded-xl border border-black/[0.08] bg-white/85 px-3 py-2 shadow-[0_14px_34px_-16px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-white/[0.12] dark:bg-[#111C29]/85 dark:shadow-[0_18px_40px_-16px_rgba(0,0,0,0.8)]";
+
+function iconTileCls(color: string) {
+  return { color, background: `linear-gradient(135deg, ${color}33, ${color}0d)` };
+}
+
 export function TradingTerminal() {
   const reduceMotion = useReducedMotion();
   const id = useId().replace(/:/g, "");
   const wrapRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [paused, setPaused] = useState(false);
+  const { theme } = useTheme();
 
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 767px)");
@@ -79,12 +84,14 @@ export function TradingTerminal() {
   }, []);
 
   const motionOn = !reduceMotion && !isMobile;
+  const decorOn = motionOn && !paused;
+  const pulseColor = theme === "dark" ? "#00E58F" : "#0080FF";
 
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
   const springCfg = { stiffness: 90, damping: 18, mass: 0.6 };
-  const rotateY = useSpring(useTransform(mx, [-0.5, 0.5], [-12, 12]), springCfg);
-  const rotateX = useSpring(useTransform(my, [-0.5, 0.5], [7, -5]), springCfg);
+  const rotateY = useSpring(useTransform(mx, [-0.5, 0.5], [-10, 10]), springCfg);
+  const rotateX = useSpring(useTransform(my, [-0.5, 0.5], [6, -5]), springCfg);
 
   const handleMove = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
@@ -126,270 +133,276 @@ export function TradingTerminal() {
     >
       <div
         aria-hidden="true"
-        className="absolute -inset-10 rounded-[64px] blur-3xl"
+        className="absolute -inset-6 rounded-[64px] opacity-60 blur-3xl dark:opacity-90"
         style={{
           background:
-            "radial-gradient(ellipse at 32% 24%, rgba(16,185,129,0.34), transparent 58%), radial-gradient(ellipse at 78% 84%, rgba(99,102,241,0.32), transparent 58%)",
+            "radial-gradient(ellipse at 30% 30%, rgba(16,185,129,0.30), transparent 60%), radial-gradient(ellipse at 76% 82%, rgba(99,102,241,0.26), transparent 60%)",
         }}
       />
 
       <motion.div
-        initial={{ opacity: 0, y: 24 }}
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: reduceMotion ? 0 : 0.45, delay: reduceMotion ? 0 : 0.15, ease: "easeOut" }}
         className="relative"
       >
         <motion.div
-          animate={motionOn ? { y: [0, -14, 0] } : undefined}
+          animate={decorOn ? { y: [0, -14, 0] } : undefined}
           transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
         >
           <motion.div
             style={motionOn ? { rotateX, rotateY, transformStyle: "preserve-3d" } : undefined}
             className="relative"
           >
-            <div className="relative overflow-hidden rounded-[28px] border border-white/[0.14] bg-[#0B0C15] shadow-[0_30px_90px_-30px_rgba(79,70,229,0.45)]">
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-0"
-                style={{
-                  background:
-                    "linear-gradient(140deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.02) 32%, transparent 60%), radial-gradient(circle at 86% 6%, rgba(16,185,129,0.20), transparent 34%), radial-gradient(circle at 6% 96%, rgba(99,102,241,0.20), transparent 38%)",
-                }}
-              />
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-x-12 top-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent"
-              />
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-y-0 left-0 w-px bg-gradient-to-b from-transparent via-white/25 to-transparent"
-              />
-
-              <header className="relative z-10 flex h-[62px] items-center justify-between border-b border-white/[0.08] px-5 sm:px-6">
-                <div className="flex items-center gap-2.5">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-xl border border-emerald-300/25 bg-emerald-300/10 text-emerald-300">
-                    <Bot size={16} />
-                  </div>
-                  <div>
-                    <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-white">Trading Auto Pilot</div>
-                    <div className="text-[10px] text-slate-500">Crypto + Stocks · one dashboard</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-1.5 rounded-full border border-emerald-300/25 bg-emerald-300/10 px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-[0.14em] text-emerald-300">
-                  <span className="relative flex h-1.5 w-1.5">
-                    <motion.span
-                      animate={reduceMotion ? undefined : { scale: [1, 2.5, 1], opacity: [0.8, 0, 0.8] }}
-                      transition={{ duration: 2, repeat: Infinity, ease: "easeOut" }}
-                      className="absolute inset-0 rounded-full bg-emerald-300"
-                    />
-                    <span className="relative h-1.5 w-1.5 rounded-full bg-emerald-300" />
-                  </span>
+            <div
+              className="absolute -top-3 right-0 z-20 flex items-center gap-2"
+              style={{ transform: "translateZ(50px)" }}
+            >
+              <div className={`${chipCls} pointer-events-none !py-1.5`}>
+                <span className="relative flex h-1.5 w-1.5">
+                  <motion.span
+                    animate={decorOn ? { scale: [1, 2.5, 1], opacity: [0.8, 0, 0.8] } : undefined}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeOut" }}
+                    className="absolute inset-0 rounded-full bg-emerald-500"
+                  />
+                  <span className="relative h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                </span>
+                <span className="text-[9px] font-bold uppercase tracking-[0.14em] text-slate-600 dark:text-emerald-300">
                   AI CORE ACTIVE
-                </div>
-              </header>
-
-              <div
-                className="relative z-10 px-3 pb-1 pt-4"
-                role="img"
-                aria-label="Парящий дашборд: доходность акций и крипты растут, ИИ-ядро активно"
+                </span>
+              </div>
+              <button
+                type="button"
+                aria-label={paused ? "Возобновить анимацию графика" : "Приостановить анимацию графика"}
+                aria-pressed={paused}
+                onClick={() => setPaused((p) => !p)}
+                className={`${chipCls} cursor-pointer !px-2.5 transition-all duration-200 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/60`}
               >
-                <svg className="block h-[min(34vh,268px)] w-full" viewBox="0 0 640 250" preserveAspectRatio="none" aria-hidden="true">
-                  <defs>
-                    <linearGradient id={stockAreaId} x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#60A5FA" stopOpacity="0.34" />
-                      <stop offset="100%" stopColor="#60A5FA" stopOpacity="0" />
-                    </linearGradient>
-                    <linearGradient id={cryptoAreaId} x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#00E58F" stopOpacity="0.36" />
-                      <stop offset="100%" stopColor="#00E58F" stopOpacity="0" />
-                    </linearGradient>
-                    <linearGradient id={edgeId} x1="0" y1="0" x2="1" y2="0">
-                      <stop offset="0%" stopColor="#60A5FA" stopOpacity="0" />
-                      <stop offset="50%" stopColor="#C7D2FE" stopOpacity="0.9" />
-                      <stop offset="100%" stopColor="#60A5FA" stopOpacity="0" />
-                    </linearGradient>
-                    <filter id={glowId} x="-25%" y="-25%" width="150%" height="150%">
-                      <feGaussianBlur stdDeviation="5" />
-                    </filter>
-                  </defs>
+                {paused ? (
+                  <Play size={14} className="text-emerald-500" />
+                ) : (
+                  <Pause size={14} className="text-slate-500 dark:text-slate-300" />
+                )}
+              </button>
+            </div>
 
-                  <path d={stockArea} fill={`url(#${stockAreaId})`} />
-                  <path d={cryptoArea} fill={`url(#${cryptoAreaId})`} />
+            <div
+              className="pointer-events-none absolute left-0 top-10 z-20 hidden sm:block"
+              style={{ transform: "translateZ(50px)" }}
+            >
+              <div className={chipCls}>
+                <span className="flex h-7 w-7 items-center justify-center rounded-lg" style={iconTileCls("#60A5FA")}>
+                  <TrendingUp size={14} />
+                </span>
+                <span>
+                  <span className="block text-[9px] font-bold tracking-[0.08em] text-slate-500 dark:text-slate-300">SHARES</span>
+                  <span className="block text-[10px] font-semibold text-slate-700 dark:text-white">+71.2% за год</span>
+                </span>
+              </div>
+            </div>
 
-                  <motion.path
-                    d={stockLine}
-                    fill="none"
-                    stroke="#60A5FA"
-                    strokeWidth="9"
-                    strokeLinecap="round"
-                    opacity="0.14"
-                    filter={`url(#${glowId})`}
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: 1 }}
-                    transition={{ duration: reduceMotion ? 0 : 1.6, delay: reduceMotion ? 0 : 0.3, ease: "easeOut" }}
-                  />
-                  <motion.path
-                    d={stockLine}
-                    fill="none"
-                    stroke="#60A5FA"
-                    strokeWidth="2.4"
-                    strokeLinecap="round"
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: 1 }}
-                    transition={{ duration: reduceMotion ? 0 : 1.6, delay: reduceMotion ? 0 : 0.3, ease: "easeOut" }}
-                  />
+            <div
+              className="pointer-events-none absolute right-0 bottom-16 z-20 hidden sm:block"
+              style={{ transform: "translateZ(50px)" }}
+            >
+              <div className={chipCls}>
+                <span className="flex h-7 w-7 items-center justify-center rounded-lg" style={iconTileCls("#34D399")}>
+                  <ShieldCheck size={14} />
+                </span>
+                <span>
+                  <span className="block text-[9px] font-bold tracking-[0.08em] text-slate-500 dark:text-slate-300">RISK GUARD</span>
+                  <span className="block text-[10px] font-semibold text-slate-700 dark:text-white">Защищено</span>
+                </span>
+              </div>
+            </div>
 
+            <div
+              className="pointer-events-none absolute -left-2 bottom-24 z-20 hidden sm:block"
+              style={{ transform: "translateZ(50px)" }}
+            >
+              <div className={chipCls}>
+                <span className="flex h-7 w-7 items-center justify-center rounded-lg" style={iconTileCls("#60A5FA")}>
+                  <Globe2 size={14} />
+                </span>
+                <span>
+                  <span className="block text-[9px] font-bold tracking-[0.08em] text-slate-500 dark:text-slate-300">20+ БИРЖ</span>
+                  <span className="block text-[10px] font-semibold text-slate-700 dark:text-white">Подключено</span>
+                </span>
+              </div>
+            </div>
+
+            <div className="relative z-10 px-2 pb-4 pt-7">
+              <svg
+                className="block h-[min(38vh,320px)] w-full"
+                viewBox="0 0 640 250"
+                preserveAspectRatio="none"
+                role="img"
+                aria-label="Парящий график: доходность акций и крипты растёт, ИИ-ядро активно"
+              >
+                <defs>
+                  <linearGradient id={stockAreaId} x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#60A5FA" stopOpacity="0.34" />
+                    <stop offset="100%" stopColor="#60A5FA" stopOpacity="0" />
+                  </linearGradient>
+                  <linearGradient id={cryptoAreaId} x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#00E58F" stopOpacity="0.36" />
+                    <stop offset="100%" stopColor="#00E58F" stopOpacity="0" />
+                  </linearGradient>
+                  <linearGradient id={edgeId} x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor="#60A5FA" stopOpacity="0" />
+                    <stop offset="50%" stopColor="#C7D2FE" stopOpacity="0.9" />
+                    <stop offset="100%" stopColor="#60A5FA" stopOpacity="0" />
+                  </linearGradient>
+                  <filter id={glowId} x="-25%" y="-25%" width="150%" height="150%">
+                    <feGaussianBlur stdDeviation="5" />
+                  </filter>
+                </defs>
+
+                <path d={stockArea} fill={`url(#${stockAreaId})`} />
+                <path d={cryptoArea} fill={`url(#${cryptoAreaId})`} />
+
+                <motion.path
+                  d={stockLine}
+                  fill="none"
+                  stroke="#60A5FA"
+                  strokeWidth="9"
+                  strokeLinecap="round"
+                  opacity="0.14"
+                  filter={`url(#${glowId})`}
+                  initial={{ pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={{ duration: reduceMotion ? 0 : 1.6, delay: reduceMotion ? 0 : 0.3, ease: "easeOut" }}
+                />
+                <motion.path
+                  d={stockLine}
+                  fill="none"
+                  stroke="#60A5FA"
+                  strokeWidth="2.4"
+                  strokeLinecap="round"
+                  initial={{ pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={{ duration: reduceMotion ? 0 : 1.6, delay: reduceMotion ? 0 : 0.3, ease: "easeOut" }}
+                />
+
+                <motion.path
+                  d={cryptoLine}
+                  fill="none"
+                  stroke="#00E58F"
+                  strokeWidth="10"
+                  strokeLinecap="round"
+                  opacity="0.18"
+                  filter={`url(#${glowId})`}
+                  initial={{ pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={{ duration: reduceMotion ? 0 : 1.8, delay: reduceMotion ? 0 : 0.5, ease: "easeOut" }}
+                />
+                <motion.path
+                  d={cryptoLine}
+                  fill="none"
+                  stroke="#00E58F"
+                  strokeWidth="2.8"
+                  strokeLinecap="round"
+                  initial={{ pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={{ duration: reduceMotion ? 0 : 1.8, delay: reduceMotion ? 0 : 0.5, ease: "easeOut" }}
+                />
+
+                {decorOn && (
                   <motion.path
                     d={cryptoLine}
                     fill="none"
-                    stroke="#00E58F"
-                    strokeWidth="10"
+                    stroke={`url(#${edgeId})`}
+                    strokeWidth="3"
                     strokeLinecap="round"
-                    opacity="0.18"
-                    filter={`url(#${glowId})`}
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: 1 }}
-                    transition={{ duration: reduceMotion ? 0 : 1.8, delay: reduceMotion ? 0 : 0.5, ease: "easeOut" }}
+                    strokeDasharray="80 900"
+                    initial={{ strokeDashoffset: 900 }}
+                    animate={{ strokeDashoffset: -140 }}
+                    transition={{ duration: 5, delay: 2.6, repeat: Infinity, repeatDelay: 2.4, ease: "easeInOut" }}
                   />
-                  <motion.path
-                    d={cryptoLine}
-                    fill="none"
-                    stroke="#00E58F"
-                    strokeWidth="2.8"
-                    strokeLinecap="round"
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: 1 }}
-                    transition={{ duration: reduceMotion ? 0 : 1.8, delay: reduceMotion ? 0 : 0.5, ease: "easeOut" }}
-                  />
+                )}
 
-                  {!reduceMotion && (
-                    <motion.path
-                      d={cryptoLine}
-                      fill="none"
-                      stroke={`url(#${edgeId})`}
-                      strokeWidth="3"
-                      strokeLinecap="round"
-                      strokeDasharray="80 900"
-                      initial={{ strokeDashoffset: 900 }}
-                      animate={{ strokeDashoffset: -140 }}
-                      transition={{ duration: 5, delay: 2.6, repeat: Infinity, repeatDelay: 2.4, ease: "easeInOut" }}
-                    />
-                  )}
+                {TOOLTIPS.map(({ index, label, color }, i) => {
+                  const p = CRYPTO_POINTS[index];
+                  const w = label.length * 5.6 + 18;
+                  return (
+                    <motion.g
+                      key={label}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: reduceMotion ? 0 : 0.5, delay: reduceMotion ? 0 : 1.4 + i * 0.18 }}
+                    >
+                      <circle cx={p.x} cy={p.y} r="7" fill={color} opacity="0.18" />
+                      <circle cx={p.x} cy={p.y} r="3.2" fill="#0B0C15" stroke={color} strokeWidth="2" />
+                      <rect x={p.x - w / 2} y={p.y - 36} width={w} height="20" rx="6" fill="rgba(12,16,26,0.86)" stroke={color} strokeOpacity="0.4" />
+                      <text x={p.x} y={p.y - 26} textAnchor="middle" dominantBaseline="middle" fill={color} fontSize="9.5" fontWeight="700">
+                        {label}
+                      </text>
+                    </motion.g>
+                  );
+                })}
 
-                  {TOOLTIPS.map(({ index, label, color }, i) => {
-                    const p = CRYPTO_POINTS[index];
-                    const w = label.length * 5.6 + 18;
-                    return (
-                      <motion.g
-                        key={label}
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: reduceMotion ? 0 : 0.5, delay: reduceMotion ? 0 : 1.4 + i * 0.18 }}
-                      >
-                        <circle cx={p.x} cy={p.y} r="7" fill={color} opacity="0.18" />
-                        <circle cx={p.x} cy={p.y} r="3.2" fill="#0B0C15" stroke={color} strokeWidth="2" />
-                        <rect x={p.x - w / 2} y={p.y - 36} width={w} height="20" rx="6" fill="rgba(12,16,26,0.86)" stroke={color} strokeOpacity="0.4" />
-                        <text x={p.x} y={p.y - 26} textAnchor="middle" dominantBaseline="middle" fill={color} fontSize="9.5" fontWeight="700">
-                          {label}
-                        </text>
-                      </motion.g>
-                    );
-                  })}
-
-                  <line x1={lastCrypto.x} x2={lastCrypto.x} y1={lastCrypto.y + 8} y2="240" stroke="rgba(0,229,143,0.3)" strokeWidth="1" strokeDasharray="3 5" />
+                <line x1={lastCrypto.x} x2={lastCrypto.x} y1={lastCrypto.y + 8} y2="240" stroke={pulseColor} strokeOpacity="0.3" strokeWidth="1" strokeDasharray="3 5" />
+                {decorOn && (
                   <motion.circle
                     cx={lastCrypto.x}
                     cy={lastCrypto.y}
                     r="11"
                     fill="none"
-                    stroke="#00E58F"
+                    stroke={pulseColor}
                     strokeWidth="1.2"
-                    animate={reduceMotion ? undefined : { opacity: [0.6, 0, 0.6], r: [9, 16, 9] }}
+                    animate={{ opacity: [0.6, 0, 0.6], r: [9, 16, 9] }}
                     transition={{ duration: 2.4, repeat: Infinity, ease: "easeOut" }}
                   />
-                  <circle cx={lastCrypto.x} cy={lastCrypto.y} r="7" fill="#00E58F" opacity="0.22" />
-                  <circle cx={lastCrypto.x} cy={lastCrypto.y} r="4.2" fill="#00E58F" />
-                  <circle cx={lastStock.x} cy={lastStock.y} r="4" fill="#60A5FA" opacity="0.85" />
+                )}
+                <circle cx={lastCrypto.x} cy={lastCrypto.y} r="7" fill={pulseColor} opacity="0.22" />
+                <circle cx={lastCrypto.x} cy={lastCrypto.y} r="4.2" fill={pulseColor} />
+                <circle cx={lastStock.x} cy={lastStock.y} r="4" fill="#60A5FA" opacity="0.85" />
 
-                  {MONTHS.map((month, index) => (
-                    <text
-                      key={month}
-                      x={24 + (572 / 11) * index}
-                      y="245"
-                      textAnchor="middle"
-                      fill="#5C6675"
-                      fontSize="9"
-                      fontWeight="500"
-                    >
-                      {month}
-                    </text>
-                  ))}
-                </svg>
-              </div>
-
-              <footer className="relative z-10 flex h-[52px] items-center justify-between gap-3 border-t border-white/[0.08] px-5 sm:px-6">
-                <div className="flex min-w-0 items-center gap-4 text-[10px] text-slate-500">
-                  <span className="flex items-center gap-1.5">
-                    <span className="h-2 w-2 rounded-full bg-[#60A5FA]" />
-                    <b className="text-white">Акции</b>
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <span className="h-2 w-2 rounded-full bg-[#00E58F]" />
-                    <b className="text-white">Крипта</b>
-                  </span>
-                  <span className="hidden sm:inline">
-                    <b className="text-emerald-300">+96.4%</b> портфель за год
-                  </span>
-                </div>
-                <div className="flex items-center gap-1 text-[10px] font-medium text-emerald-300">
-                  <Zap size={12} /> Автопилот включён
-                </div>
-              </footer>
+                {MONTHS.map((month, index) => (
+                  <text
+                    key={month}
+                    x={24 + (572 / 11) * index}
+                    y="245"
+                    textAnchor="middle"
+                    fill="#5C6675"
+                    fontSize="9"
+                    fontWeight="500"
+                  >
+                    {month}
+                  </text>
+                ))}
+              </svg>
             </div>
 
-            {motionOn && (
-              <div style={{ transform: "translateZ(60px)" }} className="pointer-events-none absolute inset-0">
-                <motion.div
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 1.2 }}
-                  className="absolute -left-6 top-[22%] hidden items-center gap-2 rounded-xl border border-white/[0.14] bg-[#111C29]/85 px-3 py-2 shadow-[0_18px_40px_-18px_rgba(0,0,0,0.9)] backdrop-blur-md sm:flex"
-                >
-                  <span className="flex h-7 w-7 items-center justify-center rounded-lg" style={{ color: "#60A5FA", backgroundColor: "#60A5FA18" }}>
-                    <TrendingUp size={14} />
-                  </span>
-                  <span>
-                    <span className="block text-[9px] font-bold tracking-[0.08em] text-slate-300">SHARES</span>
-                    <span className="block text-[10px] text-slate-500">+71.2% за год</span>
-                  </span>
-                </motion.div>
-
-                {ORBIT_ITEMS.map(({ label, value, icon: Icon, color }, i) => (
-                  <motion.div
-                    key={label}
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 1.35 + i * 0.15 }}
-                    className={`absolute hidden items-center gap-2 rounded-xl border border-white/[0.14] bg-[#111C29]/85 px-3 py-2 shadow-[0_18px_40px_-18px_rgba(0,0,0,0.9)] backdrop-blur-md sm:flex ${
-                      i === 0 ? "-right-5 top-[30%]" : "-right-3 bottom-[16%]"
-                    }`}
-                  >
-                    <span className="flex h-7 w-7 items-center justify-center rounded-lg" style={{ color, backgroundColor: `${color}18` }}>
-                      <Icon size={14} />
-                    </span>
-                    <span>
-                      <span className="block text-[9px] font-bold tracking-[0.08em] text-slate-300">{label}</span>
-                      <span className="block text-[10px] text-slate-500">{value}</span>
-                    </span>
-                  </motion.div>
-                ))}
+            <div
+              className="pointer-events-none absolute inset-x-0 bottom-2 z-20 flex justify-center"
+              style={{ transform: "translateZ(40px)" }}
+            >
+              <div className={chipCls}>
+                <span className="flex items-center gap-1.5">
+                  <span className="h-2 w-2 rounded-full bg-[#60A5FA]" />
+                  <b className="text-[10px] font-semibold text-slate-700 dark:text-white">Акции</b>
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="h-2 w-2 rounded-full bg-[#00E58F]" />
+                  <b className="text-[10px] font-semibold text-slate-700 dark:text-white">Крипта</b>
+                </span>
+                <span className="hidden items-center gap-1.5 sm:flex">
+                  <Bot size={12} className="text-emerald-500" />
+                  <b className="text-[10px] font-semibold text-emerald-500">+96.4%</b>
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400">портфель за год</span>
+                </span>
+                <span className="hidden items-center gap-1 text-[10px] font-medium text-emerald-500 md:flex">
+                  <Zap size={12} /> 24/7
+                </span>
               </div>
-            )}
+            </div>
 
-            <div className="pointer-events-none absolute bottom-4 left-1/2 hidden -translate-x-1/2 items-center gap-4 text-[9px] text-slate-500 sm:flex">
-              <span className="flex items-center gap-1"><BrainCircuit size={11} className="text-violet-300" /> AI rebalancing</span>
-              <span className="flex items-center gap-1"><Activity size={11} className="text-emerald-300" /> 24/7</span>
-              <span className="flex items-center gap-1"><Sparkles size={11} className="text-amber-300" /> Limit orders</span>
+            {!motionOn && null}
+            <div className="pointer-events-none absolute inset-x-0 bottom-2 hidden justify-center sm:flex">
+              <span className="flex items-center gap-2 text-[9px] text-slate-400 dark:text-slate-500">
+                <Activity size={11} className="text-emerald-500" /> Наведи курсор — график оживёт
+              </span>
             </div>
           </motion.div>
         </motion.div>
