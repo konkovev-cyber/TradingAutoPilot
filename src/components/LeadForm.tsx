@@ -1,7 +1,7 @@
 ﻿import React, { useState } from "react";
 import { Send, CheckCircle2, User, AtSign, Bot as BotIcon, MessageSquareText, Sparkles, ShieldCheck, Settings2, Rocket } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
-import { getSupabase } from "@/lib/supabase";
+import { getSupabase, supabaseUrl } from "@/lib/supabase";
 
 export default function LeadForm() {
   const { t } = useI18n();
@@ -22,16 +22,18 @@ export default function LeadForm() {
           created_at: new Date().toISOString()
         }]);
         if (error) throw error;
-        // Telegram-уведомление через edge function (необязательно)
         try {
-          await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/notify-lead`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-            },
-            body: JSON.stringify({ name: form.name, contact: form.contact, bot: form.bot, message: form.message }),
-          });
+          if (supabaseUrl) {
+            const { data: { session } } = await sb.auth.getSession();
+            await fetch(`${supabaseUrl}/functions/v1/notify-lead`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${session?.access_token ?? ""}`,
+              },
+              body: JSON.stringify({ name: form.name, contact: form.contact, bot: form.bot, message: form.message }),
+            });
+          }
         } catch {
           /* уведомление опционально */
         }
@@ -40,7 +42,8 @@ export default function LeadForm() {
         setStatus("error");
       }
     } else {
-      window.open(`https://t.me/coinsofter?text=${encodeURIComponent(`Заявка:\nИмя: ${form.name}\nКонтакт: ${form.contact}\nБот: ${form.bot}\nСообщение: ${form.message}`)}`, "_blank");
+      const text = `Заявка:\nИмя: ${form.name}\nКонтакт: ${form.contact}\nБот: ${form.bot}\nСообщение: ${form.message}`;
+      window.open(`https://t.me/share/url?url=${encodeURIComponent("https://t.me/coinsofter")}&text=${encodeURIComponent(text)}`, "_blank");
       setStatus("success");
     }
   };

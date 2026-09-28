@@ -131,7 +131,7 @@ export default function Header() {
               onClick={(e) => handleAnchor(e, "/#bots")}
               className="hidden sm:inline-flex px-5 py-2.5 border border-[#2563EB]/30 bg-transparent text-[#2563EB] text-sm font-semibold rounded-lg hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-colors"
             >
-              Смотреть роботов
+              {c("nav", "cta", lang === "en" ? "View bots" : "Смотреть роботов")}
             </a>
 
             <button
@@ -162,7 +162,7 @@ export default function Header() {
               onClick={(e) => handleAnchor(e, "/#bots")}
               className="block w-full text-center px-5 py-2.5 border border-[#2563EB]/30 bg-transparent text-[#2563EB] text-sm font-semibold rounded-lg"
             >
-              Смотреть роботов
+              {c("nav", "cta", lang === "en" ? "View bots" : "Смотреть роботов")}
             </a>
           </div>
         )}

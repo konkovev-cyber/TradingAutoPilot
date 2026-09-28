@@ -1,7 +1,8 @@
 import React, { lazy, Suspense } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { I18nProvider } from "./lib/i18n";
 import { ThemeProvider } from "./lib/theme";
+import { SiteContentProvider } from "./lib/site-content";
 
 const HomePage = lazy(() => import("./pages/HomePage"));
 const BotDetailPage = lazy(() => import("./pages/BotDetailPage"));
@@ -10,7 +11,7 @@ const AdminLogin = lazy(() => import("./admin/pages/AdminLogin"));
 const AdminRoutes = lazy(() => import("./admin/index"));
 
 function ScrollToTop() {
-  const { pathname } = window.location;
+  const { pathname } = useLocation();
   React.useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
@@ -21,6 +22,7 @@ export default function App() {
   return (
     <ThemeProvider>
       <I18nProvider>
+        <SiteContentProvider>
         <BrowserRouter>
           <ScrollToTop />
           <Suspense fallback={
@@ -37,6 +39,7 @@ export default function App() {
             </Routes>
           </Suspense>
         </BrowserRouter>
+        </SiteContentProvider>
       </I18nProvider>
     </ThemeProvider>
   );

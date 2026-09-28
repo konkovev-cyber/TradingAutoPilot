@@ -11,7 +11,7 @@
 2. Security
 - RLS enabled
 - SELECT: public (anon + authenticated) — the public site reads content
-- INSERT/UPDATE/DELETE: authenticated only — only logged-in admin can edit
+- INSERT/UPDATE/DELETE: admins only (is_admin())
 
 3. Seed Data
 - Initial content for hero, cta, stats, exchanges, advantages,
@@ -35,17 +35,17 @@ TO anon, authenticated USING (true);
 DROP POLICY IF EXISTS "auth_insert_site_content" ON site_content;
 CREATE POLICY "auth_insert_site_content"
 ON site_content FOR INSERT
-TO authenticated WITH CHECK (true);
+TO authenticated WITH CHECK (is_admin());
 
 DROP POLICY IF EXISTS "auth_update_site_content" ON site_content;
 CREATE POLICY "auth_update_site_content"
 ON site_content FOR UPDATE
-TO authenticated USING (true) WITH CHECK (true);
+TO authenticated USING (is_admin()) WITH CHECK (is_admin());
 
 DROP POLICY IF EXISTS "auth_delete_site_content" ON site_content;
 CREATE POLICY "auth_delete_site_content"
 ON site_content FOR DELETE
-TO authenticated USING (true);
+TO authenticated USING (is_admin());
 
 -- Auto-update trigger for updated_at
 CREATE OR REPLACE FUNCTION update_updated_at_column()

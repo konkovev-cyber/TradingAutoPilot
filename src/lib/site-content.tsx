@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState, useCallback } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { supabase } from "./supabase";
 
 type Json = any;
@@ -31,25 +31,45 @@ const FALLBACKS: Record<string, Json> = {
   },
 };
 
-export function useSiteContent(): Record<string, Json> {
+const SiteContentContext = createContext<Record<string, Json>>(FALLBACKS);
+
+export function SiteContentProvider({ children }: { children: ReactNode }) {
   const [data, setData] = useState<Record<string, Json>>(FALLBACKS);
 
   useEffect(() => {
     if (!supabase) return;
-    supabase
-      .from("site_content")
-      .select("section, data")
-      .then(({ data: rows }) => {
-        if (!rows || rows.length === 0) return;
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const { data: rows, error } = await supabase
+          .from("site_content")
+          .select("section, data");
+        if (error) {
+          console.error("[site_content] load failed:", error.message);
+          return;
+        }
+        if (!rows || rows.length === 0 || cancelled) return;
         const merged: Record<string, Json> = { ...FALLBACKS };
         rows.forEach((r: any) => {
           merged[r.section] = { ...(FALLBACKS[r.section] ?? {}), ...(r.data ?? {}) };
         });
         setData(merged);
-      });
+      } catch (e) {
+        console.error("[site_content] exception:", e);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  return data;
+  return <SiteContentContext.Provider value={data}>{children}</SiteContentContext.Provider>;
+}
+
+export function useSiteContent(): Record<string, Json> {
+  return useContext(SiteContentContext);
 }
 
 export function useContent() {
@@ -61,4 +81,12 @@ export function useContent() {
     },
     [data]
   );
+}
+
+export function useSectionList(section: string): Json[] {
+  const data = useSiteContent();
+  return useMemo(() => {
+    const v = data?.[section];
+    return Array.isArray(v) ? v : [];
+  }, [data, section]);
 }
