@@ -62,7 +62,7 @@ export default function Footer() {
                 </span>
               ))}
             </div>
-            <p className="mt-2 text-[10px] text-gray-400 dark:text-gray-500">и ещё 8 бирж — всего 20+ площадок</p>
+            <p className="mt-2 text-[10px] text-gray-400 dark:text-gray-500">{t("footer.moreExchanges")}</p>
           </div>
         </div>
 

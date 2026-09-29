@@ -45,6 +45,23 @@ export const ruTranslations = {
       "today": "Сегодня",
       "uptime": "Аптайм",
       "months": ["Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"]
+    },
+    "terminal": {
+      "aiLive": "ИИ торгует 24/7",
+      "stocks": "АКЦИИ",
+      "stocksYear": "+71.2% за год",
+      "stopLoss": "СТОП-ЛОСС",
+      "stopLossNote": "Защита средств",
+      "exchanges": "20+ БИРЖ",
+      "connected": "Подключено",
+      "stocksLegend": "Акции",
+      "cryptoLegend": "Крипта",
+      "portfolioYear": "портфель за год",
+      "autopilot": "Автопилот 24/7",
+      "hoverHint": "Двигайте мышкой — график наклоняется",
+      "ariaLabel": "Парящий график: доходность акций и крипты растёт, ИИ-ядро активно",
+      "tooltip1": "+4.2% сделка",
+      "tooltip2": "ИИ перестроил портфель"
     }
   },
   "products": {
@@ -89,7 +106,15 @@ export const ruTranslations = {
     "submit": "Отправить заявку",
     "success": "Заявка отправлена! Мы скоро свяжемся с вами.",
     "error": "Не удалось отправить заявку. Напишите нам в Telegram.",
-    "privacy": "Нажимая кнопку, вы соглашаетесь на обработку персональных данных"
+    "privacy": "Нажимая кнопку, вы соглашаетесь на обработку персональных данных",
+    "again": "Отправить ещё одну заявку",
+    "whyTitle": "Почему стоит написать нам?",
+    "whySubtitle": "Отвечаем в течение часа, подберём робота под ваш депозит и риск-профиль.",
+    "whyItems": [
+      { "title": "Подбор стратегии", "desc": "Поможем выбрать робота исходя из вашего риск-профиля и депозита" },
+      { "title": "Помощь в настройке", "desc": "Проконсультируем по подключению API и первичной конфигурации" },
+      { "title": "Эксклюзивы", "desc": "Расскажем о новых бета-тестах и закрытых стратегиях" }
+    ]
   },
   "notFound": {
     "title": "Страница не найдена",
@@ -157,7 +182,8 @@ export const ruTranslations = {
     "support": "Поддержка",
     "exchanges": "Биржи",
     "copyright": "© 2026 Trading Auto Pilot. All rights reserved.",
-    "risk": "Торговля криптовалютами связана с риском.\nПрошлые результаты не гарантируют будущую доходность."
+    "risk": "Торговля криптовалютами связана с риском.\nПрошлые результаты не гарантируют будущую доходность.",
+    "moreExchanges": "и ещё 8 бирж — всего 20+ площадок"
   },
   "botDetail": {
     "home": "Главная",
@@ -181,6 +207,17 @@ export const ruTranslations = {
     "exampleTitle": "Пример сделки",
     "exampleNote": "Концептуальный пример на основе алгоритма робота — не реальная сделка",
     "examplePrinciple": "Сделки открываются и закрываются по условиям алгоритма — результат зависит от рынка"
+  },
+  "trust": {
+    "points": [
+      { "title": "Работает на 20+ биржах через API", "desc": "Подключение за 2 минуты на любой бирже" },
+      { "title": "Без абонентской платы", "desc": "Покупка один раз — торгует навсегда" },
+      { "title": "Стоп-лосс и риск-менеджмент", "desc": "В каждом роботе по умолчанию" },
+      { "title": "Бэктесты и прозрачная статистика", "desc": "Результаты подтверждены историей" }
+    ],
+    "connectedTitle": "Подключено 20+ бирж",
+    "connectedNote": "Торговля идёт по API — ключ создаётся без права вывода, средства остаются на вашем аккаунте",
+    "disclaimer": "Не является инвестиционной рекомендацией. Торговля на биржах связана с риском потери средств, прошлая доходность не гарантирует будущих результатов."
   },
   "contact": {
     "writeIn": "Написать в",
@@ -224,6 +261,23 @@ export const enTranslations = {
       "today": "Today",
       "uptime": "Uptime",
       "months": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    },
+    "terminal": {
+      "aiLive": "AI trades 24/7",
+      "stocks": "STOCKS",
+      "stocksYear": "+71.2% a year",
+      "stopLoss": "STOP-LOSS",
+      "stopLossNote": "Funds protection",
+      "exchanges": "20+ EXCHANGES",
+      "connected": "Connected",
+      "stocksLegend": "Stocks",
+      "cryptoLegend": "Crypto",
+      "portfolioYear": "portfolio a year",
+      "autopilot": "Autopilot 24/7",
+      "hoverHint": "Move the mouse — the chart tilts",
+      "ariaLabel": "Floating chart: stock and crypto returns rising, AI core active",
+      "tooltip1": "+4.2% trade",
+      "tooltip2": "AI rebuilt the portfolio"
     }
   },
   "products": {
@@ -307,7 +361,15 @@ export const enTranslations = {
     "submit": "Send request",
     "success": "Request sent! We will contact you soon.",
     "error": "Something went wrong. Please write us on Telegram.",
-    "privacy": "By clicking the button you agree to the processing of personal data"
+    "privacy": "By clicking the button you agree to the processing of personal data",
+    "again": "Send another request",
+    "whyTitle": "Why write to us?",
+    "whySubtitle": "We answer within an hour and pick a bot for your deposit and risk profile.",
+    "whyItems": [
+      { "title": "Strategy selection", "desc": "We help you choose a bot based on your risk profile and deposit" },
+      { "title": "Setup help", "desc": "We advise on API connection and initial configuration" },
+      { "title": "Exclusives", "desc": "We tell you about new beta tests and closed strategies" }
+    ]
   },
   "notFound": {
     "title": "Page not found",
@@ -321,7 +383,8 @@ export const enTranslations = {
     "knowledge": "Knowledge base",
     "exchanges": "Exchanges",
     "copyright": "© 2026 Trading Auto Pilot. All rights reserved.",
-    "risk": "Cryptocurrency trading involves risk.\nPast results do not guarantee future profitability."
+    "risk": "Cryptocurrency trading involves risk.\nPast results do not guarantee future profitability.",
+    "moreExchanges": "and 8 more exchanges — 20+ platforms in total"
   },
   "botDetail": {
     "home": "Home",
@@ -345,6 +408,17 @@ export const enTranslations = {
     "exampleTitle": "Example of a trade",
     "exampleNote": "A conceptual example based on the bot's algorithm — not a real transaction",
     "examplePrinciple": "Trades open and close by the algorithm's conditions — the result depends on the market"
+  },
+  "trust": {
+    "points": [
+      { "title": "Works on 20+ exchanges via API", "desc": "Setup takes 2 minutes on any exchange" },
+      { "title": "No subscription fee", "desc": "Buy once — it trades forever" },
+      { "title": "Stop-loss and risk management", "desc": "Built into every bot by default" },
+      { "title": "Backtests and transparent statistics", "desc": "Results backed by history" }
+    ],
+    "connectedTitle": "20+ exchanges connected",
+    "connectedNote": "Trading goes via API — the key is created without withdrawal rights, funds stay on your account",
+    "disclaimer": "Not investment advice. Exchange trading involves the risk of losing funds; past returns do not guarantee future results."
   },
   "contact": {
     "writeIn": "Write on",

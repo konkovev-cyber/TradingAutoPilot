@@ -1,5 +1,6 @@
 ﻿import { motion } from "framer-motion";
 import { Globe, CreditCard, ShieldCheck, BarChart3, type LucideIcon } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
 import {
   BingxIcon,
   BinanceIcon,
@@ -16,12 +17,7 @@ import {
   WhitebitIcon,
 } from "./ExchangeIcons";
 
-const trustPoints: { icon: LucideIcon; title: string; desc: string }[] = [
-  { icon: Globe, title: "Работает на 20+ биржах через API", desc: "Подключение за 2 минуты на любой бирже" },
-  { icon: CreditCard, title: "Без абонентской платы", desc: "Покупка один раз — торгует навсегда" },
-  { icon: ShieldCheck, title: "Стоп-лосс и риск-менеджмент", desc: "В каждом роботе по умолчанию" },
-  { icon: BarChart3, title: "Бэктесты и прозрачная статистика", desc: "Результаты подтверждены историей" },
-];
+const icons: LucideIcon[] = [Globe, CreditCard, ShieldCheck, BarChart3];
 
 const exchangeLogos = [
   { name: "BYBIT", Icon: BybitIcon },
@@ -40,12 +36,15 @@ const exchangeLogos = [
 ];
 
 export default function Trust() {
+  const { t } = useI18n();
+  const points = t("trust.points") as { title: string; desc: string }[];
+
   return (
     <section className="bg-white dark:bg-gray-950 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {trustPoints.map((p, i) => {
-            const Icon = p.icon;
+          {points.map((p, i) => {
+            const Icon = icons[i % icons.length];
             return (
               <motion.div
                 key={i}
@@ -86,10 +85,10 @@ export default function Trust() {
             </span>
             <span className="min-w-0">
               <span className="block text-sm font-semibold text-gray-800 dark:text-gray-200 leading-snug">
-                Подключено 20+ бирж
+                {t("trust.connectedTitle")}
               </span>
               <span className="block text-xs text-gray-500 dark:text-gray-400 mt-0.5 leading-snug">
-                Торговля идёт по API — ключ создаётся без права вывода, средства остаются на вашем аккаунте
+                {t("trust.connectedNote")}
               </span>
             </span>
           </div>
@@ -109,7 +108,7 @@ export default function Trust() {
         </motion.div>
 
         <p className="mt-3 text-center text-[10px] leading-relaxed text-gray-400 dark:text-gray-500">
-          Не является инвестиционной рекомендацией. Торговля на биржах связана с риском потери средств, прошлая доходность не гарантирует будущих результатов.
+          {t("trust.disclaimer")}
         </p>
       </div>
     </section>

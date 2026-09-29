@@ -2,10 +2,9 @@ import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } fro
 import { Activity, Bot, Globe2, ShieldCheck, TrendingUp, Zap } from "lucide-react";
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { useTheme } from "@/lib/theme";
+import { useI18n } from "@/lib/i18n";
 
 interface Pt { x: number; y: number }
-
-const MONTHS = ["Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"];
 
 const STOCK_POINTS: Pt[] = [
   { x: 24, y: 198 },
@@ -37,11 +36,6 @@ const CRYPTO_POINTS: Pt[] = [
   { x: 596, y: 40 },
 ];
 
-const TOOLTIPS = [
-  { index: 4, label: "+4.2% сделка", color: "#34D399" },
-  { index: 10, label: "ИИ перестроил портфель", color: "#C084FC" },
-] as const;
-
 function smoothPath(points: Pt[]): string {
   if (points.length < 2) return "";
   let d = `M ${points[0].x} ${points[0].y}`;
@@ -69,10 +63,17 @@ function iconTileCls(color: string) {
 
 export function TradingTerminal() {
   const reduceMotion = useReducedMotion();
+  const { t } = useI18n();
   const id = useId().replace(/:/g, "");
   const wrapRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
   const { theme } = useTheme();
+
+  const months: string[] = t("hero.chart.months");
+  const tooltips = [
+    { index: 4, label: t("hero.terminal.tooltip1"), color: "#34D399" },
+    { index: 10, label: t("hero.terminal.tooltip2"), color: "#C084FC" },
+  ] as const;
 
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 767px)");
@@ -167,7 +168,7 @@ export function TradingTerminal() {
                   <span className="relative h-1.5 w-1.5 rounded-full bg-emerald-500" />
                 </span>
                 <span className="text-[9px] font-bold uppercase tracking-[0.14em] text-slate-600 dark:text-emerald-300">
-                  ИИ торгует 24/7
+                  {t("hero.terminal.aiLive")}
                 </span>
               </div>
             </div>
@@ -181,8 +182,8 @@ export function TradingTerminal() {
                   <TrendingUp size={14} />
                 </span>
                 <span>
-                  <span className="block text-[9px] font-bold tracking-[0.08em] text-slate-500 dark:text-slate-300">АКЦИИ</span>
-                  <span className="block text-[10px] font-semibold text-slate-700 dark:text-white">+71.2% за год</span>
+                  <span className="block text-[9px] font-bold tracking-[0.08em] text-slate-500 dark:text-slate-300">{t("hero.terminal.stocks")}</span>
+                  <span className="block text-[10px] font-semibold text-slate-700 dark:text-white">{t("hero.terminal.stocksYear")}</span>
                 </span>
               </div>
             </div>
@@ -196,8 +197,8 @@ export function TradingTerminal() {
                   <ShieldCheck size={14} />
                 </span>
                 <span>
-                  <span className="block text-[9px] font-bold tracking-[0.08em] text-slate-500 dark:text-slate-300">СТОП-ЛОСС</span>
-                  <span className="block text-[10px] font-semibold text-slate-700 dark:text-white">Защита средств</span>
+                  <span className="block text-[9px] font-bold tracking-[0.08em] text-slate-500 dark:text-slate-300">{t("hero.terminal.stopLoss")}</span>
+                  <span className="block text-[10px] font-semibold text-slate-700 dark:text-white">{t("hero.terminal.stopLossNote")}</span>
                 </span>
               </div>
             </div>
@@ -211,8 +212,8 @@ export function TradingTerminal() {
                   <Globe2 size={14} />
                 </span>
                 <span>
-                  <span className="block text-[9px] font-bold tracking-[0.08em] text-slate-500 dark:text-slate-300">20+ БИРЖ</span>
-                  <span className="block text-[10px] font-semibold text-slate-700 dark:text-white">Подключено</span>
+                  <span className="block text-[9px] font-bold tracking-[0.08em] text-slate-500 dark:text-slate-300">{t("hero.terminal.exchanges")}</span>
+                  <span className="block text-[10px] font-semibold text-slate-700 dark:text-white">{t("hero.terminal.connected")}</span>
                 </span>
               </div>
             </div>
@@ -223,7 +224,7 @@ export function TradingTerminal() {
                 viewBox="0 0 640 250"
                 preserveAspectRatio="none"
                 role="img"
-                aria-label="Парящий график: доходность акций и крипты растёт, ИИ-ядро активно"
+                aria-label={t("hero.terminal.ariaLabel")}
               >
                 <defs>
                   <linearGradient id={stockAreaId} x1="0" y1="0" x2="0" y2="1">
@@ -307,7 +308,7 @@ export function TradingTerminal() {
                   />
                 )}
 
-                {!isMobile && TOOLTIPS.map(({ index, label, color }, i) => {
+                {!isMobile && tooltips.map(({ index, label, color }, i) => {
                   const p = CRYPTO_POINTS[index];
                   const w = label.length * 5.6 + 18;
                   return (
@@ -344,7 +345,7 @@ export function TradingTerminal() {
                 <circle cx={lastCrypto.x} cy={lastCrypto.y} r="4.2" fill={pulseColor} />
                 <circle cx={lastStock.x} cy={lastStock.y} r="4" fill="#60A5FA" opacity="0.85" />
 
-                {MONTHS.map((month, index) =>
+                {months.map((month, index) =>
                   isMobile && index % 2 !== 0 ? null : (
                     <text
                       key={month}
@@ -369,26 +370,26 @@ export function TradingTerminal() {
               <div className={chipCls}>
                 <span className="flex items-center gap-1.5">
                   <span className="h-2 w-2 rounded-full bg-[#60A5FA]" />
-                  <b className="text-[10px] font-semibold text-slate-700 dark:text-white">Акции</b>
+                  <b className="text-[10px] font-semibold text-slate-700 dark:text-white">{t("hero.terminal.stocksLegend")}</b>
                 </span>
                 <span className="flex items-center gap-1.5">
                   <span className="h-2 w-2 rounded-full bg-[#00E58F]" />
-                  <b className="text-[10px] font-semibold text-slate-700 dark:text-white">Крипта</b>
+                  <b className="text-[10px] font-semibold text-slate-700 dark:text-white">{t("hero.terminal.cryptoLegend")}</b>
                 </span>
                 <span className="hidden items-center gap-1.5 sm:flex">
                   <Bot size={12} className="text-emerald-500" />
                   <b className="text-[10px] font-semibold text-emerald-500">+96.4%</b>
-                  <span className="text-[10px] text-slate-500 dark:text-slate-400">портфель за год</span>
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400">{t("hero.terminal.portfolioYear")}</span>
                 </span>
                 <span className="hidden items-center gap-1 text-[10px] font-medium text-emerald-500 md:flex">
-                  <Zap size={12} /> Автопилот 24/7
+                  <Zap size={12} /> {t("hero.terminal.autopilot")}
                 </span>
               </div>
             </div>
 
             <div className="pointer-events-none absolute inset-x-0 bottom-2 hidden justify-center sm:flex">
               <span className="flex items-center gap-2 text-[9px] text-slate-400 dark:text-slate-500">
-                <Activity size={11} className="text-emerald-500" /> Двигайте мышкой — график наклоняется
+                <Activity size={11} className="text-emerald-500" /> {t("hero.terminal.hoverHint")}
               </span>
             </div>
           </motion.div>

@@ -1,10 +1,13 @@
 ﻿import React, { useState } from "react";
 import { Send, CheckCircle2, User, AtSign, Bot as BotIcon, MessageSquareText, Sparkles, ShieldCheck, Settings2, Rocket } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
+import { useBots } from "@/lib/use-bots";
+import { botText } from "@/data/bots";
 import { getSupabase, supabaseUrl } from "@/lib/supabase";
 
 export default function LeadForm() {
   const { t, lang } = useI18n();
+  const bots = useBots();
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [form, setForm] = useState({ name: "", contact: "", bot: "any", message: "" });
 
@@ -59,7 +62,7 @@ export default function LeadForm() {
             </div>
             <h3 className="text-2xl font-bold text-gray-900 mb-2">{t("lead.success")}</h3>
             <p className="text-gray-500 mb-8">{t("lead.privacy")}</p>
-            <button onClick={() => setStatus("idle")} className="text-brand-blue font-semibold hover:underline">Отправить ещё одну заявку</button>
+            <button onClick={() => setStatus("idle")} className="text-brand-blue font-semibold hover:underline">{t("lead.again")}</button>
           </div>
         </div>
       </section>
@@ -123,9 +126,9 @@ export default function LeadForm() {
                     value={form.bot} onChange={(e) => setForm({ ...form, bot: e.target.value })}
                   >
                     <option value="any">{t("lead.botAny")}</option>
-                    <option value="cryptosuperstock">CryptoSuperStock</option>
-                    <option value="megagrid-ai">MEGAGRID-AI</option>
-                    <option value="smartix">SMARTIX: Импульсный трейдер</option>
+                    {bots.map((b) => (
+                      <option key={b.slug} value={b.slug}>{botText(b, lang).name}</option>
+                    ))}
                   </select>
                 </div>
               </div>
@@ -166,24 +169,23 @@ export default function LeadForm() {
               <div className="w-12 h-12 rounded-2xl bg-white/15 backdrop-blur flex items-center justify-center mb-6">
                 <Rocket size={22} className="text-white" />
               </div>
-              <h4 className="text-2xl font-bold mb-3">Почему стоит написать нам?</h4>
-              <p className="text-blue-100 text-sm mb-8">Отвечаем в течение часа, подберём робота под ваш депозит и риск-профиль.</p>
+              <h4 className="text-2xl font-bold mb-3">{t("lead.whyTitle")}</h4>
+              <p className="text-blue-100 text-sm mb-8">{t("lead.whySubtitle")}</p>
               <ul className="space-y-6 flex-grow">
-                {[
-                  { icon: Sparkles, t: "Подбор стратегии", d: "Поможем выбрать робота исходя из вашего риск-профиля и депозита" },
-                  { icon: Settings2, t: "Помощь в настройке", d: "Проконсультируем по подключению API и первичной конфигурации" },
-                  { icon: ShieldCheck, t: "Эксклюзивы", d: "Расскажем о новых бета-тестах и закрытых стратегиях" },
-                ].map((item, i) => (
-                  <li key={i} className="flex gap-4">
-                    <div className="w-10 h-10 rounded-xl bg-white/15 backdrop-blur flex items-center justify-center shrink-0">
-                      <item.icon size={18} className="text-white" />
-                    </div>
-                    <div>
-                      <div className="font-semibold">{item.t}</div>
-                      <div className="text-sm text-blue-100 leading-snug">{item.d}</div>
-                    </div>
-                  </li>
-                ))}
+                {(t("lead.whyItems") as { title: string; desc: string }[]).map((item, i) => {
+                  const Icon = [Sparkles, Settings2, ShieldCheck][i % 3];
+                  return (
+                    <li key={i} className="flex gap-4">
+                      <div className="w-10 h-10 rounded-xl bg-white/15 backdrop-blur flex items-center justify-center shrink-0">
+                        <Icon size={18} className="text-white" />
+                      </div>
+                      <div>
+                        <div className="font-semibold">{item.title}</div>
+                        <div className="text-sm text-blue-100 leading-snug">{item.desc}</div>
+                      </div>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           </div>
