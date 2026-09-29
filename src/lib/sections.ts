@@ -10,15 +10,18 @@ export interface SiteSection {
 
 export const DEFAULT_SECTIONS: SiteSection[] = [
   { key: "hero", title: "Шапка с графиком (Hero)", enabled: true, position: 1 },
-  { key: "trust", title: "Островок доверия", enabled: true, position: 2 },
-  { key: "why", title: "Почему роботы не взаимозаменяемы", enabled: true, position: 3 },
-  { key: "products", title: "Витрина трёх роботов", enabled: true, position: 4 },
-  { key: "choose", title: "Как выбрать робота (сравнение)", enabled: true, position: 5 },
-  { key: "connect", title: "Подключение и безопасность", enabled: true, position: 6 },
-  { key: "cta", title: "Финальный CTA (карусель роботов)", enabled: true, position: 7 },
-  { key: "faq", title: "Частые вопросы", enabled: false, position: 8 },
-  { key: "calculator", title: "Калькулятор доходности", enabled: false, position: 9 },
-  { key: "lead", title: "Форма заявки", enabled: false, position: 10 },
+  { key: "products", title: "Список ботов (переключатель)", enabled: true, position: 2 },
+  { key: "why", title: "Для чего нужны торговые боты", enabled: true, position: 3 },
+  { key: "connect", title: "Подключение и безопасность", enabled: true, position: 4 },
+  { key: "advantages", title: "Преимущества использования ботов", enabled: true, position: 5 },
+  { key: "benefits", title: "Почему стоит выбрать нас", enabled: true, position: 6 },
+  { key: "pricing", title: "Наши цены", enabled: true, position: 7 },
+  { key: "conclusion", title: "Заключение", enabled: true, position: 8 },
+  { key: "questions", title: "Остались вопросы?", enabled: true, position: 9 },
+  { key: "cta", title: "Просто попробуйте (карусель роботов)", enabled: true, position: 10 },
+  { key: "faq", title: "Частые вопросы", enabled: false, position: 11 },
+  { key: "calculator", title: "Калькулятор доходности", enabled: false, position: 12 },
+  { key: "lead", title: "Форма заявки", enabled: false, position: 13 },
 ];
 
 export async function fetchSections(): Promise<SiteSection[]> {
@@ -35,8 +38,8 @@ export async function fetchSections(): Promise<SiteSection[]> {
   }
 }
 
-// Sections removed from the homepage in the product-first redesign.
-const LEGACY_KEYS = ["how", "compare"];
+// Sections removed from the homepage in the redesigns.
+const LEGACY_KEYS = ["how", "compare", "choose", "trust"];
 // Optional blocks that must stay out of the main landing flow until explicitly re-enabled.
 const OPTIONAL_KEYS = ["faq", "calculator", "lead"];
 

@@ -16,16 +16,16 @@ export default function Header() {
   const { sections } = useSections();
   const c = useContent();
 
-  const navMap: Record<string, { href: string; label: string }> = {
-    products: { href: "/#bots", label: c("nav", "bots", t("nav.bots")) },
-    how: { href: "/#how", label: c("nav", "how", t("nav.how")) },
-    faq: { href: "/#faq", label: c("nav", "faq", t("nav.faq")) },
+  const navMap: Record<string, { href: string; domId: string; label: string }> = {
+    products: { href: "/#bots", domId: "bots", label: c("nav", "bots", t("nav.bots")) },
+    connect: { href: "/#how", domId: "how", label: c("nav", "how", t("nav.how")) },
+    faq: { href: "/#faq", domId: "faq", label: c("nav", "faq", t("nav.faq")) },
   };
   const enabledKeys = new Set(sections.filter((s) => s.enabled).map((s) => s.key));
   const navLinks = Object.entries(navMap)
     .filter(([key]) => enabledKeys.has(key))
-    .map(([key, v]) => ({ id: key, ...v }));
-  const navKey = navLinks.map((l) => l.id).join(",");
+    .map(([key, v]) => ({ id: key, domId: v.domId, ...v }));
+  const navDomIds = navLinks.map((l) => l.domId).join(",");
 
   useEffect(() => {
     const onScroll = () => {
@@ -39,7 +39,7 @@ export default function Header() {
   }, []);
 
   useEffect(() => {
-    const els = navKey.split(",")
+    const els = navDomIds.split(",")
       .map((id) => document.getElementById(id))
       .filter((el): el is HTMLElement => Boolean(el));
     if (!els.length) return;
@@ -53,7 +53,7 @@ export default function Header() {
     );
     els.forEach((el) => io.observe(el));
     return () => io.disconnect();
-  }, [navKey]);
+  }, [navDomIds]);
 
   const handleAnchor = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     const id = href.split("#")[1];
@@ -99,7 +99,7 @@ export default function Header() {
                 href={link.href}
                 onClick={(e) => handleAnchor(e, link.href)}
                 className={`text-sm font-medium transition-colors ${
-                  active === link.id
+                  active === link.domId
                     ? "text-[#2563EB]"
                     : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
                 }`}

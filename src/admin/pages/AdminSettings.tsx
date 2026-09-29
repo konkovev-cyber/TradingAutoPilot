@@ -9,16 +9,19 @@ const SECTION_LABELS: Record<string, string> = {
   meta: "SEO и мета-данные",
   nav: "Меню в шапке",
   hero: "Hero / Знакомство с проектом",
-  why: "Почему роботы не взаимозаменяемы",
-  choose: "Как выбрать робота",
+  why: "Для чего нужны торговые боты",
+  advantages: "Преимущества использования ботов",
+  benefits: "Почему стоит выбрать нас",
+  pricing: "Наши цены",
+  conclusion: "Заключение",
+  questions: "Остались вопросы?",
+  tryIt: "Просто попробуйте (CTA)",
   connect: "Подключение и безопасность",
-  cta: "CTA / Карусель роботов",
+  cta: "Карусель роботов",
   stats: "Статистика",
   exchanges: "Биржи",
-  advantages: "Преимущества",
   how_it_works: "Как это работает",
   testimonials: "Отзывы",
-  pricing: "Тарифы",
   faq: "FAQ",
 };
 
@@ -26,16 +29,19 @@ const HELP_TEXT: Record<string, string> = {
   meta: "Title и Description отображаются во вкладках браузера и в поисковой выдаче.",
   nav: "Текст пунктов меню в шапке сайта.",
   hero: "Заголовок, подзаголовок и кнопки на главном экране. Поля поддерживают RU и EN.",
-  why: "Три принципа проекта: специализированные стратегии, автоматизация, контроль риска.",
-  choose: "Заголовок и подзаголовок блока сравнения роботов.",
+  why: "Блок «Для чего нужны торговые боты» — заголовок и пояснительный текст.",
+  advantages: "Карточки преимуществ: круглосуточная работа, отсутствие эмоций и т.д.",
+  benefits: "Карточки «Почему стоит выбрать нас»: подпись-тег, заголовок и описание.",
+  pricing: "Блок «Наши цены» — условия модели: без абонплаты, покупка навсегда.",
+  conclusion: "Блок «Заключение» — итоговый текст страницы.",
+  questions: "Блок «Остались вопросы?» — бесплатная консультация через Telegram.",
+  tryIt: "Финальный блок «Просто попробуйте» — карусель роботов, кнопки и строка доверия.",
   connect: "Шаги подключения по API и строка безопасности. Ключ без права вывода.",
-  cta: "Карусель роботов, кнопки и строка доверия перед подвалом.",
+  cta: "Карусель роботов: заголовки, кнопка связи и строка доверия.",
   stats: "Цифры статистики на главной странице.",
   exchanges: "Список бирж, которые поддерживает сайт.",
-  advantages: "Карточки преимуществ с иконками.",
   how_it_works: "Шаги Как это работает — нумеруются автоматически.",
   testimonials: "Отзывы клиентов.",
-  pricing: "Тарифные планы — highlight указывает на рекомендуемый.",
   faq: "Вопросы и ответы. Вопросы сортируются в том же порядке.",
 };
 
@@ -215,11 +221,27 @@ export default function AdminSettings() {
       <ListEditor
         items={items}
         onChange={(next) => updateData("advantages", next)}
-        emptyItem={() => ({ icon: "shield", title: "", description: "" })}
+        emptyItem={() => ({ title: { ru: "", en: "" }, desc: { ru: "", en: "" } })}
         fields={[
-          { key: "icon", label: "Иконка (ключ)", placeholder: "shield" },
-          { key: "title", label: "Заголовок" },
-          { key: "description", label: "Описание", multiline: true },
+          { key: "title", label: "Заголовок", localized: true },
+          { key: "desc", label: "Описание", localized: true, multiline: true },
+        ]}
+      />
+    );
+  };
+
+  // --- benefits ---
+  const BenefitsEditor = () => {
+    const items = Array.isArray(sections.benefits) ? sections.benefits : [];
+    return (
+      <ListEditor
+        items={items}
+        onChange={(next) => updateData("benefits", next)}
+        emptyItem={() => ({ tag: { ru: "", en: "" }, title: { ru: "", en: "" }, desc: { ru: "", en: "" } })}
+        fields={[
+          { key: "tag", label: "Подпись-тег", localized: true },
+          { key: "title", label: "Заголовок", localized: true },
+          { key: "desc", label: "Описание", localized: true, multiline: true },
         ]}
       />
     );
@@ -262,26 +284,18 @@ export default function AdminSettings() {
     );
   };
 
-  // --- pricing ---
+  // --- pricing (текстовый блок «Наши цены») ---
   const PricingEditor = () => {
-    const items = Array.isArray(sections.pricing) ? sections.pricing : [];
+    const d = sections.pricing ?? {};
     return (
-      <ListEditor
-        items={items}
-        onChange={(next) => updateData("pricing", next)}
-        emptyItem={() => ({
-          name: "", price: "", period: "", description: "",
-          features: [] as string[], highlight: false, cta: ""
-        })}
-        fields={[
-          { key: "name", label: "Название тарифа" },
-          { key: "price", label: "Цена" },
-          { key: "period", label: "Период" },
-          { key: "description", label: "Описание", multiline: true },
-          { key: "cta", label: "Текст кнопки" },
-          { key: "highlight", label: "Рекомендуемый (true/false)" },
-        ]}
-      />
+      <div className="space-y-3">
+        <FieldInput label="Заголовок" value={d.title ?? ""}
+          onChange={(v) => updateData("pricing", { ...d, title: v })} localized />
+        <FieldInput label="Первый абзац" value={d.text1 ?? ""}
+          onChange={(v) => updateData("pricing", { ...d, text1: v })} multiline localized />
+        <FieldInput label="Второй абзац" value={d.text2 ?? ""}
+          onChange={(v) => updateData("pricing", { ...d, text2: v })} multiline localized />
+      </div>
     );
   };
 
@@ -331,10 +345,24 @@ export default function AdminSettings() {
       { key: "carouselTitle", label: "Заголовок карусели", localized: true },
       { key: "carouselSubtitle", label: "Подзаголовок карусели", localized: true },
       { key: "contactBtn", label: "Кнопка связи с нами", localized: true },
-      { key: "title", label: "Заголовок (резерв)" },
-      { key: "subtitle", label: "Подзаголовок (резерв)", multiline: true },
-      { key: "btn1", label: "Текст кнопки Смотреть роботов" },
       { key: "trust", label: "Строка доверия под кнопками" },
+    ],
+    tryIt: [
+      { key: "title", label: "Заголовок", localized: true },
+      { key: "text", label: "Описание", localized: true, multiline: true },
+      { key: "bullet1", label: "Буллет 1", localized: true },
+      { key: "bullet2", label: "Бullet 2", localized: true },
+      { key: "btn", label: "Текст кнопки", localized: true },
+    ],
+    conclusion: [
+      { key: "title", label: "Заголовок", localized: true },
+      { key: "text1", label: "Первый абзац", localized: true, multiline: true },
+      { key: "text2", label: "Второй абзац", localized: true, multiline: true },
+    ],
+    questions: [
+      { key: "title", label: "Заголовок", localized: true },
+      { key: "subtitle", label: "Подзаголовок", localized: true, multiline: true },
+      { key: "btn", label: "Текст кнопки", localized: true },
     ],
     nav: [
       { key: "bots", label: "Пункт меню Роботы" },
@@ -430,6 +458,7 @@ export default function AdminSettings() {
             if (section === "how_it_works") return <HowItWorksEditor />;
             if (section === "testimonials") return <TestimonialsEditor />;
             if (section === "pricing") return <PricingEditor />;
+            if (section === "benefits") return <BenefitsEditor />;
             if (section === "faq") return <FaqEditor />;
             if (section === "why") return (
               <>

@@ -1,12 +1,10 @@
 import { motion } from "framer-motion";
-import { useBots } from "@/lib/use-bots";
 import { useI18n } from "@/lib/i18n";
 import { useContent } from "@/lib/site-content";
-import BotCard from "@/components/bots/BotCard";
+import BotSwitcher from "@/components/bots/BotSwitcher";
 
 export default function Products() {
   const { t } = useI18n();
-  const bots = useBots();
   const c = useContent();
 
   return (
@@ -27,20 +25,14 @@ export default function Products() {
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-8">
-          {bots.map((bot, i) => (
-            <motion.div
-              key={bot.slug}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
-              className="flex min-w-0"
-            >
-              <BotCard bot={bot} />
-            </motion.div>
-          ))}
-        </div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          <BotSwitcher />
+        </motion.div>
 
         <p className="mt-10 max-w-3xl mx-auto text-center text-[11px] leading-relaxed text-gray-500 dark:text-gray-400">
           {c("products", "disclaimer", t("products.disclaimer"))}
