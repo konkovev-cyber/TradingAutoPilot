@@ -10,7 +10,7 @@ export interface SiteSection {
 
 export const DEFAULT_SECTIONS: SiteSection[] = [
   { key: "hero", title: "Шапка с графиком (Hero)", enabled: true, position: 1 },
-  { key: "products", title: "Список ботов (переключатель)", enabled: true, position: 2 },
+  { key: "products", title: "Наши разработки (3 бота)", enabled: true, position: 2 },
   { key: "why", title: "Для чего нужны торговые боты", enabled: true, position: 3 },
   { key: "connect", title: "Подключение и безопасность", enabled: true, position: 4 },
   { key: "advantages", title: "Преимущества использования ботов", enabled: true, position: 5 },
@@ -18,7 +18,7 @@ export const DEFAULT_SECTIONS: SiteSection[] = [
   { key: "pricing", title: "Наши цены", enabled: true, position: 7 },
   { key: "conclusion", title: "Заключение", enabled: true, position: 8 },
   { key: "questions", title: "Остались вопросы?", enabled: true, position: 9 },
-  { key: "cta", title: "Просто попробуйте (карусель роботов)", enabled: true, position: 10 },
+  { key: "cta", title: "Понравился наш робот? (слайдер)", enabled: true, position: 10 },
   { key: "faq", title: "Частые вопросы", enabled: false, position: 11 },
   { key: "calculator", title: "Калькулятор доходности", enabled: false, position: 12 },
   { key: "lead", title: "Форма заявки", enabled: false, position: 13 },

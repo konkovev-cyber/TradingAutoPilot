@@ -114,11 +114,12 @@ export const ruTranslations = {
     "btn": "Получить консультацию"
   },
   "tryIt": {
-    "title": "Просто попробуйте!",
+    "title": "Понравился наш робот? Выберите подходящий",
+    "subtitle": "Листайте слайды — каждый ведёт на подробное описание робота.",
     "text": "С торговыми роботами TradingAutoPilot ваш робот торгует на любимых биржах автоматически. Подключите API-ключ, выберите робота — остальное сделает алгоритм.",
     "bullet1": "Без абонентской платы",
     "bullet2": "Покупаете робота один раз",
-    "btn": "Начать зарабатывать"
+    "btn": "Смотреть роботов"
   },
   "compare": {
     "title": "Сравнение роботов",
@@ -379,11 +380,12 @@ export const enTranslations = {
     "btn": "Get a consultation"
   },
   "tryIt": {
-    "title": "Just try it!",
+    "title": "Liked our bot? Pick the right one",
+    "subtitle": "Flip through the slides — each one leads to the bot's detailed description.",
     "text": "With TradingAutoPilot trading bots, your bot trades on your favorite exchanges automatically. Connect an API key, pick a bot — the algorithm does the rest.",
     "bullet1": "No subscription fee",
     "bullet2": "Buy the bot once",
-    "btn": "Start earning"
+    "btn": "View bots"
   },
   "compare": {
     "title": "Bot comparison",

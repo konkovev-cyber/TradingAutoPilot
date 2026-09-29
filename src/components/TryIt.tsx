@@ -25,7 +25,7 @@ export default function TryIt() {
         >
           <h2 className="heading-lg mb-4 text-gray-900 dark:text-white">{c("tryIt", "title", t("tryIt.title"))}</h2>
           <p className="mx-auto max-w-2xl text-base text-gray-500 dark:text-gray-400 md:text-lg">
-            {c("tryIt", "text", t("tryIt.text"))}
+            {c("tryIt", "subtitle", t("tryIt.subtitle"))}
           </p>
           <div className="mt-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
             {[c("tryIt", "bullet1", t("tryIt.bullet1")), c("tryIt", "bullet2", t("tryIt.bullet2"))].map((text) => (
@@ -40,19 +40,19 @@ export default function TryIt() {
         <BotCarousel />
 
         <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-          <button onClick={() => scrollToId("bots")} className="btn-primary px-8 py-4 text-base">
-            {c("tryIt", "btn", t("tryIt.btn"))}
-            <ArrowRight size={18} />
-          </button>
           <a
             href="https://t.me/coinsofter"
             target="_blank"
             rel="noopener noreferrer"
-            className="btn-secondary inline-flex items-center gap-2 px-8 py-4 text-base"
+            className="btn-primary inline-flex items-center gap-2 px-8 py-4 text-base"
           >
             <Send size={18} />
             {c("cta", "contactBtn", t("cta.contactBtn"))}
           </a>
+          <button onClick={() => scrollToId("bots")} className="btn-secondary inline-flex items-center gap-2 px-8 py-4 text-base">
+            {c("tryIt", "btn", t("tryIt.btn"))}
+            <ArrowRight size={18} />
+          </button>
         </div>
 
         <p className="mt-8 text-center text-xs text-gray-500 dark:text-gray-400">{c("cta", "trust", t("cta.trust"))}</p>
