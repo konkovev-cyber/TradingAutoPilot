@@ -1,6 +1,7 @@
 ﻿import { Link } from "react-router-dom";
-import { bots } from "@/data/bots";
+import { useBots } from "@/lib/use-bots";
 import { useI18n } from "@/lib/i18n";
+import { botText } from "@/data/bots";
 import {
   BybitIcon,
   BinanceIcon,
@@ -14,7 +15,8 @@ const mainExchanges = [
 ];
 
 export default function Footer() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
+  const bots = useBots();
 
   return (
     <footer className="py-16 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-950 transition-colors duration-300">
@@ -31,7 +33,7 @@ export default function Footer() {
               {bots.map((b) => (
                 <li key={b.slug}>
                   <Link to={`/bots/${b.slug}`} className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
-                    {b.name}
+                    {botText(b, lang).name}
                   </Link>
                 </li>
               ))}
@@ -41,8 +43,8 @@ export default function Footer() {
           <div>
             <h4 className="font-bold text-gray-900 dark:text-white mb-4 text-sm">{t("footer.support")}</h4>
             <ul className="space-y-2 text-sm text-gray-500 dark:text-gray-400">
-              <li><a href="#faq" className="hover:text-gray-900 dark:hover:text-white transition-colors">FAQ</a></li>
               <li><a href="https://t.me/coinsofter" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900 dark:hover:text-white transition-colors">Telegram</a></li>
+              <li><Link to="/#bots" className="hover:text-gray-900 dark:hover:text-white transition-colors">{t("footer.robots")}</Link></li>
               <li><a href="#" className="hover:text-gray-900 dark:hover:text-white transition-colors">{t("footer.knowledge") || "Knowledge base"}</a></li>
             </ul>
           </div>

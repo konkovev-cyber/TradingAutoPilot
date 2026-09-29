@@ -1,21 +1,25 @@
 ﻿import { useState } from "react";
 import { useI18n } from "@/lib/i18n";
-import { bots } from "@/data/bots";
+import { useBots } from "@/lib/use-bots";
+import { botText } from "@/data/bots";
 
-export default function Calculator() {
-  const { t } = useI18n();
+export default function Calculator({ initialSlug, ctaTarget = "#bots" }: { initialSlug?: string; ctaTarget?: string }) {
+  const { t, lang } = useI18n();
+  const allBots = useBots();
   const [deposit, setDeposit] = useState(1000);
   const [term, setTerm] = useState(6);
-  const [botIdx, setBotIdx] = useState(0);
+  const [botSlug, setBotSlug] = useState(initialSlug ?? allBots[0]?.slug ?? "");
 
-  const botReturns = bots.map((b) => {
+  const botReturns = allBots.map((b) => {
     const last = b.returns[b.returns.length - 1];
     return parseFloat(last?.value.replace(/[+%]/g, "")) ?? 0;
   });
-  const annualRate = botReturns[botIdx] ?? 0;
+  const annualRate = botReturns[allBots.findIndex((b) => b.slug === botSlug)] ?? 0;
   const monthlyRate = Math.pow(1 + annualRate, 1/12) - 1;
   const finalAmount = deposit * Math.pow(1 + monthlyRate, term);
   const profit = finalAmount - deposit;
+
+  if (allBots.length === 0) return null;
 
   return (
     <section id="calculator" className="py-24 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
@@ -32,8 +36,8 @@ export default function Calculator() {
                 <label className="text-sm font-medium text-gray-700 dark:text-gray-300">{t("calculator.deposit")}</label>
                 <span className="text-lg font-bold text-brand-blue">${deposit}</span>
               </div>
-              <input 
-                type="range" min="100" max="10000" step="100" value={deposit} 
+              <input
+                type="range" min="100" max="10000" step="100" value={deposit}
                 onChange={(e) => setDeposit(Number(e.target.value))}
                 className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-brand-blue"
               />
@@ -43,8 +47,8 @@ export default function Calculator() {
                 <label className="text-sm font-medium text-gray-700 dark:text-gray-300">{t("calculator.term")}</label>
                 <span className="text-lg font-bold text-brand-blue">{term}</span>
               </div>
-              <input 
-                type="range" min="1" max="12" step="1" value={term} 
+              <input
+                type="range" min="1" max="12" step="1" value={term}
                 onChange={(e) => setTerm(Number(e.target.value))}
                 className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-brand-blue"
               />
@@ -52,17 +56,17 @@ export default function Calculator() {
             <div>
               <label className="text-sm font-medium text-gray-700 dark:text-gray-300 block mb-4">{t("calculator.bot")}</label>
               <div className="grid grid-cols-3 gap-2">
-                {bots.map((bot, i) => (
+                {allBots.map((bot) => (
                   <button
                     key={bot.slug}
-                    onClick={() => setBotIdx(i)}
+                    onClick={() => setBotSlug(bot.slug)}
                     className={`py-2 px-1.5 text-[10px] font-semibold rounded-lg border transition-all text-center break-words leading-tight ${
-                      botIdx === i
+                      botSlug === bot.slug
                       ? "bg-brand-blue text-white border-brand-blue"
                       : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:border-brand-blue"
                     }`}
                   >
-                    {bot.name}
+                    {botText(bot, lang).name}
                   </button>
                 ))}
               </div>
@@ -85,7 +89,7 @@ export default function Calculator() {
               </div>
             </div>
             <p className="text-[10px] text-gray-400 dark:text-gray-500 italic mb-6">{t("calculator.note")}</p>
-            <button onClick={() => window.location.href = "#bots"} className="btn-primary w-full py-3 text-sm">
+            <button onClick={() => window.location.href = ctaTarget} className="btn-primary w-full py-3 text-sm">
               {t("calculator.cta")}
             </button>
           </div>
@@ -94,5 +98,3 @@ export default function Calculator() {
     </section>
   );
 }
-
-

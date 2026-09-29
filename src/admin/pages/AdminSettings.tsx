@@ -8,8 +8,11 @@ type Json = any;
 const SECTION_LABELS: Record<string, string> = {
   meta: "SEO и мета-данные",
   nav: "Меню в шапке",
-  hero: "Hero / Главная",
-  cta: "CTA / Призыв к действию",
+  hero: "Hero / Знакомство с проектом",
+  why: "Почему роботы не взаимозаменяемы",
+  choose: "Как выбрать робота",
+  connect: "Подключение и безопасность",
+  cta: "CTA / Карусель роботов",
   stats: "Статистика",
   exchanges: "Биржи",
   advantages: "Преимущества",
@@ -22,18 +25,21 @@ const SECTION_LABELS: Record<string, string> = {
 const HELP_TEXT: Record<string, string> = {
   meta: "Title и Description отображаются во вкладках браузера и в поисковой выдаче.",
   nav: "Текст пунктов меню в шапке сайта.",
-  hero: "Заголовок, подзаголовок и кнопки на главном экране.",
-  cta: "Призыв к действию перед подвалом.",
+  hero: "Заголовок, подзаголовок и кнопки на главном экране. Поля поддерживают RU и EN.",
+  why: "Три принципа проекта: специализированные стратегии, автоматизация, контроль риска.",
+  choose: "Заголовок и подзаголовок блока сравнения роботов.",
+  connect: "Шаги подключения по API и строка безопасности. Ключ без права вывода.",
+  cta: "Карусель роботов, кнопки и строка доверия перед подвалом.",
   stats: "Цифры статистики на главной странице.",
   exchanges: "Список бирж, которые поддерживает сайт.",
   advantages: "Карточки преимуществ с иконками.",
-  how_it_works: "Шаги Как это работает  нумеруются автоматически.",
+  how_it_works: "Шаги Как это работает — нумеруются автоматически.",
   testimonials: "Отзывы клиентов.",
-  pricing: "Тарифные планы  highlight указывает на рекомендуемый.",
+  pricing: "Тарифные планы — highlight указывает на рекомендуемый.",
   faq: "Вопросы и ответы. Вопросы сортируются в том же порядке.",
 };
 
-interface Field { key: string; label: string; multiline?: boolean; placeholder?: string; }
+interface Field { key: string; label: string; multiline?: boolean; placeholder?: string; localized?: boolean; }
 interface ListEditorProps {
   items: Json[];
   onChange: (items: Json[]) => void;
@@ -42,18 +48,31 @@ interface ListEditorProps {
   hint?: string;
 }
 
-function FieldInput({ label, value, onChange, multiline, placeholder }: {
-  label: string; value: string; onChange: (v: string) => void;
-  multiline?: boolean; placeholder?: string;
+function FieldInput({ label, value, onChange, multiline, placeholder, localized }: {
+  label: string; value: any; onChange: (v: any) => void;
+  multiline?: boolean; placeholder?: string; localized?: boolean;
 }) {
   const cls = "w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-blue";
+  if (localized) {
+    const obj: { ru: string; en: string } =
+      value && typeof value === "object" && !Array.isArray(value)
+        ? { ru: String(value.ru ?? ""), en: String(value.en ?? "") }
+        : { ru: typeof value === "string" ? value : "", en: "" };
+    return (
+      <div className="space-y-1">
+        <span className="block text-xs font-medium text-gray-400">{label}</span>
+        <input className={cls} value={obj.ru} onChange={(e) => onChange({ ...obj, ru: e.target.value })} placeholder="RU" />
+        <input className={cls} value={obj.en} onChange={(e) => onChange({ ...obj, en: e.target.value })} placeholder="EN" />
+      </div>
+    );
+  }
   return (
     <div className="space-y-1">
       <span className="block text-xs font-medium text-gray-400">{label}</span>
       {multiline ? (
-        <textarea rows={3} className={cls} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} />
+        <textarea rows={3} className={cls} value={String(value ?? "")} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} />
       ) : (
-        <input className={cls} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} />
+        <input className={cls} value={String(value ?? "")} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} />
       )}
     </div>
   );
@@ -88,10 +107,11 @@ function ListEditor({ items, onChange, emptyItem, fields, hint }: ListEditorProp
               <FieldInput
                 key={f.key}
                 label={f.label}
-                value={String((item as Record<string, Json>)?.[f.key] ?? "")}
+                value={(item as Record<string, Json>)?.[f.key] ?? ""}
                 onChange={(v) => updateItem(i, { ...(item as Record<string, Json>), [f.key]: v })}
                 multiline={f.multiline}
                 placeholder={f.placeholder}
+                localized={f.localized}
               />
             ))}
           </div>
@@ -282,21 +302,38 @@ export default function AdminSettings() {
     );
   };
 
-  // --- hero / cta / nav  текстовые секции ---
+  // --- hero / why / choose / connect / cta / nav — текстовые секции ---
   const TEXT_SECTIONS: Record<string, Field[]> = {
     hero: [
-      { key: "badge", label: "Плашка над заголовком" },
-      { key: "title1", label: "Заголовок 1-я строка" },
-      { key: "title2", label: "Заголовок 2-я строка" },
-      { key: "subtitle", label: "Подзаголовок", multiline: true },
-      { key: "pick", label: "Текст кнопки Выбрать робота" },
-      { key: "cta2", label: "Текст второй кнопки" },
+      { key: "badge", label: "Плашка над заголовком", localized: true },
+      { key: "title", label: "Заголовок", localized: true },
+      { key: "subtitle", label: "Подзаголовок", localized: true, multiline: true },
+      { key: "primary", label: "Кнопка: Выбрать робота", localized: true },
+      { key: "secondary", label: "Вторая кнопка", localized: true },
+      { key: "trust1", label: "Строка доверия 1", localized: true },
+      { key: "trust2", label: "Строка доверия 2", localized: true },
+      { key: "trust3", label: "Строка доверия 3", localized: true },
+    ],
+    choose: [
+      { key: "title", label: "Заголовок", localized: true },
+      { key: "subtitle", label: "Подзаголовок", localized: true, multiline: true },
+    ],
+    why: [
+      { key: "title", label: "Заголовок", localized: true },
+      { key: "subtitle", label: "Подзаголовок", localized: true, multiline: true },
+    ],
+    connect: [
+      { key: "title", label: "Заголовок", localized: true },
+      { key: "subtitle", label: "Подзаголовок", localized: true, multiline: true },
+      { key: "note", label: "Строка безопасности", localized: true },
     ],
     cta: [
-      { key: "title", label: "Заголовок" },
-      { key: "subtitle", label: "Подзаголовок", multiline: true },
-      { key: "btn1", label: "Текст первой кнопки" },
-      { key: "btn2", label: "Текст второй кнопки" },
+      { key: "carouselTitle", label: "Заголовок карусели", localized: true },
+      { key: "carouselSubtitle", label: "Подзаголовок карусели", localized: true },
+      { key: "contactBtn", label: "Кнопка связи с нами", localized: true },
+      { key: "title", label: "Заголовок (резерв)" },
+      { key: "subtitle", label: "Подзаголовок (резерв)", multiline: true },
+      { key: "btn1", label: "Текст кнопки Смотреть роботов" },
       { key: "trust", label: "Строка доверия под кнопками" },
     ],
     nav: [
@@ -314,13 +351,46 @@ export default function AdminSettings() {
           <FieldInput
             key={f.key}
             label={f.label}
-            value={String(d[f.key] ?? "")}
+            value={d[f.key] ?? ""}
             onChange={(v) => updateData(section, { ...d, [f.key]: v })}
             multiline={f.multiline}
+            localized={f.localized}
             placeholder={`Пример: ${f.label}`}
           />
         ))}
       </div>
+    );
+  };
+
+  // --- why items ---
+  const WhyItemsEditor = () => {
+    const items = Array.isArray(sections.why?.items) ? sections.why.items : [];
+    return (
+      <ListEditor
+        items={items}
+        onChange={(next) => updateData("why", { ...(sections.why ?? {}), items: next })}
+        emptyItem={() => ({ title: { ru: "", en: "" }, desc: { ru: "", en: "" } })}
+        fields={[
+          { key: "title", label: "Заголовок", localized: true },
+          { key: "desc", label: "Описание", localized: true, multiline: true },
+        ]}
+      />
+    );
+  };
+
+  // --- connect steps ---
+  const ConnectStepsEditor = () => {
+    const items = Array.isArray(sections.connect?.steps) ? sections.connect.steps : [];
+    return (
+      <ListEditor
+        items={items}
+        onChange={(next) => updateData("connect", { ...(sections.connect ?? {}), steps: next })}
+        emptyItem={() => ({ title: { ru: "", en: "" }, desc: { ru: "", en: "" } })}
+        fields={[
+          { key: "title", label: "Заголовок", localized: true },
+          { key: "desc", label: "Описание", localized: true, multiline: true },
+        ]}
+      />
     );
   };
 
@@ -361,6 +431,18 @@ export default function AdminSettings() {
             if (section === "testimonials") return <TestimonialsEditor />;
             if (section === "pricing") return <PricingEditor />;
             if (section === "faq") return <FaqEditor />;
+            if (section === "why") return (
+              <>
+                <TextSectionEditor section={section} fields={TEXT_SECTIONS[section]} />
+                <WhyItemsEditor />
+              </>
+            );
+            if (section === "connect") return (
+              <>
+                <TextSectionEditor section={section} fields={TEXT_SECTIONS[section]} />
+                <ConnectStepsEditor />
+              </>
+            );
             if (TEXT_SECTIONS[section]) return <TextSectionEditor section={section} fields={TEXT_SECTIONS[section]} />;
             return null;
           };

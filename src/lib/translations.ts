@@ -51,13 +51,15 @@ export const ruTranslations = {
     "title": "Три робота — три стратегии",
     "subtitle": "Каждый робот — самостоятельная торговая система. Покупка один раз — торговля без абонентской платы.",
     "detail": "Подробнее",
-    "hit": "ХИТ"
+    "hit": "ХИТ",
+    "disclaimer": "* Историческая доходность не гарантирует будущих результатов. Торговля на бирже связана с риском, возможна просадка депозита. Показатели приведены за прошлые периоды и не являются обещанием дохода."
   },
   "compare": {
     "title": "Сравнение роботов",
     "subtitle": "Три стратегии \u2014 выберите свою",
     "market": "Рынок",
     "strategy": "Стратегия",
+    "style": "Стиль торговли",
     "risk": "Риск",
     "income": "Доходность за год",
     "pairs": "Активы",
@@ -97,6 +99,7 @@ export const ruTranslations = {
   "how": {
     "title": "Как это работает",
     "subtitle": "От регистрации до первой сделки — 2 минуты.",
+    "apiNote": "API-ключи шифруются и хранятся без права вывода — доступа к вашим средствам у нас нет.",
     "steps": [
       { "n": "01", "title": "Регистрация", "desc": "Создайте аккаунт за минуту \u2014 нужен только email" },
       { "n": "02", "title": "Подключение биржи", "desc": "Добавьте API-ключ с правом торговли, но без права вывода средств" },
@@ -135,7 +138,17 @@ export const ruTranslations = {
     "subtitle": "Без абонентской платы и комиссий с прибыли — покупаете робота один раз, он торгует для вас круглосуточно.",
     "btn1": "Смотреть роботов",
     "btn2": "Вопросы и ответы",
-    "trust": "АПИ-ключи без права вывода \u2014 Средства остаются на вашей бирже"
+    "trust": "АПИ-ключи без права вывода \u2014 Средства остаются на вашей бирже",
+    "carouselTitle": "Какой робот вам подходит?",
+    "carouselSubtitle": "Три стратегии — выберите свою и откройте подробное описание",
+    "contactBtn": "Связаться с нами"
+  },
+  "carousel": {
+    "label": "Карусель роботов",
+    "prev": "Предыдущий слайд",
+    "next": "Следующий слайд",
+    "goto": "Перейти к слайду",
+    "pick": "Подробнее"
   },
   "footer": {
     "knowledge": "База знаний",
@@ -158,7 +171,16 @@ export const ruTranslations = {
     "launch": "Запустить",
     "others": "Другие роботы",
     "notFound": "Робот не найден",
-    "backHome": "На главную"
+    "backHome": "На главную",
+    "share": "Поделиться",
+    "copied": "Скопировано",
+    "safetyTitle": "Безопасность API",
+    "safety": "Робот торгует по вашему API-ключу с правом торговли, но без права вывода средств. Средства и прибыль остаются на вашей бирже.",
+    "contactCta": "Обсудить запуск в Telegram",
+    "fits": "Какой робот вам подходит",
+    "exampleTitle": "Пример сделки",
+    "exampleNote": "Концептуальный пример на основе алгоритма робота — не реальная сделка",
+    "examplePrinciple": "Сделки открываются и закрываются по условиям алгоритма — результат зависит от рынка"
   },
   "contact": {
     "writeIn": "Написать в",
@@ -208,13 +230,15 @@ export const enTranslations = {
     "title": "Three bots \u2014 three strategies",
     "subtitle": "Each bot is an independent trading system. Buy once \u2014 trade without subscription fees.",
     "detail": "More details",
-    "hit": "HIT"
+    "hit": "HIT",
+    "disclaimer": "* Historical returns do not guarantee future results. Exchange trading involves risk, deposit drawdown is possible. Figures are shown for past periods and are not a promise of profit."
   },
   "compare": {
     "title": "Bot comparison",
     "subtitle": "Three strategies \u2014 pick yours",
     "market": "Market",
     "strategy": "Strategy",
+    "style": "Trade style",
     "risk": "Risk",
     "income": "Annual return",
     "pairs": "Assets",
@@ -236,6 +260,7 @@ export const enTranslations = {
   "how": {
     "title": "How it works",
     "subtitle": "From registration to the first trade \u2014 2 minutes.",
+    "apiNote": "API keys are encrypted and stored without withdrawal rights \u2014 we have no access to your funds.",
     "steps": [
       { "n": "01", "title": "Registration", "desc": "Create an account in a minute \u2014 all you need is an email" },
       { "n": "02", "title": "Exchange connection", "desc": "Add an API key with trading rights but without withdrawal rights" },
@@ -259,7 +284,17 @@ export const enTranslations = {
     "subtitle": "No subscription fee and no profit commission \u2014 buy the bot once, it trades for you around the clock.",
     "btn1": "View bots",
     "btn2": "Questions and answers",
-    "trust": "API keys without withdrawal rights. Funds stay on your exchange"
+    "trust": "API keys without withdrawal rights. Funds stay on your exchange",
+    "carouselTitle": "Which bot fits you?",
+    "carouselSubtitle": "Three strategies — pick yours and open the detailed description",
+    "contactBtn": "Contact us"
+  },
+  "carousel": {
+    "label": "Bot carousel",
+    "prev": "Previous slide",
+    "next": "Next slide",
+    "goto": "Go to slide",
+    "pick": "More details"
   },
   "lead": {
     "title": "Leave a request",
@@ -300,7 +335,16 @@ export const enTranslations = {
     "launch": "Launch",
     "others": "Other bots",
     "notFound": "Bot not found",
-    "backHome": "Back to home"
+    "backHome": "Back to home",
+    "share": "Share",
+    "copied": "Copied",
+    "safetyTitle": "API safety",
+    "safety": "The bot trades via your API key with trading rights but without withdrawal rights. Funds and profit stay on your exchange.",
+    "contactCta": "Discuss launch on Telegram",
+    "fits": "Which bot fits you",
+    "exampleTitle": "Example of a trade",
+    "exampleNote": "A conceptual example based on the bot's algorithm — not a real transaction",
+    "examplePrinciple": "Trades open and close by the algorithm's conditions — the result depends on the market"
   },
   "contact": {
     "writeIn": "Write on",

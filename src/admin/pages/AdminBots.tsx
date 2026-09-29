@@ -1,7 +1,7 @@
 ﻿import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Link } from "react-router-dom";
-import { Plus, Edit2, Trash2, Save, X, ArrowUp, ArrowDown, ImageOff } from "lucide-react";
+import { Plus, Edit2, Trash2, Save, X, ArrowUp, ArrowDown, ImageOff, ChevronDown } from "lucide-react";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type Json = any;
@@ -12,6 +12,7 @@ interface Bot {
   name: string;
   slogan: string;
   shortDesc: string;
+  fullDesc?: string;
   badge: string;
   market: string;
   strategy: string;
@@ -24,6 +25,8 @@ interface Bot {
   features?: Json;
   returns?: Json;
   how_it_works?: Json;
+  example_trade?: Json;
+  i18n?: Json;
   position?: number;
 }
 
@@ -37,10 +40,22 @@ const DIFFICULTIES = [
 ] as const;
 
 const initialBot: Bot = {
-  slug: "", name: "", slogan: "", shortDesc: "", badge: "",
+  slug: "", name: "", slogan: "", shortDesc: "", fullDesc: "", badge: "",
   market: "", strategy: "", risk: "", pairs: "", color: "#3b82f6", image_url: null,
   difficulty: "", difficulty_tone: ""
 };
+
+const EN_FIELDS: { key: string; label: string; multiline?: boolean }[] = [
+  { key: "name", label: "Name" },
+  { key: "slogan", label: "Слоган" },
+  { key: "badge", label: "Бейдж" },
+  { key: "market", label: "Рынок" },
+  { key: "strategy", label: "Стратегия" },
+  { key: "risk", label: "Риск" },
+  { key: "pairs", label: "Пары" },
+  { key: "shortDesc", label: "Краткое описание", multiline: true },
+  { key: "fullDesc", label: "Полное описание (алгоритм)", multiline: true },
+];
 
 export default function AdminBots() {
   const [bots, setBots] = useState<Bot[]>([]);
@@ -49,12 +64,17 @@ export default function AdminBots() {
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [enOpen, setEnOpen] = useState(false);
 
   const [extra, setExtra] = useState<{
     features: string[];
     returns: ReturnRow[];
     how: StepRow[];
-  }>({ features: [], returns: [], how: [] });
+    example: StepRow[];
+    en: { features: string[]; how: StepRow[]; example: StepRow[] };
+  }>({ features: [], returns: [], how: [], example: [], en: { features: [], how: [], example: [] } });
+
+  const [i18n, setI18n] = useState<Record<string, any>>({});
 
   const fetchBots = async () => {
     if (!supabase) { setLoading(false); return; }
@@ -68,6 +88,8 @@ export default function AdminBots() {
   const openEditor = (bot: Bot) => {
     setEditing(bot);
     setError("");
+    setI18n(bot.i18n && typeof bot.i18n === "object" ? { ...bot.i18n } : {});
+    const en = bot.i18n?.en ?? {};
     setExtra({
       features: Array.isArray(bot.features) ? bot.features.map(String) : [],
       returns: Array.isArray(bot.returns)
@@ -76,6 +98,18 @@ export default function AdminBots() {
       how: Array.isArray(bot.how_it_works)
         ? bot.how_it_works.map((s: Json) => ({ title: String(s?.title ?? ""), desc: String(s?.desc ?? "") }))
         : [],
+      example: Array.isArray(bot.example_trade)
+        ? bot.example_trade.map((s: Json) => ({ title: String(s?.title ?? ""), desc: String(s?.desc ?? "") }))
+        : [],
+      en: {
+        features: Array.isArray(en.features) ? en.features.map(String) : [],
+        how: Array.isArray(en.how_it_works ?? en.howItWorks)
+          ? (en.how_it_works ?? en.howItWorks).map((s: Json) => ({ title: String(s?.title ?? ""), desc: String(s?.desc ?? "") }))
+          : [],
+        example: Array.isArray(en.example_trade ?? en.exampleTrade)
+          ? (en.example_trade ?? en.exampleTrade).map((s: Json) => ({ title: String(s?.title ?? ""), desc: String(s?.desc ?? "") }))
+          : [],
+      },
     });
   };
 
@@ -96,10 +130,22 @@ export default function AdminBots() {
     setUploading(false);
   };
 
+  const buildI18n = (enBase: Record<string, any>): Json => {
+    const en: Record<string, any> = {};
+    EN_FIELDS.forEach(({ key }) => {
+      const v = enBase[key];
+      if (typeof v === "string" && v.trim() !== "") en[key] = v;
+    });
+    if (extra.en.features.filter((f) => f.trim() !== "").length > 0) en.features = extra.en.features.filter((f) => f.trim() !== "");
+    if (extra.en.how.filter((s) => s.title.trim() !== "" || s.desc.trim() !== "").length > 0) en.howItWorks = extra.en.how.filter((s) => s.title.trim() !== "" || s.desc.trim() !== "");
+    if (extra.en.example.filter((s) => s.title.trim() !== "" || s.desc.trim() !== "").length > 0) en.exampleTrade = extra.en.example.filter((s) => s.title.trim() !== "" || s.desc.trim() !== "");
+    return Object.keys(en).length > 0 ? { en } : {};
+  };
+
   const saveBot = async (bot: Bot) => {
     if (!supabase) return;
     if (!bot.name.trim() || !bot.slug.trim()) {
-      setError("Заполните Name и Slug  без них робот не сохранится");
+      setError("Заполните Name и Slug — без них робот не сохранится");
       return;
     }
     setSaving(true); setError("");
@@ -108,6 +154,8 @@ export default function AdminBots() {
       features: extra.features.filter((f) => f.trim() !== ""),
       returns: extra.returns.filter((r) => r.period.trim() !== "" || r.value.trim() !== ""),
       how_it_works: extra.how.filter((s) => s.title.trim() !== "" || s.desc.trim() !== ""),
+      example_trade: extra.example.filter((s) => s.title.trim() !== "" || s.desc.trim() !== ""),
+      i18n: buildI18n(i18n),
     };
     try {
       if (bot.id) {
@@ -147,16 +195,55 @@ export default function AdminBots() {
 
   const inputCls = "bg-gray-800 border border-gray-700 text-white px-4 py-2 rounded-lg";
 
+  const stepsEditor = (
+    label: string,
+    rows: StepRow[],
+    onChange: (rows: StepRow[]) => void,
+    addLabel: string
+  ) => (
+    <div>
+      <label className="block text-sm font-medium text-gray-300 mb-2">{label}</label>
+      <div className="space-y-2">
+        {rows.map((s, i) => (
+          <div key={i} className="flex gap-2 items-start">
+            <div className="flex-1 space-y-1">
+              <input
+                value={s.title}
+                placeholder="Заголовок шага"
+                onChange={(e) => onChange(rows.map((v, j) => (j === i ? { ...v, title: e.target.value } : v)))}
+                className="w-full bg-gray-800 border border-gray-700 text-white px-3 py-1.5 rounded-lg text-sm"
+              />
+              <input
+                value={s.desc}
+                placeholder="Описание шага"
+                onChange={(e) => onChange(rows.map((v, j) => (j === i ? { ...v, desc: e.target.value } : v)))}
+                className="w-full bg-gray-800 border border-gray-700 text-white px-3 py-1.5 rounded-lg text-sm"
+              />
+            </div>
+            <button onClick={() => onChange(rows.filter((_, j) => j !== i))}
+              className="p-2 text-red-400 hover:text-red-300" aria-label="Удалить">
+              <Trash2 size={16} />
+            </button>
+          </div>
+        ))}
+      </div>
+      <button onClick={() => onChange([...rows, { title: "", desc: "" }])}
+        className="mt-2 flex items-center gap-1 text-sm text-blue-400 hover:text-blue-300">
+        <Plus size={14} /> {addLabel}
+      </button>
+    </div>
+  );
+
   return (
     <div className="space-y-6 max-w-5xl">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-white">Роботы</h1>
           <p className="text-gray-400 text-sm mt-1">
-            Порядок роботов на сайте задаётся стрелками . Картинка, доходность и шаги показываются в карточках и на детальной странице.
+            Порядок роботов на сайте задаётся стрелками. Картинка, доходность и шаги показываются в карточках и на детальной странице.
           </p>
         </div>
-        <button onClick={() => openEditor({ ...initialBot })}
+        <button onClick={() => { setEditing({ ...initialBot }); setEnOpen(false); }}
           className="flex items-center gap-2 px-4 py-2 bg-brand-blue hover:bg-blue-600 text-white rounded-lg transition-colors shrink-0">
           <Plus size={18} /> Добавить робота
         </button>
@@ -170,17 +257,18 @@ export default function AdminBots() {
           </div>
 
           <div className="grid md:grid-cols-2 gap-4">
-            <input placeholder="Name  название, например CryptoSuperStock" value={editing.name} onChange={(e) => setEditing({ ...editing, name: e.target.value })} className={inputCls} />
-            <input placeholder="Slug  адрес страницы, например megagrid-ai" value={editing.slug} onChange={(e) => setEditing({ ...editing, slug: e.target.value.replace(/[^a-zA-Z0-9-]/g, "") })} className={inputCls} />
-            <input placeholder="Бейдж  плашка, например ХИТ продаж" value={editing.badge} onChange={(e) => setEditing({ ...editing, badge: e.target.value })} className={inputCls} />
+            <input placeholder="Name — название, например CryptoSuperStock" value={editing.name} onChange={(e) => setEditing({ ...editing, name: e.target.value })} className={inputCls} />
+            <input placeholder="Slug — адрес страницы, например megagrid-ai" value={editing.slug} onChange={(e) => setEditing({ ...editing, slug: e.target.value.replace(/[^a-zA-Z0-9-]/g, "") })} className={inputCls} />
+            <input placeholder="Бейдж — плашка, например ХИТ продаж" value={editing.badge} onChange={(e) => setEditing({ ...editing, badge: e.target.value })} className={inputCls} />
             <input placeholder="Рынок, например Крипта" value={editing.market} onChange={(e) => setEditing({ ...editing, market: e.target.value })} className={inputCls} />
             <input placeholder="Стратегия, например Послотная сетка с ИИ" value={editing.strategy} onChange={(e) => setEditing({ ...editing, strategy: e.target.value })} className={inputCls} />
             <input placeholder="Пары, например BTC/USDT, ETH/USDT" value={editing.pairs} onChange={(e) => setEditing({ ...editing, pairs: e.target.value })} className={inputCls} />
           </div>
 
-          <input placeholder="Слоган  короткая фраза под названием" value={editing.slogan} onChange={(e) => setEditing({ ...editing, slogan: e.target.value })} className={`${inputCls} w-full`} />
-          <textarea placeholder="Краткое описание  1-2 предложения" value={editing.shortDesc} onChange={(e) => setEditing({ ...editing, shortDesc: e.target.value })} className={`${inputCls} w-full`} rows={3} />
-          <input placeholder="Риск  описание уровня риска" value={editing.risk} onChange={(e) => setEditing({ ...editing, risk: e.target.value })} className={`${inputCls} w-full`} />
+          <input placeholder="Слоган — короткая фраза под названием" value={editing.slogan} onChange={(e) => setEditing({ ...editing, slogan: e.target.value })} className={`${inputCls} w-full`} />
+          <textarea placeholder="Краткое описание — 1-2 предложения" value={editing.shortDesc} onChange={(e) => setEditing({ ...editing, shortDesc: e.target.value })} className={`${inputCls} w-full`} rows={3} />
+          <textarea placeholder="Полное описание — подробное объяснение алгоритма" value={editing.fullDesc ?? ""} onChange={(e) => setEditing({ ...editing, fullDesc: e.target.value })} className={`${inputCls} w-full`} rows={5} />
+          <input placeholder="Риск — описание уровня риска" value={editing.risk} onChange={(e) => setEditing({ ...editing, risk: e.target.value })} className={`${inputCls} w-full`} />
 
           <div className="grid md:grid-cols-2 gap-4">
             <div>
@@ -220,7 +308,7 @@ export default function AdminBots() {
             </div>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-4">
+          <div className="grid md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">Преимущества</label>
               <div className="space-y-2">
@@ -273,38 +361,72 @@ export default function AdminBots() {
                 <Plus size={14} /> Добавить
               </button>
             </div>
+          </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Как работает (шаги)</label>
-              <div className="space-y-2">
-                {extra.how.map((s, i) => (
-                  <div key={i} className="flex gap-2 items-start">
-                    <div className="flex-1 space-y-1">
-                      <input
-                        value={s.title}
-                        placeholder="Заголовок шага"
-                        onChange={(e) => setExtra({ ...extra, how: extra.how.map((v, j) => (j === i ? { ...v, title: e.target.value } : v)) })}
-                        className="w-full bg-gray-800 border border-gray-700 text-white px-3 py-1.5 rounded-lg text-sm"
-                      />
-                      <input
-                        value={s.desc}
-                        placeholder="Описание шага"
-                        onChange={(e) => setExtra({ ...extra, how: extra.how.map((v, j) => (j === i ? { ...v, desc: e.target.value } : v)) })}
-                        className="w-full bg-gray-800 border border-gray-700 text-white px-3 py-1.5 rounded-lg text-sm"
-                      />
+          <div className="grid md:grid-cols-2 gap-4">
+            {stepsEditor("Как работает (шаги)", extra.how, (rows) => setExtra({ ...extra, how: rows }), "Добавить шаг")}
+            {stepsEditor("Пример сделки (концептуальные шаги)", extra.example, (rows) => setExtra({ ...extra, example: rows }), "Добавить шаг")}
+          </div>
+
+          <div className="border border-gray-700 rounded-xl overflow-hidden">
+            <button
+              onClick={() => setEnOpen(!enOpen)}
+              className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-800/50 transition-colors"
+            >
+              <span className="font-semibold text-white text-sm">Английская версия (EN)</span>
+              <ChevronDown size={18} className={`text-gray-400 transition-transform ${enOpen ? "rotate-180" : ""}`} />
+            </button>
+            {enOpen && (
+              <div className="px-4 pb-4 pt-2 border-t border-gray-700 space-y-4">
+                <div className="grid md:grid-cols-2 gap-3">
+                  {EN_FIELDS.map((f) => (
+                    <div key={f.key} className={f.multiline ? "md:col-span-2" : ""}>
+                      <label className="block text-xs font-medium text-gray-400 mb-1">{f.label}</label>
+                      {f.multiline ? (
+                        <textarea
+                          rows={3}
+                          value={String(i18n[f.key] ?? "")}
+                          onChange={(e) => setI18n({ ...i18n, [f.key]: e.target.value })}
+                          className="w-full bg-gray-800 border border-gray-700 text-white px-3 py-2 rounded-lg text-sm"
+                        />
+                      ) : (
+                        <input
+                          value={String(i18n[f.key] ?? "")}
+                          onChange={(e) => setI18n({ ...i18n, [f.key]: e.target.value })}
+                          className="w-full bg-gray-800 border border-gray-700 text-white px-3 py-2 rounded-lg text-sm"
+                        />
+                      )}
                     </div>
-                    <button onClick={() => setExtra({ ...extra, how: extra.how.filter((_, j) => j !== i) })}
-                      className="p-2 text-red-400 hover:text-red-300" aria-label="Удалить">
-                      <Trash2 size={16} />
-                    </button>
+                  ))}
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-400 mb-1">Преимущества (EN)</label>
+                  <div className="space-y-2">
+                    {extra.en.features.map((f, i) => (
+                      <div key={i} className="flex gap-2 items-center">
+                        <input
+                          value={f}
+                          onChange={(e) => setExtra({ ...extra, en: { ...extra.en, features: extra.en.features.map((v, j) => (j === i ? e.target.value : v)) } })}
+                          className="flex-1 bg-gray-800 border border-gray-700 text-white px-3 py-2 rounded-lg text-sm"
+                        />
+                        <button onClick={() => setExtra({ ...extra, en: { ...extra.en, features: extra.en.features.filter((_, j) => j !== i) } })}
+                          className="p-2 text-red-400 hover:text-red-300" aria-label="Удалить">
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                  <button onClick={() => setExtra({ ...extra, en: { ...extra.en, features: [...extra.en.features, ""] } })}
+                    className="mt-2 flex items-center gap-1 text-sm text-blue-400 hover:text-blue-300">
+                    <Plus size={14} /> Добавить
+                  </button>
+                </div>
+                <div className="grid md:grid-cols-2 gap-4">
+                  {stepsEditor("Как работает (EN)", extra.en.how, (rows) => setExtra({ ...extra, en: { ...extra.en, how: rows } }), "Добавить шаг")}
+                  {stepsEditor("Пример сделки (EN)", extra.en.example, (rows) => setExtra({ ...extra, en: { ...extra.en, example: rows } }), "Добавить шаг")}
+                </div>
               </div>
-              <button onClick={() => setExtra({ ...extra, how: [...extra.how, { title: "", desc: "" }] })}
-                className="mt-2 flex items-center gap-1 text-sm text-blue-400 hover:text-blue-300">
-                <Plus size={14} /> Добавить шаг
-              </button>
-            </div>
+            )}
           </div>
 
           <div className="grid md:grid-cols-2 gap-4 items-center">
@@ -351,7 +473,7 @@ export default function AdminBots() {
       <div className="space-y-3">
         {bots.length === 0 && (
           <div className="text-gray-500 text-center py-8 bg-gray-900 border border-gray-800 rounded-xl">
-            Роботов пока нет. Нажмите Добавить робота  он сразу появится на сайте.
+            Роботов пока нет. Нажмите Добавить робота — он сразу появится на сайте.
           </div>
         )}
         {bots.map((bot, i) => (
