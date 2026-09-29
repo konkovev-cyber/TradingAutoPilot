@@ -23,7 +23,7 @@ export default function Hero() {
   });
 
   return (
-    <section className="hero relative isolate flex min-h-[92svh] w-full flex-col overflow-hidden bg-[#F8FAFC] pb-5 pt-20 dark:bg-[#080D16] md:pt-20">
+    <section className="hero relative isolate flex min-h-[70svh] w-full flex-col overflow-hidden bg-[#F8FAFC] pb-6 pt-24 dark:bg-[#080D16] md:pt-28">
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
         <div
           className="absolute inset-0 opacity-[0.035] dark:opacity-[0.06]"
@@ -49,8 +49,8 @@ export default function Hero() {
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
       </div>
 
-      <div className="relative mx-auto flex w-full max-w-[1440px] flex-1 flex-col px-6 lg:px-10 xl:px-14 2xl:px-16">
-        <motion.div {...enter(0)} className="mb-3 flex shrink-0 flex-wrap items-center gap-3">
+      <div className="relative mx-auto flex w-full max-w-4xl flex-1 flex-col px-6 lg:px-10">
+        <motion.div {...enter(0)} className="mb-5 flex justify-center">
           <div className="flex items-center gap-2 rounded-full border border-black/[0.08] bg-white/90 px-3.5 py-1.5 shadow-sm backdrop-blur dark:border-white/[0.12] dark:bg-white/[0.06]">
             <span className="relative flex h-1.5 w-1.5">
               <motion.span
@@ -66,63 +66,59 @@ export default function Hero() {
           </div>
         </motion.div>
 
-        <div className="grid flex-1 items-center gap-7 lg:grid-cols-12 xl:gap-9">
-          <div className="relative z-10 lg:col-span-5">
-            <motion.h1
-              {...enter(0.06)}
-              className="mb-4 max-w-[600px] text-balance text-[32px] font-bold leading-[1.15] tracking-[-0.02em] text-[#0B0F14] dark:text-white sm:text-[38px] lg:text-[42px] xl:text-[46px]"
-            >
-              {c("hero", "title", t("hero.title"))}
-            </motion.h1>
+        <motion.h1
+          {...enter(0.06)}
+          className="mb-5 text-balance text-center text-[32px] font-bold leading-[1.15] tracking-[-0.02em] text-[#0B0F14] dark:text-white sm:text-[38px] lg:text-[44px]"
+        >
+          {c("hero", "title", t("hero.title"))}
+        </motion.h1>
 
-            <motion.p
-              {...enter(0.12)}
-              className="mb-6 max-w-[520px] text-[15px] leading-[1.6] text-[#4B5563] dark:text-slate-400 lg:text-[16px]"
-            >
-              {c("hero", "subtitle", t("hero.subtitle"))}
-            </motion.p>
+        <motion.p
+          {...enter(0.12)}
+          className="mx-auto mb-8 max-w-[720px] text-center text-[15px] leading-[1.7] text-[#4B5563] dark:text-slate-400 lg:text-[17px]"
+        >
+          {c("hero", "subtitle", t("hero.subtitle"))}
+        </motion.p>
 
-            <motion.div {...enter(0.24)} className="mb-3 flex flex-col gap-2.5 sm:flex-row">
-              <a
-                href="#bots"
-                className="group inline-flex h-[46px] items-center justify-center gap-2 rounded-xl bg-emerald-500 px-7 text-[14px] font-semibold text-white shadow-[0_12px_32px_-12px_rgba(16,185,129,0.75)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-emerald-600 hover:shadow-[0_18px_38px_-12px_rgba(16,185,129,0.85)]"
+        <motion.div {...enter(0.2)} className="mb-4 flex justify-center">
+          <a
+            href="#bots"
+            className="group inline-flex h-[48px] items-center justify-center gap-2 rounded-xl bg-emerald-500 px-9 text-[15px] font-semibold text-white shadow-[0_12px_32px_-12px_rgba(16,185,129,0.75)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-emerald-600 hover:shadow-[0_18px_38px_-12px_rgba(16,185,129,0.85)]"
+          >
+            {c("hero", "primary", t("hero.pick"))}
+            <ArrowRight
+              size={16}
+              strokeWidth={2.5}
+              className="transition-transform group-hover:translate-x-1"
+            />
+          </a>
+          <a
+            href="#how"
+            className="ml-3 inline-flex h-[48px] items-center justify-center rounded-xl border border-black/10 px-7 text-[14px] font-medium text-[#0B0F14] transition-colors hover:bg-black/[0.03] dark:border-white/15 dark:text-white dark:hover:bg-white/[0.06]"
+          >
+            <BookOpen size={16} className="mr-2 opacity-50" />
+            {c("hero", "secondary", t("hero.cta2"))}
+          </a>
+        </motion.div>
+
+        <motion.div {...enter(0.26)} className="flex flex-wrap justify-center gap-x-5 gap-y-2">
+          {trust.map((text, i) => {
+            const Icon = [Sparkles, ShieldCheck, Zap][i % 3];
+            return (
+              <div
+                key={text}
+                className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400"
               >
-                {c("hero", "primary", t("hero.pick"))}
-                <ArrowRight
-                  size={16}
-                  strokeWidth={2.5}
-                  className="transition-transform group-hover:translate-x-1"
-                />
-              </a>
-              <a
-                href="#how"
-                className="inline-flex h-[46px] items-center justify-center rounded-xl border border-black/10 px-7 text-[14px] font-medium text-[#0B0F14] transition-colors hover:bg-black/[0.03] dark:border-white/15 dark:text-white dark:hover:bg-white/[0.06]"
-              >
-                <BookOpen size={16} className="mr-2 opacity-50" />
-                {c("hero", "secondary", t("hero.cta2"))}
-              </a>
-            </motion.div>
+                <Icon size={13} className="text-emerald-500" />
+                <span>{text}</span>
+              </div>
+            );
+          })}
+        </motion.div>
 
-            <motion.div {...enter(0.3)} className="flex flex-wrap gap-x-5 gap-y-2">
-              {trust.map((text, i) => {
-                const Icon = [Sparkles, ShieldCheck, Zap][i % 3];
-                return (
-                  <div
-                    key={text}
-                    className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400"
-                  >
-                    <Icon size={13} className="text-emerald-500" />
-                    <span>{text}</span>
-                  </div>
-                );
-              })}
-            </motion.div>
-          </div>
-
-          <div className="relative min-w-0 lg:col-span-7">
-            <TradingTerminal />
-          </div>
-        </div>
+        <motion.div {...enter(0.3)} className="relative mt-8 min-w-0">
+          <TradingTerminal />
+        </motion.div>
 
         <div className="mt-4 shrink-0">
           <MetricsStrip />
