@@ -90,7 +90,13 @@ export default function Header() {
       >
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link to="/" aria-label="TradingAutoPilot" className="group flex items-center">
-            <span className="bg-gradient-to-r from-cyan-500 via-blue-600 to-violet-600 bg-clip-text text-[20px] font-extrabold tracking-[-0.055em] text-transparent transition-opacity group-hover:opacity-80 dark:from-cyan-300 dark:via-blue-300 dark:to-violet-300">
+            <span
+              className={`text-[20px] font-extrabold tracking-[-0.055em] transition-opacity group-hover:opacity-80 ${
+                scrolled
+                  ? "bg-gradient-to-r from-cyan-500 via-blue-600 to-violet-600 bg-clip-text text-transparent dark:from-cyan-300 dark:via-blue-300 dark:to-violet-300"
+                  : "text-white"
+              }`}
+            >
               TradingAutoPilot
             </span>
           </Link>
