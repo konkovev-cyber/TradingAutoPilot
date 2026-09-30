@@ -26,8 +26,12 @@ export default function Header() {
     .filter(([key]) => enabledKeys.has(key))
     .map(([key, v]) => ({ id: key, domId: v.domId, ...v }));
   const navDomIds = navLinks.map((l) => l.domId).join(",");
-  const shellText = !scrolled && theme === "dark" ? "text-white/80 hover:text-white" : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white";
-  const controlText = !scrolled && theme === "dark" ? "text-white/80 hover:text-white hover:bg-white/10" : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800";
+  const shellText = !scrolled
+    ? "text-white/85 hover:text-white"
+    : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white";
+  const controlText = !scrolled
+    ? "text-white/85 hover:text-white hover:bg-white/10"
+    : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800";
 
   useEffect(() => {
     const onScroll = () => {
@@ -97,7 +101,7 @@ export default function Header() {
                 key={link.href}
                 href={link.href}
                 onClick={(e) => handleAnchor(e, link.href)}
-                className={`text-sm font-medium transition-colors ${active === link.domId ? "text-blue-600 dark:text-cyan-300" : shellText}`}
+                  className={`text-sm font-medium transition-colors ${active === link.domId ? (scrolled ? "text-blue-600 dark:text-cyan-300" : "text-white") : shellText}`}
               >
                 {link.label}
               </a>
@@ -126,7 +130,11 @@ export default function Header() {
             <a
               href="#bots"
               onClick={(e) => handleAnchor(e, "/#bots")}
-              className="hidden sm:inline-flex px-5 py-2.5 border border-blue-500/40 bg-blue-500/10 text-blue-600 dark:text-blue-200 dark:border-blue-300/30 dark:bg-blue-400/10 text-sm font-semibold rounded-lg hover:bg-blue-500/20 dark:hover:bg-blue-400/20 transition-colors cursor-pointer"
+              className={`hidden sm:inline-flex px-5 py-2.5 border text-sm font-semibold rounded-lg transition-colors cursor-pointer ${
+                !scrolled
+                  ? "border-white/40 bg-white/10 text-white hover:bg-white/20"
+                  : "border-blue-500/40 bg-blue-500/10 text-blue-600 dark:text-blue-200 dark:border-blue-300/30 dark:bg-blue-400/10 hover:bg-blue-500/20 dark:hover:bg-blue-400/20"
+              }`}
             >
               {c("nav", "cta", lang === "en" ? "View bots" : "Смотреть роботов")}
             </a>
