@@ -156,6 +156,12 @@ const FALLBACKS: Record<string, Json> = {
     trust: "АПИ-ключи без права вывода. Средства остаются на вашей бирже",
     contactBtn: { ru: "Связаться с нами", en: "Contact us" },
   },
+  contacts: {
+    telegram: "https://t.me/coinsofter",
+    whatsapp: "https://wa.me/79990000000",
+    email: "mailto:info@coinsofter.com",
+    phone: "+7 999 000-00-00",
+  },
   nav: {
     bots: "Роботы",
     how: "Как работает",
@@ -228,6 +234,26 @@ export function useContent() {
 export function useSectionValue(section: string): Json {
   const data = useSiteContent();
   return useMemo(() => data?.[section], [data, section]);
+}
+
+export interface SiteContacts {
+  telegram: string;
+  whatsapp: string;
+  email: string;
+  phone: string;
+}
+
+/** Contact channels editable in the admin panel (site_content "contacts"). */
+export function useContacts(): SiteContacts {
+  const data = useSiteContent();
+  const contacts = data?.contacts ?? {};
+  const str = (v: Json, fallback: string): string => (typeof v === "string" && v.trim() !== "" ? v.trim() : fallback);
+  return {
+    telegram: str(contacts.telegram, "https://t.me/coinsofter"),
+    whatsapp: str(contacts.whatsapp, "https://wa.me/79990000000"),
+    email: str(contacts.email, "mailto:info@coinsofter.com"),
+    phone: str(contacts.phone, "+7 999 000-00-00"),
+  };
 }
 
 /** Localized list accessor: returns items of an array field or []. */

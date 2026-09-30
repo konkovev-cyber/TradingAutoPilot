@@ -1,11 +1,12 @@
 import { motion } from "framer-motion";
 import { Send } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
-import { useContent } from "@/lib/site-content";
+import { useContent, useContacts } from "@/lib/site-content";
 
 export default function CTA() {
   const { t } = useI18n();
   const c = useContent();
+  const contacts = useContacts();
 
   return (
     <section id="questions" className="section-padding bg-gray-50 py-16 transition-colors duration-300 dark:bg-gray-900 md:py-20">
@@ -27,7 +28,7 @@ export default function CTA() {
             {c("questions", "subtitle", t("questions.subtitle"))}
           </p>
           <a
-            href="https://t.me/coinsofter"
+            href={contacts.telegram}
             target="_blank"
             rel="noopener noreferrer"
             className="btn-primary inline-flex items-center gap-2 px-8 py-4 text-base"

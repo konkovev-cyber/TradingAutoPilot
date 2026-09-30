@@ -9,6 +9,7 @@ const SECTION_LABELS: Record<string, string> = {
   meta: "SEO и мета-данные",
   nav: "Меню в шапке",
   hero: "Hero / Знакомство с проектом",
+  contacts: "Контакты (Telegram/WhatsApp/Email/Телефон)",
   why: "Для чего нужны торговые боты",
   advantages: "Преимущества использования ботов",
   benefits: "Почему стоит выбрать нас",
@@ -29,6 +30,7 @@ const HELP_TEXT: Record<string, string> = {
   meta: "Title и Description отображаются во вкладках браузера и в поисковой выдаче.",
   nav: "Текст пунктов меню в шапке сайта.",
   hero: "Заголовок, подзаголовок и кнопки на главном экране. Поля поддерживают RU и EN.",
+  contacts: "Каналы связи для всего сайта: ссылки Telegram и WhatsApp, email и отображаемый телефон. WhatsApp — ссылка вида https://wa.me/79991234567 (номер без плюса-пробелов).",
   why: "Блок «Для чего нужны торговые боты» — заголовок и пояснительный текст.",
   advantages: "Карточки преимуществ: круглосуточная работа, отсутствие эмоций и т.д.",
   benefits: "Карточки «Почему стоит выбрать нас»: подпись-тег, заголовок и описание.",
@@ -368,6 +370,12 @@ export default function AdminSettings() {
       { key: "bots", label: "Пункт меню Роботы" },
       { key: "how", label: "Пункт меню Как работает" },
       { key: "faq", label: "Пункт меню FAQ" },
+    ],
+    contacts: [
+      { key: "telegram", label: "Ссылка Telegram (https://t.me/имя)" },
+      { key: "whatsapp", label: "Ссылка WhatsApp (https://wa.me/номер)" },
+      { key: "email", label: "Email (mailto:адрес)" },
+      { key: "phone", label: "Телефон для отображения (+7 999 123-45-67)" },
     ],
   };
 

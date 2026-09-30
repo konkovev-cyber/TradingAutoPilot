@@ -2,7 +2,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ArrowRight, Send, ShieldCheck, Sparkles, Zap } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
-import { useContent } from "@/lib/site-content";
+import { useContent, useContacts } from "@/lib/site-content";
 import { useBots } from "@/lib/use-bots";
 import { botText } from "@/data/bots";
 import { BotAvatar } from "./bots/BotCard";
@@ -33,6 +33,7 @@ export default function Hero() {
   const { t, lang } = useI18n();
   const reduceMotion = useReducedMotion();
   const c = useContent();
+  const contacts = useContacts();
   const bots = useBots();
   const trust = [c("hero", "trust1", t("hero.trust1")), c("hero", "trust2", t("hero.trust2")), c("hero", "trust3", t("hero.trust3"))];
   const enter = (delay: number) => ({
@@ -80,7 +81,7 @@ export default function Hero() {
                 {c("hero", "primary", t("hero.pick"))}
                 <ArrowRight size={17} className="transition-transform group-hover:translate-x-1" />
               </a>
-              <a href="https://t.me/coinsofter" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-7 py-4 text-sm font-semibold text-slate-800 transition-colors hover:border-blue-300 hover:bg-blue-50 dark:border-white/15 dark:bg-white/[0.06] dark:text-white dark:hover:bg-white/[0.12]">
+              <a href={contacts.telegram} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-7 py-4 text-sm font-semibold text-slate-800 transition-colors hover:border-blue-300 hover:bg-blue-50 dark:border-white/15 dark:bg-white/[0.06] dark:text-white dark:hover:bg-white/[0.12]">
                 <Send size={16} className="text-blue-600 dark:text-cyan-300" />
                 {t("cta.contactBtn")}
               </a>

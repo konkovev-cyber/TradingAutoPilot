@@ -1,9 +1,11 @@
 ﻿import { useEffect, useState } from "react";
 import { useI18n } from "@/lib/i18n";
-import { MessageCircle, X, ArrowUp, Send } from "lucide-react";
+import { useContacts } from "@/lib/site-content";
+import { MessageCircle, X, ArrowUp, Send, Mail, Phone } from "lucide-react";
 
 export default function FloatingContact() {
   const { t } = useI18n();
+  const contacts = useContacts();
   const [open, setOpen] = useState(false);
   const [showTop, setShowTop] = useState(false);
 
@@ -21,7 +23,7 @@ export default function FloatingContact() {
       {open && (
         <div className="fixed bottom-24 right-5 z-[70] flex flex-col gap-2">
           <a
-            href="https://t.me/coinsofter"
+            href={contacts.telegram}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-3 bg-white dark:bg-gray-900 rounded-xl px-4 py-3 border border-gray-200 dark:border-gray-800 shadow-md hover:shadow-lg transition-all"
@@ -35,7 +37,7 @@ export default function FloatingContact() {
             </span>
           </a>
           <a
-            href="https://wa.me/71234567890"
+            href={contacts.whatsapp}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-3 bg-white dark:bg-gray-900 rounded-xl px-4 py-3 border border-gray-200 dark:border-gray-800 shadow-md hover:shadow-lg transition-all"
@@ -48,6 +50,32 @@ export default function FloatingContact() {
               <span className="text-sm font-semibold text-gray-900 dark:text-white">WhatsApp</span>
             </span>
           </a>
+          <a
+            href={contacts.email}
+            className="flex items-center gap-3 bg-white dark:bg-gray-900 rounded-xl px-4 py-3 border border-gray-200 dark:border-gray-800 shadow-md hover:shadow-lg transition-all"
+          >
+            <span className="w-10 h-10 rounded-full bg-violet-50 dark:bg-violet-900/30 flex items-center justify-center shrink-0">
+              <Mail size={18} className="text-violet-600" />
+            </span>
+            <span>
+              <span className="block text-xs text-gray-400 dark:text-gray-500">{t("contact.writeIn")}</span>
+              <span className="text-sm font-semibold text-gray-900 dark:text-white">Email</span>
+            </span>
+          </a>
+          {contacts.phone && contacts.phone !== "+7 999 000-00-00" && (
+            <a
+              href={`tel:${contacts.phone.replace(/[^+\d]/g, "")}`}
+              className="flex items-center gap-3 bg-white dark:bg-gray-900 rounded-xl px-4 py-3 border border-gray-200 dark:border-gray-800 shadow-md hover:shadow-lg transition-all"
+            >
+              <span className="w-10 h-10 rounded-full bg-amber-50 dark:bg-amber-900/30 flex items-center justify-center shrink-0">
+                <Phone size={18} className="text-amber-600" />
+              </span>
+              <span>
+                <span className="block text-xs text-gray-400 dark:text-gray-500">{t("contact.phone")}</span>
+                <span className="text-sm font-semibold text-gray-900 dark:text-white">{contacts.phone}</span>
+              </span>
+            </a>
+          )}
         </div>
       )}
 

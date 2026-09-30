@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Menu, X, Sun, Moon, Globe } from "lucide-react";
 import { useTheme } from "@/lib/theme";
 import { useI18n } from "@/lib/i18n";
-import { useContent } from "@/lib/site-content";
+import { useContent, useContacts } from "@/lib/site-content";
 import { useSections } from "@/lib/sections";
 
 export default function Header() {
@@ -15,11 +15,12 @@ export default function Header() {
   const { lang, setLang, t } = useI18n();
   const { sections } = useSections();
   const c = useContent();
+  const contacts = useContacts();
 
   const navMap: Record<string, { href: string; domId: string; label: string; always?: boolean }> = {
     hero: { href: "/#project", domId: "project", label: t("nav.project") },
     products: { href: "/#bots", domId: "bots", label: c("nav", "bots", t("nav.bots")) },
-    contact: { href: "https://t.me/coinsofter", domId: "", label: t("nav.contact"), always: true },
+    contact: { href: contacts.telegram, domId: "", label: t("nav.contact"), always: true },
   };
   const enabledKeys = new Set(sections.filter((s) => s.enabled).map((s) => s.key));
   const navLinks = Object.entries(navMap)

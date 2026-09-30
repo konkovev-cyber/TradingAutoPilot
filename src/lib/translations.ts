@@ -298,6 +298,7 @@ export const ruTranslations = {
   },
   "contact": {
     "writeIn": "Написать в",
+    "phone": "Позвонить",
     "tg": "Написать в Telegram",
     "wa": "Написать в WhatsApp",
     "up": "Наверх",
@@ -574,6 +575,7 @@ export const enTranslations = {
   },
   "contact": {
     "writeIn": "Write on",
+    "phone": "Call",
     "tg": "Write on Telegram",
     "wa": "Write on WhatsApp",
     "up": "Back to top",

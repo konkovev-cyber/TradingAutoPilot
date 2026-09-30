@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { ArrowRight, Check } from "lucide-react";
+import { ArrowRight, Check, Mail, Phone, Send } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
-import { useContent } from "@/lib/site-content";
+import { useContent, useContacts } from "@/lib/site-content";
 import { useBots } from "@/lib/use-bots";
 import { botText } from "@/data/bots";
 import { BotAvatar, BotReturns } from "@/components/bots/BotCard";
@@ -10,6 +10,7 @@ import { BotAvatar, BotReturns } from "@/components/bots/BotCard";
 export default function Products() {
   const { t, lang } = useI18n();
   const c = useContent();
+  const contacts = useContacts();
   const bots = useBots();
 
   return (
@@ -82,13 +83,30 @@ export default function Products() {
 
         <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
           <a
-            href="https://t.me/coinsofter"
+            href={contacts.telegram}
             target="_blank"
             rel="noopener noreferrer"
             className="btn-primary inline-flex items-center gap-2 px-8 py-4 text-base"
           >
+            <Send size={18} />
             {t("cta.contactBtn")}
             <ArrowRight size={18} />
+          </a>
+          <a
+            href={contacts.whatsapp}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-secondary inline-flex items-center gap-2 px-8 py-4 text-base"
+          >
+            <Phone size={18} className="text-green-600" />
+            WhatsApp
+          </a>
+          <a
+            href={contacts.email}
+            className="btn-secondary inline-flex items-center gap-2 px-8 py-4 text-base"
+          >
+            <Mail size={18} className="text-violet-600" />
+            Email
           </a>
         </div>
 
