@@ -85,7 +85,7 @@ export default function BotDetailPage() {
             </button>
           </div>
 
-          <nav className="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500 mb-6" aria-label="Breadcrumb">
+          <nav className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-gray-400 dark:text-gray-500 mb-6" aria-label="Breadcrumb">
             <Link to="/" className="hover:text-brand-blue transition-colors">{t("botDetail.home")}</Link>
             <span>/</span>
             <Link to="/#bots" className="hover:text-brand-blue transition-colors">{t("nav.bots")}</Link>

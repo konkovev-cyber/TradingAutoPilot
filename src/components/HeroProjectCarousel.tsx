@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Bot, ShieldCheck, Infinity, Rocket, ChevronLeft, ChevronRight, type LucideIcon } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
@@ -29,6 +29,17 @@ export default function HeroProjectCarousel() {
   const Icon = icons[active % icons.length] ?? Bot;
   const goTo = (next: number) => setActive((next + count) % count);
 
+  const touchX = useRef<number | null>(null);
+  const onTouchStart = (e: React.TouchEvent) => {
+    touchX.current = e.touches[0]?.clientX ?? null;
+  };
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (touchX.current === null) return;
+    const delta = (e.changedTouches[0]?.clientX ?? touchX.current) - touchX.current;
+    touchX.current = null;
+    if (Math.abs(delta) > 48) goTo(delta < 0 ? active + 1 : active - 1);
+  };
+
   if (!current) return null;
 
   return (
@@ -40,6 +51,8 @@ export default function HeroProjectCarousel() {
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
       onBlur={() => setPaused(false)}
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
       className="relative overflow-hidden rounded-[28px] border border-slate-200/70 bg-white/75 p-5 shadow-soft-lg backdrop-blur-xl transition-colors dark:border-white/10 dark:bg-[#0d1130]/80 dark:shadow-[0_28px_80px_-32px_rgba(99,102,241,0.65)] sm:p-7"
     >
       <div aria-hidden="true" className="absolute -right-20 -top-20 h-56 w-56 rounded-full bg-indigo-300/25 blur-3xl dark:bg-violet-500/35" />

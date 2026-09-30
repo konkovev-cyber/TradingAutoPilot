@@ -99,8 +99,8 @@ export default function Hero() {
           </motion.div>
         </div>
 
-        <motion.div {...enter(0.26)} className="mt-16">
-          <div className="grid gap-3 sm:grid-cols-3">
+        <motion.div {...enter(0.26)} className="mt-16 -mx-6 px-6 lg:mx-0 lg:px-0">
+          <div className="flex gap-3 overflow-x-auto pb-1 snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:grid sm:grid-cols-3 sm:overflow-visible sm:pb-0">
             {bots.map((bot) => {
               const b = botText(bot, lang);
               const accent = bot.color === "#00FFB2" ? "#00c98d" : bot.color;
@@ -108,7 +108,7 @@ export default function Hero() {
                 <Link
                   key={bot.slug}
                   to={`/bots/${bot.slug}`}
-                  className="group flex min-w-0 items-center gap-3.5 rounded-2xl border border-slate-200 bg-white px-4 py-3.5 shadow-soft transition-all hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md dark:border-white/10 dark:bg-white/[0.05] dark:hover:border-white/25"
+                  className="group flex min-w-[260px] shrink-0 snap-start items-center gap-3.5 rounded-2xl border border-slate-200 bg-white px-4 py-3.5 shadow-soft transition-all hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md sm:min-w-0 dark:border-white/10 dark:bg-white/[0.05] dark:hover:border-white/25"
                 >
                   <BotAvatar bot={bot} size={42} />
                   <div className="min-w-0">
