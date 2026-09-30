@@ -37,12 +37,12 @@ const componentMap: Record<string, ComponentType> = {
 };
 
 export default function HomePage() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const { sections } = useSections();
   const c = useContent();
 
   useSeo({
-    title: c("meta", "title", "Торговые боты для криптобирж и акций | TradingAutoPilot (без подписки)"),
+    title: c("meta", "title", lang === "en" ? "Trading bots for crypto and stock exchanges | TradingAutoPilot (no subscription)" : "Торговые боты для криптобирж и акций | TradingAutoPilot (без подписки)"),
     description: c("meta", "description", t("hero.desc")),
     jsonLd: {
       "@context": "https://schema.org",

@@ -45,7 +45,9 @@ export default function LeadForm() {
         setStatus("error");
       }
     } else {
-      const text = `Заявка:\nИмя: ${form.name}\nКонтакт: ${form.contact}\nБот: ${form.bot}\nСообщение: ${form.message}`;
+      const text = lang === "en"
+        ? `Request:\nName: ${form.name}\nContact: ${form.contact}\nBot: ${form.bot}\nMessage: ${form.message}`
+        : `Заявка:\nИмя: ${form.name}\nКонтакт: ${form.contact}\nБот: ${form.bot}\nСообщение: ${form.message}`;
       window.open(`https://t.me/share/url?url=${encodeURIComponent("https://t.me/coinsofter")}&text=${encodeURIComponent(text)}`, "_blank");
       setStatus("success");
     }
@@ -99,7 +101,7 @@ export default function LeadForm() {
                     required
                     className="input-premium !pl-11"
                     value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    placeholder="Иван Иванов"
+                    placeholder={lang === "en" ? "John Doe" : "Иван Иванов"}
                   />
                 </div>
               </div>
@@ -113,7 +115,7 @@ export default function LeadForm() {
                     required
                     className="input-premium !pl-11"
                     value={form.contact} onChange={(e) => setForm({ ...form, contact: e.target.value })}
-                    placeholder="@username / email / телефон"
+                    placeholder={lang === "en" ? "@username / email / phone" : "@username / email / телефон"}
                   />
                 </div>
               </div>
@@ -145,7 +147,7 @@ export default function LeadForm() {
                     rows={4}
                     className="input-premium !pl-11 resize-none"
                     value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })}
-                    placeholder="Ваши вопросы..."
+                    placeholder={lang === "en" ? "Your questions..." : "Ваши вопросы..."}
                   />
                 </div>
               </div>

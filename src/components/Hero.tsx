@@ -69,8 +69,8 @@ export default function Hero() {
               {c("hero", "badge", t("hero.badge"))}
             </span>
             <h1 className="text-balance text-4xl font-extrabold leading-[1.08] tracking-[-0.045em] text-slate-900 dark:text-white sm:text-[44px]">
-              Торговые боты для криптобирж
-              <span className="block bg-gradient-to-r from-blue-700 via-indigo-600 to-violet-600 bg-clip-text text-transparent dark:from-cyan-300 dark:via-blue-300 dark:to-violet-300">и акций</span>
+              {t("hero.heading1")}
+              <span className="block bg-gradient-to-r from-blue-700 via-indigo-600 to-violet-600 bg-clip-text text-transparent dark:from-cyan-300 dark:via-blue-300 dark:to-violet-300">{t("hero.heading2")}</span>
             </h1>
             <p className="mt-5 text-base leading-relaxed text-slate-600 dark:text-slate-300 sm:text-lg">
               {c("hero", "subtitle", t("hero.subtitle"))}

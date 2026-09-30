@@ -15,6 +15,8 @@ export const ruTranslations = {
   },
   "hero": {
     "badge": "20+ бирж · ИИ-торговля 24/7",
+    "heading1": "Торговые боты для криптобирж",
+    "heading2": "и акций",
     "title1": "Торгуйте криптой",
     "title2": "на автопилоте",
     "subtitle": "Боты на ИИ торгуют на 20+ биржах через API. Средняя доходность портфеля — +96.4% за год. Работают 24/7.",
@@ -308,6 +310,8 @@ export const enTranslations = {
   "ui": { "themeLight": "Light theme", "themeDark": "Dark theme", "menu": "Menu", "skip": "Skip to content", "scrollTo": "Go to section" },
   "hero": {
     "badge": "20+ exchanges · AI trading 24/7",
+    "heading1": "Trading bots for crypto exchanges",
+    "heading2": "and stocks",
     "title1": "Trade crypto",
     "title2": "on autopilot",
     "subtitle": "AI-powered bots trade on 20+ exchanges via API. Average portfolio return is +96.4% per year. They work 24/7.",
