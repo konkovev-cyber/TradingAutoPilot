@@ -23,7 +23,9 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-10 mb-12">
           <div className="space-y-4">
-            <img src="/logo.png" alt="Trading Auto Pilot" className="h-11 w-auto" />
+            <span className="bg-gradient-to-r from-cyan-500 via-blue-600 to-violet-600 bg-clip-text text-xl font-extrabold tracking-[-0.055em] text-transparent dark:from-cyan-300 dark:via-blue-300 dark:to-violet-300">
+              TradingAutoPilot
+            </span>
             <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{t("footer.desc")}</p>
           </div>
 
