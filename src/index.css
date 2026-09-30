@@ -214,6 +214,14 @@
   margin-right: auto;
 }
 
+/* Reference-inspired curved color header without copying external assets. */
+.hero-reference-wave {
+  clip-path: ellipse(82% 78% at 50% 0%);
+}
+@media (max-width: 640px) {
+  .hero-reference-wave { clip-path: ellipse(125% 64% at 50% 0%); }
+}
+
 /* Hero занимает первый экран, контент распределён по высоте */
 .hero {
   display: flex;

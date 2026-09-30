@@ -26,6 +26,8 @@ export default function Header() {
     .filter(([key]) => enabledKeys.has(key))
     .map(([key, v]) => ({ id: key, domId: v.domId, ...v }));
   const navDomIds = navLinks.map((l) => l.domId).join(",");
+  const shellText = !scrolled && theme === "dark" ? "text-white/80 hover:text-white" : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white";
+  const controlText = !scrolled && theme === "dark" ? "text-white/80 hover:text-white hover:bg-white/10" : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800";
 
   useEffect(() => {
     const onScroll = () => {
@@ -83,12 +85,9 @@ export default function Header() {
         }`}
       >
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <img src="/logo.png" alt="Trading Auto Pilot" className="h-8 w-auto" />
-            <span className="text-sm font-bold leading-tight text-gray-900 dark:text-white">
-              Trading
-              <br />
-              Auto Pilot
+          <Link to="/" aria-label="TradingAutoPilot" className="group flex items-center">
+            <span className="bg-gradient-to-r from-cyan-500 via-blue-600 to-violet-600 bg-clip-text text-[20px] font-extrabold tracking-[-0.055em] text-transparent transition-opacity group-hover:opacity-80 dark:from-cyan-300 dark:via-blue-300 dark:to-violet-300">
+              TradingAutoPilot
             </span>
           </Link>
 
@@ -98,11 +97,7 @@ export default function Header() {
                 key={link.href}
                 href={link.href}
                 onClick={(e) => handleAnchor(e, link.href)}
-                className={`text-sm font-medium transition-colors ${
-                  active === link.domId
-                    ? "text-[#2563EB]"
-                    : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-                }`}
+                className={`text-sm font-medium transition-colors ${active === link.domId ? "text-blue-600 dark:text-cyan-300" : shellText}`}
               >
                 {link.label}
               </a>
@@ -112,7 +107,7 @@ export default function Header() {
           <div className="flex items-center gap-2">
             <button
               onClick={toggleTheme}
-              className="p-2.5 rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              className={`p-2.5 rounded-lg transition-colors ${controlText}`}
               title={theme === "dark" ? t("ui.themeLight") : t("ui.themeDark")}
               aria-label={theme === "dark" ? t("ui.themeLight") : t("ui.themeDark")}
             >
@@ -121,7 +116,7 @@ export default function Header() {
 
             <button
               onClick={() => setLang(lang === "ru" ? "en" : "ru")}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${controlText}`}
               aria-label="Language"
             >
               <Globe size={16} />
