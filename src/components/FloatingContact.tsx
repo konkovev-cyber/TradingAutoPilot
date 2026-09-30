@@ -1,6 +1,6 @@
 ﻿import { useEffect, useState } from "react";
 import { useI18n } from "@/lib/i18n";
-import { useContacts } from "@/lib/site-content";
+import { useContacts, DEFAULT_PHONE } from "@/lib/site-content";
 import { MessageCircle, X, ArrowUp, Send, Mail, Phone } from "lucide-react";
 
 export default function FloatingContact() {
@@ -62,7 +62,7 @@ export default function FloatingContact() {
               <span className="text-sm font-semibold text-gray-900 dark:text-white">Email</span>
             </span>
           </a>
-          {contacts.phone && contacts.phone !== "+7 999 000-00-00" && (
+          {contacts.phone !== DEFAULT_PHONE && (
             <a
               href={`tel:${contacts.phone.replace(/[^+\d]/g, "")}`}
               className="flex items-center gap-3 bg-white dark:bg-gray-900 rounded-xl px-4 py-3 border border-gray-200 dark:border-gray-800 shadow-md hover:shadow-lg transition-all"

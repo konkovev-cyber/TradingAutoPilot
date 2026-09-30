@@ -236,6 +236,8 @@ export function useSectionValue(section: string): Json {
   return useMemo(() => data?.[section], [data, section]);
 }
 
+export const DEFAULT_PHONE = "+7 999 000-00-00";
+
 export interface SiteContacts {
   telegram: string;
   whatsapp: string;
@@ -252,7 +254,7 @@ export function useContacts(): SiteContacts {
     telegram: str(contacts.telegram, "https://t.me/coinsofter"),
     whatsapp: str(contacts.whatsapp, "https://wa.me/79990000000"),
     email: str(contacts.email, "mailto:info@coinsofter.com"),
-    phone: str(contacts.phone, "+7 999 000-00-00"),
+    phone: str(contacts.phone, DEFAULT_PHONE),
   };
 }
 

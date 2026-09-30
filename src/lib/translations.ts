@@ -11,6 +11,7 @@ export const ruTranslations = {
     "themeDark": "Тёмная тема",
     "menu": "Меню",
     "skip": "К основному контенту",
+    "loading": "Загрузка...",
     "scrollTo": "Перейти к разделу"
   },
   "hero": {
@@ -308,7 +309,7 @@ export const ruTranslations = {
 };
 export const enTranslations = {
   "nav": { "project": "About", "bots": "Bots", "contact": "Contact", "how": "How it works", "faq": "FAQ" },
-  "ui": { "themeLight": "Light theme", "themeDark": "Dark theme", "menu": "Menu", "skip": "Skip to content", "scrollTo": "Go to section" },
+  "ui": { "themeLight": "Light theme", "themeDark": "Dark theme", "menu": "Menu", "skip": "Skip to content", "loading": "Loading...", "scrollTo": "Go to section" },
   "hero": {
     "badge": "20+ exchanges · AI trading 24/7",
     "heading1": "Trading bots for crypto exchanges",

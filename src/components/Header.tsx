@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Sun, Moon, Globe } from "lucide-react";
 import { useTheme } from "@/lib/theme";
 import { useI18n } from "@/lib/i18n";
@@ -16,6 +16,8 @@ export default function Header() {
   const { sections } = useSections();
   const c = useContent();
   const contacts = useContacts();
+  const location = useLocation();
+  const onHome = location.pathname === "/";
 
   const navMap: Record<string, { href: string; domId: string; label: string; always?: boolean }> = {
     hero: { href: "/#project", domId: "project", label: t("nav.project") },
@@ -27,12 +29,31 @@ export default function Header() {
     .filter(([key, v]) => v.always || enabledKeys.has(key))
     .map(([key, v]) => ({ id: key, domId: v.domId, ...v }));
   const navDomIds = navLinks.map((l) => l.domId).join(",");
+  const logoClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setMobileOpen(false);
+    if (onHome) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      window.location.href = "/";
+    }
+  };
   const shellText = !scrolled
     ? "text-white/85 hover:text-white"
     : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white";
   const controlText = !scrolled
     ? "text-white/85 hover:text-white hover:bg-white/10"
     : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800";
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileOpen(false);
+    };
+    if (mobileOpen) {
+      window.addEventListener("keydown", onKey);
+      return () => window.removeEventListener("keydown", onKey);
+    }
+  }, [mobileOpen]);
 
   useEffect(() => {
     const onScroll = () => {
@@ -90,7 +111,7 @@ export default function Header() {
         }`}
       >
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link to="/" aria-label="TradingAutoPilot" className="group flex items-center">
+          <Link to="/" aria-label="TradingAutoPilot" onClick={logoClick} className="group flex items-center">
             <span
               className={`text-[20px] font-extrabold tracking-[-0.055em] transition-opacity group-hover:opacity-80 ${
                 scrolled
@@ -110,7 +131,7 @@ export default function Header() {
                 onClick={(e) => handleAnchor(e, link.href)}
                 target={link.href.startsWith("http") ? "_blank" : undefined}
                 rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
-                className={`text-sm font-medium transition-colors ${active === link.domId ? (scrolled ? "text-blue-600 dark:text-cyan-300" : "text-white") : shellText}`}
+                  className={`text-sm font-medium rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 ${active === link.domId ? (scrolled ? "text-blue-600 dark:text-cyan-300" : "text-white") : shellText}`}
               >
                 {link.label}
               </a>
