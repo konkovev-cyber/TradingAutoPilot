@@ -14,7 +14,7 @@ export default function TryIt() {
   const c = useContent();
 
   return (
-    <section className="section-padding bg-gray-50 py-16 transition-colors duration-300 dark:bg-gray-900 md:py-20">
+    <section id="contact" className="section-padding bg-gray-50 py-16 transition-colors duration-300 dark:bg-gray-900 md:py-20">
       <div className="mx-auto max-w-5xl px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

@@ -17,9 +17,9 @@ export default function Header() {
   const c = useContent();
 
   const navMap: Record<string, { href: string; domId: string; label: string }> = {
+    hero: { href: "/#project", domId: "project", label: t("nav.project") },
     products: { href: "/#bots", domId: "bots", label: c("nav", "bots", t("nav.bots")) },
-    connect: { href: "/#how", domId: "how", label: c("nav", "how", t("nav.how")) },
-    faq: { href: "/#faq", domId: "faq", label: c("nav", "faq", t("nav.faq")) },
+    cta: { href: "/#contact", domId: "contact", label: t("nav.contact") },
   };
   const enabledKeys = new Set(sections.filter((s) => s.enabled).map((s) => s.key));
   const navLinks = Object.entries(navMap)

@@ -1,6 +1,8 @@
 export const ruTranslations = {
   "nav": {
+    "project": "О проекте",
     "bots": "Боты",
+    "contact": "Связаться",
     "how": "Как работает",
     "faq": "FAQ"
   },
@@ -62,7 +64,30 @@ export const ruTranslations = {
       "ariaLabel": "Парящий график: доходность акций и крипты растёт, ИИ-ядро активно",
       "tooltip1": "+4.2% сделка",
       "tooltip2": "ИИ перестроил портфель"
-    }
+    },
+    "carouselLabel": "Слайды о проекте",
+    "projectSlides": [
+      {
+        "eyebrow": "TradingAutoPilot",
+        "title": "Автоматическая торговля без рутины",
+        "desc": "Три специализированных торговых робота работают по алгоритмам, пока вы управляете своим счётом на бирже."
+      },
+      {
+        "eyebrow": "Как это работает",
+        "title": "API, безопасность и контроль",
+        "desc": "Вы подключаете API-ключ только с правом торговли. Средства и право вывода всегда остаются на вашем аккаунте биржи."
+      },
+      {
+        "eyebrow": "Преимущество",
+        "title": "Без подписки — робот остаётся с вами",
+        "desc": "Покупаете подходящего робота один раз, настраиваете риск под свой депозит и запускаете торговлю 24/7."
+      },
+      {
+        "eyebrow": "Начните сейчас",
+        "title": "Выберите стратегию под свой рынок",
+        "desc": "Гибрид акций и крипты, высокочастотная сетка или поиск импульсов — все детали и статистика доступны на странице бота."
+      }
+    ]
   },
   "products": {
     "title": "Список ботов для торговли криптовалютой и акциями",
@@ -279,7 +304,7 @@ export const ruTranslations = {
   }
 };
 export const enTranslations = {
-  "nav": { "bots": "Bots", "how": "How it works", "faq": "FAQ" },
+  "nav": { "project": "About", "bots": "Bots", "contact": "Contact", "how": "How it works", "faq": "FAQ" },
   "ui": { "themeLight": "Light theme", "themeDark": "Dark theme", "menu": "Menu", "skip": "Skip to content", "scrollTo": "Go to section" },
   "hero": {
     "badge": "20+ exchanges · AI trading 24/7",
@@ -328,7 +353,30 @@ export const enTranslations = {
       "ariaLabel": "Floating chart: stock and crypto returns rising, AI core active",
       "tooltip1": "+4.2% trade",
       "tooltip2": "AI rebuilt the portfolio"
-    }
+    },
+    "carouselLabel": "Project slides",
+    "projectSlides": [
+      {
+        "eyebrow": "TradingAutoPilot",
+        "title": "Automated trading without the routine",
+        "desc": "Three specialized trading bots run their algorithms while you stay in control of your exchange account."
+      },
+      {
+        "eyebrow": "How it works",
+        "title": "API, safety and control",
+        "desc": "You connect an API key with trading rights only. Funds and withdrawal rights always stay in your exchange account."
+      },
+      {
+        "eyebrow": "Advantage",
+        "title": "No subscription — the bot stays with you",
+        "desc": "Buy the right bot once, set risk for your deposit and run automated trading 24/7."
+      },
+      {
+        "eyebrow": "Start now",
+        "title": "Pick a strategy for your market",
+        "desc": "Stock-crypto hybrid, high-frequency grid or impulse search — full details and statistics are on each bot's page."
+      }
+    ]
   },
   "products": {
     "title": "List of bots for crypto and stock trading",
