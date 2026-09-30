@@ -8,20 +8,23 @@ import { botText } from "@/data/bots";
 import { BotAvatar } from "./bots/BotCard";
 import HeroProjectCarousel from "./HeroProjectCarousel";
 
-function WaveShape({ className }: { className?: string }) {
+function WaveLayer({ gradientId, withDefs, className, opacity }: { gradientId: string; withDefs?: boolean; className?: string; opacity?: number }) {
   return (
     <svg className={className} viewBox="0 0 1440 220" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+      {withDefs && (
+        <defs>
+          <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#6d28d9" />
+            <stop offset="55%" stopColor="#4f46e5" />
+            <stop offset="100%" stopColor="#2563eb" />
+          </linearGradient>
+        </defs>
+      )}
       <path
-        d="M0,96 C240,178 460,42 720,110 C980,178 1200,56 1440,96 L1440,0 L0,0 Z"
-        fill="url(#heroWaveGradient)"
+        d="M0,110 C240,190 480,190 720,110 C960,30 1200,30 1440,110 L1440,0 L0,0 Z"
+        fill={`url(#${gradientId})`}
+        opacity={opacity}
       />
-      <defs>
-        <linearGradient id="heroWaveGradient" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#2563eb" />
-          <stop offset="50%" stopColor="#6d28d9" />
-          <stop offset="100%" stopColor="#2563eb" />
-        </linearGradient>
-      </defs>
     </svg>
   );
 }
@@ -41,9 +44,13 @@ export default function Hero() {
   return (
     <section id="project" className="relative isolate overflow-hidden bg-white pb-28 pt-[210px] text-slate-900 transition-colors dark:bg-[#07091b] dark:text-white md:pb-32">
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-[190px] overflow-hidden">
+        <div className={`absolute inset-y-0 left-0 flex w-[200%] opacity-40 ${reduceMotion ? "" : "hero-wave-track-rev"}`}>
+          <WaveLayer gradientId="heroWaveBack" withDefs className="h-full w-1/2" />
+          <WaveLayer gradientId="heroWaveBack" className="h-full w-1/2" />
+        </div>
         <div className={`absolute inset-y-0 left-0 flex w-[200%] ${reduceMotion ? "" : "hero-wave-track"}`}>
-          <WaveShape className="h-full w-1/2" />
-          <WaveShape className="h-full w-1/2" />
+          <WaveLayer gradientId="heroWaveFront" withDefs className="h-full w-1/2" />
+          <WaveLayer gradientId="heroWaveFront" className="h-full w-1/2" />
         </div>
       </div>
 

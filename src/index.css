@@ -224,7 +224,11 @@
 
 /* Плавный дрейф волны: бесшовный цикл по двум одинаковым половинам */
 .hero-wave-track {
-  animation: wave-drift 20s linear infinite;
+  animation: wave-drift 24s linear infinite;
+  will-change: transform;
+}
+.hero-wave-track-rev {
+  animation: wave-drift 34s linear infinite reverse;
   will-change: transform;
 }
 @keyframes wave-drift {
@@ -232,7 +236,8 @@
   to { transform: translateX(-50%); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .hero-wave-track { animation: none; }
+  .hero-wave-track,
+  .hero-wave-track-rev { animation: none; }
 }
 
 /* Hero занимает первый экран, контент распределён по высоте */
