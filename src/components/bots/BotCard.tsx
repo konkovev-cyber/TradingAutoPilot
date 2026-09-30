@@ -23,7 +23,7 @@ export function BotAvatar({ bot, size = 48 }: { bot: BotData; size?: number }) {
       style={{ width: size, height: size, background: `linear-gradient(135deg, ${bot.colorDim}, transparent)` }}
     >
       {bot.imageUrl ? (
-        <img src={bot.imageUrl} alt={bot.name} className="h-full w-full object-cover" />
+        <img src={bot.imageUrl} alt={bot.name} className="h-full w-full object-cover" loading="lazy" decoding="async" />
       ) : (
         <Icon size={Math.round(size * 0.5)} style={{ color: bot.color }} />
       )}

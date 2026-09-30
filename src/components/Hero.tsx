@@ -86,10 +86,10 @@ export default function Hero() {
               </a>
             </div>
             <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2">
-              {trust.map((text, index) => {
-                const Icon = [ShieldCheck, Zap, Sparkles][index % 3];
-                return <span key={text} className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400"><Icon size={14} className="text-blue-600 dark:text-cyan-300" />{text}</span>;
-              })}
+            {trust.map((text, index) => {
+              const Icon = [ShieldCheck, Zap, Sparkles][index % 3];
+              return <span key={index} className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400"><Icon size={14} className="text-blue-600 dark:text-cyan-300" />{text}</span>;
+            })}
             </div>
           </motion.div>
 

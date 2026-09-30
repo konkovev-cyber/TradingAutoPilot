@@ -78,22 +78,24 @@ export default function HeroProjectCarousel() {
                     role="tab"
                     aria-selected={active === index}
                     aria-label={`${t("carousel.goto")} ${index + 1}`}
-                    className={`h-2.5 rounded-full transition-all ${active === index ? "w-7 bg-indigo-600 shadow-[0_0_14px_rgba(79,70,229,0.55)] dark:bg-cyan-300 dark:shadow-[0_0_14px_rgba(103,232,249,0.8)]" : "w-2.5 bg-blue-200 hover:bg-blue-300 dark:bg-white/25 dark:hover:bg-white/50"}`}
-                  />
+                    className="flex h-6 w-6 items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/60 rounded-full"
+                  >
+                    <span className={`h-2.5 rounded-full transition-all ${active === index ? "w-7 bg-indigo-600 shadow-[0_0_14px_rgba(79,70,229,0.55)] dark:bg-cyan-300 dark:shadow-[0_0_14px_rgba(103,232,249,0.8)]" : "w-2.5 bg-blue-200 hover:bg-blue-300 dark:bg-white/25 dark:hover:bg-white/50"}`} />
+                  </button>
                 ))}
               </div>
               <div className="flex gap-2">
                 <button
                   onClick={() => goTo(active - 1)}
                   aria-label={t("carousel.prev")}
-                  className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm transition-colors hover:bg-slate-50 dark:border-white/10 dark:bg-white/[0.06] dark:text-white dark:hover:bg-white/[0.13]"
+                  className="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/60 dark:border-white/10 dark:bg-white/[0.06] dark:text-white dark:hover:bg-white/[0.13]"
                 >
                   <ChevronLeft size={18} />
                 </button>
                 <button
                   onClick={() => goTo(active + 1)}
                   aria-label={t("carousel.next")}
-                  className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm transition-colors hover:bg-slate-50 dark:border-white/10 dark:bg-white/[0.06] dark:text-white dark:hover:bg-white/[0.13]"
+                  className="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/60 dark:border-white/10 dark:bg-white/[0.06] dark:text-white dark:hover:bg-white/[0.13]"
                 >
                   <ChevronRight size={18} />
                 </button>
