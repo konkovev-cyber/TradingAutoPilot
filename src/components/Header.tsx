@@ -16,14 +16,14 @@ export default function Header() {
   const { sections } = useSections();
   const c = useContent();
 
-  const navMap: Record<string, { href: string; domId: string; label: string }> = {
+  const navMap: Record<string, { href: string; domId: string; label: string; always?: boolean }> = {
     hero: { href: "/#project", domId: "project", label: t("nav.project") },
     products: { href: "/#bots", domId: "bots", label: c("nav", "bots", t("nav.bots")) },
-    cta: { href: "/#contact", domId: "contact", label: t("nav.contact") },
+    contact: { href: "https://t.me/coinsofter", domId: "", label: t("nav.contact"), always: true },
   };
   const enabledKeys = new Set(sections.filter((s) => s.enabled).map((s) => s.key));
   const navLinks = Object.entries(navMap)
-    .filter(([key]) => enabledKeys.has(key))
+    .filter(([key, v]) => v.always || enabledKeys.has(key))
     .map(([key, v]) => ({ id: key, domId: v.domId, ...v }));
   const navDomIds = navLinks.map((l) => l.domId).join(",");
   const shellText = !scrolled
@@ -107,7 +107,9 @@ export default function Header() {
                 key={link.href}
                 href={link.href}
                 onClick={(e) => handleAnchor(e, link.href)}
-                  className={`text-sm font-medium transition-colors ${active === link.domId ? (scrolled ? "text-blue-600 dark:text-cyan-300" : "text-white") : shellText}`}
+                target={link.href.startsWith("http") ? "_blank" : undefined}
+                rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                className={`text-sm font-medium transition-colors ${active === link.domId ? (scrolled ? "text-blue-600 dark:text-cyan-300" : "text-white") : shellText}`}
               >
                 {link.label}
               </a>
@@ -163,6 +165,8 @@ export default function Header() {
                 key={link.href}
                 href={link.href}
                 onClick={(e) => handleAnchor(e, link.href)}
+                target={link.href.startsWith("http") ? "_blank" : undefined}
+                rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
                 className="block text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white py-2"
               >
                 {link.label}

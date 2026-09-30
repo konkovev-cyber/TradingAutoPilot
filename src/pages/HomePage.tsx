@@ -10,8 +10,6 @@ import Connect from "@/components/Connect";
 import Calculator from "@/components/Calculator";
 import FAQ from "@/components/FAQ";
 import LeadForm from "@/components/LeadForm";
-import CTA from "@/components/CTA";
-import TryIt from "@/components/TryIt";
 import Advantages from "@/components/Advantages";
 import Benefits from "@/components/Benefits";
 import PricingNote from "@/components/PricingNote";
@@ -32,7 +30,6 @@ const componentMap: Record<string, ComponentType> = {
   pricing: PricingNote,
   conclusion: Conclusion,
   questions: CTA,
-  cta: TryIt,
   faq: FAQ,
   calculator: Calculator,
   lead: LeadForm,

@@ -18,8 +18,7 @@ export const DEFAULT_SECTIONS: SiteSection[] = [
   { key: "pricing", title: "Наши цены", enabled: true, position: 7 },
   { key: "conclusion", title: "Заключение", enabled: true, position: 8 },
   { key: "questions", title: "Остались вопросы?", enabled: true, position: 9 },
-  { key: "cta", title: "Понравился наш робот? (слайдер)", enabled: true, position: 10 },
-  { key: "faq", title: "Частые вопросы", enabled: false, position: 11 },
+  { key: "faq", title: "Частые вопросы", enabled: false, position: 10 },
   { key: "calculator", title: "Калькулятор доходности", enabled: false, position: 12 },
   { key: "lead", title: "Форма заявки", enabled: false, position: 13 },
 ];
@@ -39,7 +38,7 @@ export async function fetchSections(): Promise<SiteSection[]> {
 }
 
 // Sections removed from the homepage in the redesigns.
-const LEGACY_KEYS = ["how", "compare", "choose", "trust"];
+const LEGACY_KEYS = ["how", "compare", "choose", "trust", "cta"];
 // Optional blocks that must stay out of the main landing flow until explicitly re-enabled.
 const OPTIONAL_KEYS = ["faq", "calculator", "lead"];
 
