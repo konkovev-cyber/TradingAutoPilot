@@ -10,6 +10,7 @@ import Connect from "@/components/Connect";
 import Calculator from "@/components/Calculator";
 import FAQ from "@/components/FAQ";
 import LeadForm from "@/components/LeadForm";
+import CTA from "@/components/CTA";
 import Advantages from "@/components/Advantages";
 import Benefits from "@/components/Benefits";
 import PricingNote from "@/components/PricingNote";
