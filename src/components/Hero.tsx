@@ -39,7 +39,7 @@ export default function Hero() {
   });
 
   return (
-    <section id="project" className="relative isolate overflow-hidden bg-white pb-14 pt-[210px] text-slate-900 transition-colors dark:bg-[#07091b] dark:text-white">
+    <section id="project" className="relative isolate overflow-hidden bg-white pb-28 pt-[210px] text-slate-900 transition-colors dark:bg-[#07091b] dark:text-white md:pb-32">
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-[190px] overflow-hidden">
         <div className={`absolute inset-y-0 left-0 flex w-[200%] ${reduceMotion ? "" : "hero-wave-track"}`}>
           <WaveShape className="h-full w-1/2" />
@@ -91,7 +91,7 @@ export default function Hero() {
           </motion.div>
         </div>
 
-        <motion.div {...enter(0.26)} className="mt-10">
+        <motion.div {...enter(0.26)} className="mt-16">
           <div className="grid gap-3 sm:grid-cols-3">
             {bots.map((bot) => {
               const b = botText(bot, lang);
