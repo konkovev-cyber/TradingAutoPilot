@@ -4,6 +4,8 @@ import { useI18n } from "@/lib/i18n";
 import type { BotData } from "@/data/bots";
 
 const iconMap: Record<string, LucideIcon> = {
+  synchrobot: Gauge,
+  "synchro-bot": Gauge,
   cryptosuperstock: Gauge,
   "megagrid-ai": TrendingUp,
   smartix: TrendingUp,
@@ -15,18 +17,46 @@ function difficultyStyle(tone?: string) {
   return { background: "rgba(244,63,94,0.10)", borderColor: "rgba(244,63,94,0.32)", color: "#E11D48" };
 }
 
-export function BotAvatar({ bot, size = 48 }: { bot: BotData; size?: number }) {
+export function BotAvatar({ bot, size = 48, className = "" }: { bot: BotData; size?: number; className?: string }) {
   const Icon = iconMap[bot.slug] || TrendingUp;
+  const isSynchro = bot.slug === "synchrobot" || bot.slug === "synchro-bot";
+  const avatarLight = bot.avatarUrl || (isSynchro ? "/synchro-hero-light.jpg" : undefined);
+  const avatarDark = bot.avatarDarkUrl || (isSynchro ? "/synchro-hero-dark.jpg" : undefined);
+
+  if (avatarLight || avatarDark) {
+    return (
+      <div
+        className={`relative flex shrink-0 items-center justify-center overflow-hidden rounded-full shadow-sm ring-1 ring-black/10 dark:ring-white/20 ${className}`}
+        style={{ width: size, height: size, background: `linear-gradient(135deg, ${bot.colorDim}, transparent)` }}
+      >
+        {avatarLight && (
+          <img
+            src={avatarLight}
+            alt={bot.name}
+            className={`h-full w-full object-cover scale-105 ${avatarDark ? "dark:hidden" : ""}`}
+            loading="lazy"
+            decoding="async"
+          />
+        )}
+        {avatarDark && (
+          <img
+            src={avatarDark}
+            alt={bot.name}
+            className={`h-full w-full object-cover scale-105 ${avatarLight ? "hidden dark:block" : ""}`}
+            loading="lazy"
+            decoding="async"
+          />
+        )}
+      </div>
+    );
+  }
+
   return (
     <div
-      className="flex shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gray-50 dark:bg-gray-800"
+      className={`flex shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gray-50 dark:bg-gray-800 ${className}`}
       style={{ width: size, height: size, background: `linear-gradient(135deg, ${bot.colorDim}, transparent)` }}
     >
-      {bot.imageUrl ? (
-        <img src={bot.imageUrl} alt={bot.name} className="h-full w-full object-cover" loading="lazy" decoding="async" />
-      ) : (
-        <Icon size={Math.round(size * 0.5)} style={{ color: bot.color }} />
-      )}
+      <Icon size={Math.round(size * 0.5)} style={{ color: bot.color }} />
     </div>
   );
 }

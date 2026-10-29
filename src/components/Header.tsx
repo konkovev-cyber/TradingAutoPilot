@@ -27,8 +27,9 @@ export default function Header() {
   const enabledKeys = new Set(sections.filter((s) => s.enabled).map((s) => s.key));
   const navLinks = Object.entries(navMap)
     .filter(([key, v]) => v.always || enabledKeys.has(key))
-    .map(([key, v]) => ({ id: key, domId: v.domId, ...v }));
+    .map(([key, v]) => { const { domId, ...rest } = v; return { id: key, domId, ...rest }; });
   const navDomIds = navLinks.map((l) => l.domId).join(",");
+
   const logoClick = (e: React.MouseEvent) => {
     e.preventDefault();
     setMobileOpen(false);

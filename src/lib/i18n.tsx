@@ -2,7 +2,7 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { ruTranslations, enTranslations } from './translations';
 
-type Lang = 'ru' | 'en';
+export type Lang = 'ru' | 'en';
 
 interface I18nContextValue {
   lang: Lang;

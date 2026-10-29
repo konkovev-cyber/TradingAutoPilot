@@ -6,7 +6,17 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://coinsofter.com/bots/cryptosuperstock</loc>
+    <loc>https://coinsofter.com/bots/synchrobot</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://coinsofter.com/bots/megagrid-ai</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://coinsofter.com/bots/smartix</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>

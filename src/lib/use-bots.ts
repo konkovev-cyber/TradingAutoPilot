@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "./supabase";
 import { bots as staticBots, colorDimFrom, type BotData, type BotStep } from "@/data/bots";
 
@@ -137,7 +137,9 @@ function toBotData(row: Json): BotData {
     strategy: colPair.strategy.ru || stat?.strategy || "",
     color,
     colorDim: colorDimFrom(color),
-    imageUrl: row?.image_url ? String(row.image_url) : undefined,
+    imageUrl: row?.image_url ? String(row.image_url) : (stat?.imageUrl ?? undefined),
+    avatarUrl: row?.avatar_url ? String(row.avatar_url) : (stat?.avatarUrl ?? undefined),
+    avatarDarkUrl: row?.avatar_dark_url ? String(row.avatar_dark_url) : (stat?.avatarDarkUrl ?? undefined),
     difficulty: String(row?.difficulty ?? stat?.difficulty ?? ""),
     difficultyTone: (String(row?.difficulty_tone ?? stat?.difficultyTone ?? "starter") as BotData["difficultyTone"]),
     i18n,

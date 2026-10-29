@@ -1,11 +1,11 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, Check, AlertTriangle, Share2, Send, ShieldCheck } from "lucide-react";
 import { useBots } from "@/lib/use-bots";
 import Header from "@/components/Header";
 import FloatingContact from "@/components/FloatingContact";
-import BotCard from "@/components/bots/BotCard";
+import BotCard, { BotAvatar } from "@/components/bots/BotCard";
 import BotStrategySteps from "@/components/bots/BotStrategySteps";
 import BotStats from "@/components/bots/BotStats";
 import BotTradeExample from "@/components/bots/BotTradeExample";
@@ -20,7 +20,7 @@ export default function BotDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const { t, lang } = useI18n();
   const bots = useBots();
-  const bot = bots.find((b) => b.slug === slug) ?? null;
+  const bot = bots.find((b) => b.slug === slug || ((slug === "cryptosuperstock" || slug === "synchro-bot") && b.slug === "synchrobot")) ?? null;
   const [copied, setCopied] = useState(false);
 
   const isTouch = typeof window !== "undefined" && ("ontouchstart" in window || navigator.maxTouchPoints > 0);
@@ -106,16 +106,30 @@ export default function BotDetailPage() {
                     </span>
                   </div>
 
-                  <h1 className="heading-xl text-gray-900 dark:text-white mb-4 min-w-0 break-words">{botText(bot, lang).name}</h1>
+                  <div className="flex items-center gap-4 mb-4">
+                    <BotAvatar bot={bot} size={56} />
+                    <h1 className="heading-xl text-gray-900 dark:text-white min-w-0 break-words">{botText(bot, lang).name}</h1>
+                  </div>
                   <p className="text-xl sm:text-2xl font-semibold mb-6 max-w-2xl" style={{ color: bot.color === "#00FFB2" ? "#00c98d" : bot.color }}>
                     {botText(bot, lang).slogan}
                   </p>
+
+                  {bot.imageUrl && (
+                    <div className="mb-8 overflow-hidden rounded-2xl border border-gray-100 dark:border-gray-800 shadow-soft">
+                      <img
+                        src={bot.imageUrl}
+                        alt={botText(bot, lang).name}
+                        className="w-full h-auto object-cover max-h-[380px]"
+                        loading="eager"
+                      />
+                    </div>
+                  )}
 
                   <p className="text-gray-500 dark:text-gray-400 text-lg leading-relaxed max-w-3xl mb-8">{botText(bot, lang).shortDesc}</p>
 
                   <div className="bg-white dark:bg-gray-900 rounded-xl p-8 border border-gray-100 dark:border-gray-800 shadow-sm mb-8">
                     <h3 className="heading-md text-gray-900 dark:text-white mb-4">{t("botDetail.about")}</h3>
-                    <p className="text-gray-500 dark:text-gray-400 leading-relaxed">{botText(bot, lang).fullDesc}</p>
+                    <p className="text-gray-500 dark:text-gray-400 leading-relaxed whitespace-pre-line">{botText(bot, lang).fullDesc}</p>
                   </div>
 
                   {botText(bot, lang).howItWorks.length > 0 && (

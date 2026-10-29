@@ -1,4 +1,4 @@
-﻿export interface BotStep { title: string; desc: string }
+export interface BotStep { title: string; desc: string }
 
 export type Lang = "ru" | "en";
 
@@ -17,16 +17,21 @@ export interface BotText {
   exampleTrade: BotStep[];
 }
 
+export interface BotReturn { period: string; value: string }
+
 export interface BotData extends Omit<BotText, "features" | "howItWorks" | "exampleTrade"> {
   slug: string;
   color: string;
   colorDim: string;
   imageUrl?: string;
+  avatarUrl?: string;
+  avatarDarkUrl?: string;
   difficulty?: string;
   difficultyTone?: "starter" | "advanced" | "aggressive";
   features: string[];
   howItWorks: BotStep[];
   exampleTrade: BotStep[];
+  returns: BotReturn[];
   i18n?: { ru?: Partial<BotText>; en?: Partial<BotText> };
 }
 
@@ -61,71 +66,74 @@ export function botText(bot: BotData, lang: Lang): BotData {
 
 export const bots: BotData[] = [
   {
-    slug: "cryptosuperstock",
-    market: "Акции + крипта",
-    strategy: "Возврат к среднему",
-    name: "CryptoSuperStock",
-    slogan: "Торгуйте международный рынок и акции в одном роботе",
-    shortDesc: "Гибридный бот: акции международных компаний и криптопары на BYBIT одновременно. Short и Long на двух рынках — стабильность акций плюс динамика крипты.",
-    fullDesc: "Стратегия построена на концепции возврата к среднему: в акциях часто возникают существенные ценовые отклонения от среднего уровня с последующей нормализацией. Бот реагирует на эти отклонения и постоянно пересчитывает лимитные ордера на открытие сделок. Гибридный подход позволяет торговать множество движений динамично, совершая сделки в Short и Long на двух рынках одновременно — риски нивелируются стабильными котировками международных акций, а динамику обеспечивает волатильность криптовалютных монет.",
-    badge: "Гибрид: акции + крипта",
+    slug: "synchrobot",
+    market: "Крипта",
+    strategy: "Анализ объёмов и цен в реальном времени",
+    name: "SynchroBot",
+    slogan: "Меньше ручного анализа — больше данных для принятия торговых решений",
+    shortDesc: "Интеллектуальный криптотрейдинговый бот, который анализирует рынок в режиме реального времени, отслеживает изменения объёмов и цены по множеству торговых пар и выявляет потенциальные возможности для LONG и SHORT.",
+    fullDesc: "SynchroTrade Bot — интеллектуальный криптотрейдинговый бот, который анализирует рынок в режиме реального времени, отслеживает изменения объёмов и цены по множеству торговых пар и выявляет потенциальные возможности для LONG и SHORT. Алгоритмы помогают оценивать рыночную ситуацию, определять точки входа и контролировать риски, сокращая рутинную работу трейдера.\n\nМеньше ручного анализа — больше данных для принятия торговых решений.",
+    badge: "Анализ объёмов и цен",
+    imageUrl: "/synchro-bot.jpg",
+    avatarUrl: "/synchro-hero-light.jpg",
+    avatarDarkUrl: "/synchro-hero-dark.jpg",
     howItWorks: [
-      { title: "Поиск отклонений", desc: "Бот отслеживает отклонения рыночной цены от среднестатистического значения" },
-      { title: "Динамические ордера", desc: "Постоянно пересчитывает лимитные ордера на открытие сделки" },
-      { title: "Два рынка — один бот", desc: "Short и Long на акциях и крипте одновременно, диверсификация рисков" },
+      { title: "Мониторинг рынка в реальном времени", desc: "Бот непрерывно сканирует поток котировок и изменения объёмов по множеству торговых пар" },
+      { title: "Поиск возможностей LONG & SHORT", desc: "Алгоритмы выявляют ценовые дисбалансы и подтверждённые импульсы для входа в сделку" },
+      { title: "Контроль рисков", desc: "Автоматический расчёт точек входа, выставление стоп-лоссов и защита капитала" },
     ],
     exampleTrade: [
-      { title: "Условие", desc: "Цена акции отклоняется от среднего уровня сильнее обычного" },
-      { title: "Вход", desc: "Бот выставляет лимитные ордера на открытие Long или Short" },
-      { title: "Пересчёт", desc: "Лимитные ордера автоматически пересчитываются вслед за ценой" },
-      { title: "Закрытие", desc: "При нормализации цены сделки закрываются на обоих рынках" },
+      { title: "Всплеск объёма", desc: "Бот фиксирует синхронный рост объёма и ценовое движение на паре" },
+      { title: "Вход в сделку", desc: "Алгоритм вычисляет оптимальную точку входа и открывает позицию в LONG или SHORT" },
+      { title: "Сопровождение", desc: "Динамический контроль рисков и сопровождение позиции по заданным параметрам" },
+      { title: "Фиксация прибыли", desc: "Сделка закрывается по тейк-профиту с защитой накопленной прибыли" },
     ],
     features: [
-      "Акции международных компаний + криптопары на BYBIT",
-      "Стратегия возврата к среднему, проверенная бэктестами",
-      "Одновременная торговля Long и Short",
-      "Автоматический пересчёт лимитных ордеров",
-      "Диверсификация рисков за счёт двух рынков",
+      "Анализ рынка в режиме реального времени",
+      "Отслеживание изменений объёмов и цены по множеству торговых пар",
+      "Поиск возможностей для сделок в LONG и SHORT",
+      "Оценка рыночной ситуации и определение точных точек входа",
+      "Контроль рисков и сокращение рутинного анализа трейдера",
     ],
     returns: [
-      { period: "30 дней", value: "+6.8%" },
-      { period: "90 дней", value: "+19.4%" },
-      { period: "365 дней", value: "+71.2%" },
+      { period: "30 дней", value: "+7.9%" },
+      { period: "90 дней", value: "+22.8%" },
+      { period: "365 дней", value: "+78.4%" },
     ],
-    risk: "Сбалансированный: стабильные акции компенсируют волатильность крипты",
-    pairs: "AAPL, TSLA, NVDA, BTC/USDT, ETH/USDT и др.",
+    risk: "Контролируемый: математический расчёт точек входа и встроенный риск-менеджмент",
+    pairs: "BTC/USDT, ETH/USDT, SOL/USDT, Bybit, BingX, OKX и др.",
     color: "#00FFB2",
     colorDim: "rgba(0, 255, 178, 0.12)",
-    difficulty: "Для новичков",
+    difficulty: "Для новичков и профи",
     difficultyTone: "starter",
     i18n: {
       en: {
-        name: "CryptoSuperStock",
-        slogan: "Trade international markets and stocks in one bot",
-        shortDesc: "Hybrid bot: stocks of international companies and crypto pairs on BYBIT at the same time. Long and Short on two markets — stock stability plus crypto dynamics.",
-        fullDesc: "The strategy is built on mean reversion: stocks often show significant deviations from the average level followed by normalization. The bot reacts to these deviations and continuously recalculates limit orders to open trades. The hybrid approach lets it trade many movements dynamically, opening Long and Short trades on two markets at once — risks are offset by stable quotes of international stocks, while crypto volatility provides the dynamics.",
-        badge: "Hybrid: stocks + crypto",
-        market: "Stocks + Crypto",
-        strategy: "Mean reversion",
-        risk: "Balanced: stable stocks offset crypto volatility",
-        pairs: "AAPL, TSLA, NVDA, BTC/USDT, ETH/USDT and more",
+        name: "SynchroBot",
+        slogan: "Less manual analysis — more actionable data for smart trading decisions",
+        shortDesc: "An intelligent crypto trading bot analyzing the market in real time, tracking volume and price dynamics across pairs to spot LONG and SHORT opportunities.",
+        fullDesc: "SynchroTrade Bot is an intelligent crypto trading bot that analyzes the market in real time, tracks volume and price dynamics across multiple trading pairs, and detects potential LONG and SHORT opportunities. Its algorithms evaluate market conditions, calculate optimal entry points, and manage risk, eliminating tedious routine for traders.\n\nLess manual analysis — more actionable data for smart trading decisions.",
+        badge: "Volume & Price AI",
+        market: "Crypto",
+        strategy: "Real-time volume & price analysis",
+        risk: "Controlled: mathematical entry calculation and built-in risk management",
+        pairs: "BTC/USDT, ETH/USDT, SOL/USDT, Bybit, BingX, OKX & more",
         features: [
-          "International company stocks + crypto pairs on BYBIT",
-          "Mean-reversion strategy backed by backtests",
-          "Simultaneous Long and Short trading",
-          "Automatic limit-order recalculation",
-          "Risk diversification across two markets",
+          "Real-time market depth and price stream analysis",
+          "Tracking volume surges and price dynamics across multiple pairs",
+          "Dual-direction setups: LONG and SHORT opportunities",
+          "Market condition evaluation and precise entry points",
+          "Automated risk control reducing trader routine",
         ],
         howItWorks: [
-          { title: "Detecting deviations", desc: "The bot tracks deviations of the market price from its average value" },
-          { title: "Dynamic orders", desc: "Continuously recalculates limit orders to open trades" },
-          { title: "Two markets — one bot", desc: "Long and Short on stocks and crypto at once, with risk diversification" },
+          { title: "Real-Time Market Tracking", desc: "Continuously scans order flow and volume changes across multiple crypto pairs" },
+          { title: "Detecting LONG & SHORT Setups", desc: "Algorithms identify price imbalances and confirmed momentum for optimal entries" },
+          { title: "Risk Management", desc: "Automated entry calculation, stop-loss protection, and capital defense" },
         ],
         exampleTrade: [
-          { title: "Condition", desc: "A stock price deviates from its average level more than usual" },
-          { title: "Entry", desc: "The bot places limit orders to open Long or Short trades" },
-          { title: "Recalculation", desc: "Limit orders are automatically recalculated as the price moves" },
-          { title: "Closing", desc: "When the price normalizes, trades are closed on both markets" },
+          { title: "Volume Surge", desc: "The bot detects synchronized volume inflow and price movement" },
+          { title: "Trade Entry", desc: "The algorithm calculates an optimal entry and opens a LONG or SHORT trade" },
+          { title: "Management", desc: "Dynamic risk control and position tracking based on preset rules" },
+          { title: "Profit Taking", desc: "Trade closes at target take-profit while securing accumulated gains" },
         ],
       },
     },
@@ -275,5 +283,9 @@ export const bots: BotData[] = [
 ]
 
 export function getBot(slug: string): BotData | undefined {
-  return bots.find((b) => b.slug === slug)
+  return bots.find(
+    (b) =>
+      b.slug === slug ||
+      ((slug === "cryptosuperstock" || slug === "synchro-bot") && b.slug === "synchrobot")
+  );
 }

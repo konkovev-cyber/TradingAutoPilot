@@ -27,3 +27,7 @@ _*.cmd
 _*.ps1
 *.png
 !public/*.png
+
+photo_*.jpg
+.kilo/
+supabase/.temp/
