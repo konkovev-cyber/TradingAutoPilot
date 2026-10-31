@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <!-- Dark theme: deep navy bg circle with cyan robot -->
+  
+  <!-- Outer glow circle -->
+  <defs>
+    <radialGradient id="bgGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1a2744"/>
+      <stop offset="100%" stop-color="#0d1520"/>
+    </radialGradient>
+    <radialGradient id="eyeGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00f5ff"/>
+      <stop offset="100%" stop-color="#0088cc"/>
+    </radialGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="1.5" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="50" cy="50" r="49" fill="url(#bgGrad)" stroke="#1e40af" stroke-width="1.5"/>
+  
+  <!-- Trend arrow up (background element) -->
+  <polyline points="18,68 32,52 44,60 62,38" fill="none" stroke="#22d3ee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.35"/>
+  <polygon points="58,32 68,36 64,46" fill="#22d3ee" opacity="0.35"/>
+  
+  <!-- Robot head -->
+  <!-- Antenna -->
+  <line x1="50" y1="22" x2="50" y2="30" stroke="#60a5fa" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="50" cy="20" r="3" fill="#22d3ee" filter="url(#glow)"/>
+  
+  <!-- Head shape (rounded rectangle) -->
+  <rect x="33" y="30" width="34" height="26" rx="7" ry="7" fill="#1e3a6e" stroke="#3b82f6" stroke-width="1.5"/>
+  
+  <!-- Eyes -->
+  <rect x="38" y="38" width="9" height="6" rx="3" fill="url(#eyeGlow)" filter="url(#glow)"/>
+  <rect x="53" y="38" width="9" height="6" rx="3" fill="url(#eyeGlow)" filter="url(#glow)"/>
+  
+  <!-- Mouth / status bar -->
+  <rect x="40" y="50" width="20" height="3" rx="1.5" fill="#1d4ed8" opacity="0.8"/>
+  <rect x="40" y="50" width="12" height="3" rx="1.5" fill="#22d3ee" opacity="0.9"/>
+  
+  <!-- Neck -->
+  <rect x="45" y="56" width="10" height="5" rx="2" fill="#1e3a6e" stroke="#3b82f6" stroke-width="1"/>
+  
+  <!-- Body / shoulders -->
+  <rect x="30" y="61" width="40" height="20" rx="6" ry="6" fill="#1e3a6e" stroke="#3b82f6" stroke-width="1.5"/>
+  
+  <!-- Chest bitcoin symbol hint -->
+  <text x="50" y="76" font-family="Arial" font-size="10" font-weight="bold" fill="#f59e0b" text-anchor="middle" opacity="0.9">₿</text>
+  
+  <!-- Shoulders highlight -->
+  <rect x="30" y="61" width="10" height="8" rx="4" fill="#2563eb" opacity="0.6"/>
+  <rect x="60" y="61" width="10" height="8" rx="4" fill="#2563eb" opacity="0.6"/>
+</svg>

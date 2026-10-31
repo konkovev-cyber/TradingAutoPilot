@@ -1,37 +1,50 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 96" width="420" height="96" role="img" aria-labelledby="logo-light-title">
-  <title id="logo-light-title">Trading Auto Pilot</title>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <!-- Light theme: white bg circle with blue robot -->
+  
   <defs>
-    <linearGradient id="l-frame" x1="14" y1="10" x2="84" y2="86" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#1986FF" />
-      <stop offset="1" stop-color="#00C67F" />
-    </linearGradient>
-    <linearGradient id="l-blue" x1="16" y1="20" x2="61" y2="76" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#1986FF" />
-      <stop offset="1" stop-color="#0A5ACF" />
-    </linearGradient>
-    <linearGradient id="l-green" x1="32" y1="72" x2="82" y2="18" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#00A86B" />
-      <stop offset="1" stop-color="#5BE89A" />
-    </linearGradient>
-    <filter id="l-glow" x="-30%" y="-30%" width="160%" height="160%">
-      <feGaussianBlur stdDeviation="1.8" result="blur" />
-      <feMerge>
-        <feMergeNode in="blur" />
-        <feMergeNode in="SourceGraphic" />
-      </feMerge>
-    </filter>
+    <radialGradient id="bgGradL" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#eff6ff"/>
+      <stop offset="100%" stop-color="#dbeafe"/>
+    </radialGradient>
+    <radialGradient id="eyeGlowL" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#2563eb"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </radialGradient>
   </defs>
-  <g transform="translate(0 0)">
-    <rect x="3" y="3" width="90" height="90" rx="24" fill="#F8FAFC" stroke="url(#l-frame)" stroke-opacity=".18" stroke-width="1.5" />
-    <g fill="none" stroke-linecap="round" stroke-linejoin="round" filter="url(#l-glow)">
-      <path d="M15 24h31M30.5 24v48" stroke="url(#l-blue)" stroke-width="5.5" />
-      <path d="M37 72 50 27l14 45M42 56h16" stroke="url(#l-blue)" stroke-width="5.5" />
-      <path d="M61 27h10c15 0 15 23 0 23H61v22" stroke="url(#l-blue)" stroke-width="5.5" />
-      <path d="m29 70 17-17 9 7 24-40" stroke="url(#l-green)" stroke-width="6" />
-      <path d="m79 20 1 20M80 20 61 25" stroke="url(#l-green)" stroke-width="6" />
-    </g>
-    <circle cx="80" cy="20" r="3" fill="#5BE89A" />
-  </g>
-  <text x="112" y="56" fill="#0F172A" font-family="Inter, Arial, sans-serif" font-size="29" font-weight="800" letter-spacing="-1.2">TRADING AUTO PILOT</text>
-  <text x="114" y="78" fill="#64748B" font-family="Inter, Arial, sans-serif" font-size="9" font-weight="600" letter-spacing="2.8">AUTONOMOUS TRADING SYSTEM</text>
+  
+  <!-- Background circle -->
+  <circle cx="50" cy="50" r="49" fill="url(#bgGradL)" stroke="#93c5fd" stroke-width="1.5"/>
+  
+  <!-- Trend arrow up (background element) -->
+  <polyline points="18,68 32,52 44,60 62,38" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.25"/>
+  <polygon points="58,32 68,36 64,46" fill="#3b82f6" opacity="0.25"/>
+  
+  <!-- Robot head -->
+  <!-- Antenna -->
+  <line x1="50" y1="22" x2="50" y2="30" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="50" cy="20" r="3" fill="#2563eb"/>
+  
+  <!-- Head shape -->
+  <rect x="33" y="30" width="34" height="26" rx="7" ry="7" fill="#bfdbfe" stroke="#3b82f6" stroke-width="1.5"/>
+  
+  <!-- Eyes -->
+  <rect x="38" y="38" width="9" height="6" rx="3" fill="url(#eyeGlowL)"/>
+  <rect x="53" y="38" width="9" height="6" rx="3" fill="url(#eyeGlowL)"/>
+  
+  <!-- Mouth / status bar -->
+  <rect x="40" y="50" width="20" height="3" rx="1.5" fill="#93c5fd"/>
+  <rect x="40" y="50" width="12" height="3" rx="1.5" fill="#2563eb"/>
+  
+  <!-- Neck -->
+  <rect x="45" y="56" width="10" height="5" rx="2" fill="#bfdbfe" stroke="#3b82f6" stroke-width="1"/>
+  
+  <!-- Body -->
+  <rect x="30" y="61" width="40" height="20" rx="6" ry="6" fill="#bfdbfe" stroke="#3b82f6" stroke-width="1.5"/>
+  
+  <!-- Chest bitcoin -->
+  <text x="50" y="76" font-family="Arial" font-size="10" font-weight="bold" fill="#d97706" text-anchor="middle">₿</text>
+  
+  <!-- Shoulders -->
+  <rect x="30" y="61" width="10" height="8" rx="4" fill="#93c5fd" opacity="0.8"/>
+  <rect x="60" y="61" width="10" height="8" rx="4" fill="#93c5fd" opacity="0.8"/>
 </svg>
