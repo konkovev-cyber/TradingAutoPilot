@@ -18,6 +18,7 @@ export default function Header() {
   const contacts = useContacts();
   const location = useLocation();
   const onHome = location.pathname === "/";
+  const isSolid = scrolled || !onHome;
 
   const navMap: Record<string, { href: string; domId: string; label: string; always?: boolean }> = {
     hero: { href: "/#project", domId: "project", label: t("nav.project") },
@@ -39,10 +40,10 @@ export default function Header() {
       window.location.href = "/";
     }
   };
-  const shellText = !scrolled
+  const shellText = !isSolid
     ? "text-white/85 hover:text-white"
     : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white";
-  const controlText = !scrolled
+  const controlText = !isSolid
     ? "text-white/85 hover:text-white hover:bg-white/10"
     : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800";
 
@@ -106,8 +107,8 @@ export default function Header() {
 
       <header
         className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-          scrolled
-            ? "bg-white/95 dark:bg-gray-950/95 border-b border-gray-100 dark:border-gray-800 shadow-sm"
+          isSolid
+            ? "bg-white/95 dark:bg-gray-950/95 border-b border-gray-100 dark:border-gray-800 shadow-sm backdrop-blur-md"
             : "bg-transparent"
         }`}
       >
@@ -131,7 +132,7 @@ export default function Header() {
             </div>
             <span
               className={`text-[20px] font-extrabold tracking-[-0.055em] transition-opacity group-hover:opacity-80 ${
-                scrolled
+                isSolid
                   ? "bg-gradient-to-r from-cyan-500 via-blue-600 to-violet-600 bg-clip-text text-transparent dark:from-cyan-300 dark:via-blue-300 dark:to-violet-300"
                   : "text-white"
               }`}
@@ -148,7 +149,7 @@ export default function Header() {
                 onClick={(e) => handleAnchor(e, link.href)}
                 target={link.href.startsWith("http") ? "_blank" : undefined}
                 rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
-                  className={`text-sm font-medium rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 ${active === link.domId ? (scrolled ? "text-blue-600 dark:text-cyan-300" : "text-white") : shellText}`}
+                  className={`text-sm font-medium rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 ${active === link.domId ? (isSolid ? "text-blue-600 dark:text-cyan-300" : "text-white") : shellText}`}
               >
                 {link.label}
               </a>
@@ -175,10 +176,10 @@ export default function Header() {
             </button>
 
             <a
-              href="#bots"
+              href="/#bots"
               onClick={(e) => handleAnchor(e, "/#bots")}
               className={`hidden sm:inline-flex px-5 py-2.5 border text-sm font-semibold rounded-lg transition-colors cursor-pointer ${
-                !scrolled
+                !isSolid
                   ? "border-white/40 bg-white/10 text-white hover:bg-white/20"
                   : "border-blue-500/40 bg-blue-500/10 text-blue-600 dark:text-blue-200 dark:border-blue-300/30 dark:bg-blue-400/10 hover:bg-blue-500/20 dark:hover:bg-blue-400/20"
               }`}
@@ -212,7 +213,7 @@ export default function Header() {
               </a>
             ))}
             <a
-              href="#bots"
+              href="/#bots"
               onClick={(e) => handleAnchor(e, "/#bots")}
               className="block w-full text-center px-5 py-2.5 border border-blue-500/40 bg-blue-500/10 text-blue-600 dark:text-blue-200 dark:border-blue-300/30 dark:bg-blue-400/10 text-sm font-semibold rounded-lg cursor-pointer"
             >
