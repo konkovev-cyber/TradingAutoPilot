@@ -113,20 +113,20 @@ export default function Header() {
       >
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link to="/" aria-label="TradingAutoPilot" onClick={logoClick} className="group flex items-center gap-2.5">
-            <div className="relative h-10 w-10 shrink-0 transition-transform group-hover:scale-105">
+            <div className="relative h-12 w-12 shrink-0 transition-transform group-hover:scale-105">
               <img
-                src="/logo-light.svg"
+                src="/logo-light.png"
                 alt="TradingAutoPilot logo"
                 className="h-full w-full object-contain block dark:hidden"
-                width={40}
-                height={40}
+                width={48}
+                height={48}
               />
               <img
-                src="/logo-dark.svg"
+                src="/logo-dark.png"
                 alt="TradingAutoPilot logo"
                 className="h-full w-full object-contain hidden dark:block"
-                width={40}
-                height={40}
+                width={48}
+                height={48}
               />
             </div>
             <span
