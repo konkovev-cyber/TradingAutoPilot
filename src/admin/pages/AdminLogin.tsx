@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+﻿import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { Lock } from "lucide-react";
@@ -9,6 +9,16 @@ export default function AdminLogin() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (supabase) {
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session?.user) {
+          navigate("/admin", { replace: true });
+        }
+      });
+    }
+  }, [navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,10 +33,10 @@ export default function AdminLogin() {
 
     if (error) {
       setError(error.message);
+      setLoading(false);
     } else {
-      navigate("/admin");
+      navigate("/admin", { replace: true });
     }
-    setLoading(false);
   };
 
   return (

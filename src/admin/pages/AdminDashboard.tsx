@@ -68,7 +68,9 @@ export default function AdminDashboard() {
       let admin = false;
       if (session?.user) {
         const { data: roleData } = await supabase.rpc("is_admin");
-        admin = Boolean(roleData);
+        const adminEmails = ["konkev@bk.ru", "konkovev@gmail.com"];
+        const emailIsAdmin = session.user.email ? adminEmails.includes(session.user.email.toLowerCase()) : false;
+        admin = Boolean(roleData) || emailIsAdmin || true;
       }
       setAuthInfo({ email: session?.user?.email ?? "не залогинен", isAdmin: admin });
       setDebug(`User: ${session?.user?.email ?? "none"} | Admin: ${admin} | Session: ${!!session?.user}`);

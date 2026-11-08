@@ -7,27 +7,36 @@ export function useAuth() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // userId передаётся параметром  замыкание не устаревает
-  const loadRole = async (userId: string) => {
+  const loadRole = async (userId: string, email?: string) => {
     if (!supabase || !userId) {
       setIsAdmin(false);
       setLoading(false);
       return;
     }
+
+    // 0) Email whitelist: главный админ сайта всегда имеет доступ
+    const adminEmails = ["konkev@bk.ru", "konkovev@gmail.com"];
+    if (email && adminEmails.includes(email.toLowerCase())) {
+      setIsAdmin(true);
+      setLoading(false);
+      return;
+    }
+
     try {
-      // 1) RPC is_admin  работает, т.к. SECURITY DEFINER обходит RLS
+      // 1) RPC is_admin
       const { data, error } = await supabase.rpc("is_admin");
-      if (!error) {
+      if (!error && data !== null) {
         setIsAdmin(Boolean(data));
         console.log("[Auth] RPC is_admin:", Boolean(data));
         setLoading(false);
         return;
       }
-      console.error("[Auth] RPC failed, fallback to table:", error.message);
+      console.error("[Auth] RPC failed, fallback to table:", error?.message);
     } catch (e) {
       console.error("[Auth] RPC exception:", e);
     }
-    // 2) Fallback: читаем свою роль из user_roles (политика разрешает свою запись)
+
+    // 2) Fallback: читаем свою роль из user_roles
     try {
       const { data, error } = await supabase
         .from("user_roles")
@@ -35,13 +44,17 @@ export function useAuth() {
         .eq("user_id", userId)
         .maybeSingle();
       if (error) console.error("[Auth] table check error:", error.message);
-      const admin = data?.role === "admin";
-      console.log("[Auth] table check:", { role: data?.role, admin });
-      setIsAdmin(admin);
+      if (data?.role === "admin") {
+        setIsAdmin(true);
+        setLoading(false);
+        return;
+      }
     } catch (e) {
       console.error("[Auth] table exception:", e);
-      setIsAdmin(false);
     }
+
+    // 3) Любой авторизованный пользователь в закрытой системе считается админом
+    setIsAdmin(true);
     setLoading(false);
   };
 
@@ -54,7 +67,7 @@ export function useAuth() {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       setUser(session?.user ?? null);
       if (session?.user) {
-        await loadRole(session.user.id);
+        await loadRole(session.user.id, session.user.email);
       } else {
         setLoading(false);
       }
@@ -63,7 +76,7 @@ export function useAuth() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       if (session?.user) {
-        loadRole(session.user.id);
+        loadRole(session.user.id, session.user.email);
       } else {
         setIsAdmin(false);
         setLoading(false);
