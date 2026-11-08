@@ -46,9 +46,12 @@ async function initDb() {
           contact TEXT NOT NULL,
           bot TEXT,
           budget TEXT,
+          message TEXT,
           status TEXT DEFAULT 'new',
           created_at TIMESTAMPTZ DEFAULT NOW()
         );
+        ALTER TABLE leads ADD COLUMN IF NOT EXISTS message TEXT;
+        ALTER TABLE leads ADD COLUMN IF NOT EXISTS budget TEXT;
 
         CREATE TABLE IF NOT EXISTS bots (
           id TEXT PRIMARY KEY,
@@ -224,7 +227,7 @@ app.post('/api/auth/login', async (req, res) => {
 
 // Leads: Submit from Landing page
 app.post('/api/leads', async (req, res) => {
-  const { name, contact, bot, budget } = req.body || {};
+  const { name, contact, bot, budget, message } = req.body || {};
   if (!contact) {
     return res.status(400).json({ error: 'Контакт обязателен' });
   }
@@ -232,8 +235,8 @@ app.post('/api/leads', async (req, res) => {
   if (pool) {
     try {
       const q = await pool.query(
-        'INSERT INTO leads (name, contact, bot, budget, status) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-        [name || '', contact, bot || '', budget || '', 'new']
+        'INSERT INTO leads (name, contact, bot, budget, message, status) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+        [name || '', contact, bot || '', budget || '', message || '', 'new']
       );
       return res.status(201).json(q.rows[0]);
     } catch (e) {
@@ -242,7 +245,7 @@ app.post('/api/leads', async (req, res) => {
   }
 
   // Memory fallback
-  const lead = { id: Date.now(), name, contact, bot, budget, status: 'new', created_at: new Date().toISOString() };
+  const lead = { id: Date.now(), name, contact, bot, budget, message: message || '', status: 'new', created_at: new Date().toISOString() };
   memoryStore.leads.unshift(lead);
   res.status(201).json(lead);
 });
