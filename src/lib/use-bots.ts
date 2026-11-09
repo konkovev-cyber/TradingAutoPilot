@@ -153,15 +153,30 @@ export function useBots() {
   const [bots, setBots] = useState<BotData[]>(staticBots);
 
   useEffect(() => {
-    if (!supabase) return;
-    supabase
-      .from("bots")
-      .select("*")
-      .order("position", { ascending: true })
-      .then(({ data: rows }) => {
-        if (!rows || rows.length === 0) return;
-        setBots(rows.map(toBotData));
-      });
+    (async () => {
+      try {
+        const res = await fetch("/api/bots");
+        if (res.ok) {
+          const rows = await res.json();
+          if (Array.isArray(rows) && rows.length > 0) {
+            setBots(rows.map(toBotData));
+            return;
+          }
+        }
+      } catch {
+        // fallback to supabase/static
+      }
+
+      if (!supabase) return;
+      supabase
+        .from("bots")
+        .select("*")
+        .order("position", { ascending: true })
+        .then(({ data: rows }) => {
+          if (!rows || rows.length === 0) return;
+          setBots(rows.map(toBotData));
+        });
+    })();
   }, []);
 
   return bots;

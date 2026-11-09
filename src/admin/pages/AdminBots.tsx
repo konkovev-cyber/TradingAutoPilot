@@ -82,9 +82,28 @@ export default function AdminBots() {
   const [i18n, setI18n] = useState<Record<string, any>>({});
 
   const fetchBots = async () => {
-    if (!supabase) { setLoading(false); return; }
-    const { data } = await supabase.from("bots").select("*").order("position");
-    setBots(data ?? []);
+    try {
+      const res = await fetch("/api/bots");
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          setBots(data);
+          setLoading(false);
+          return;
+        }
+      }
+    } catch {
+      // fallback
+    }
+
+    if (supabase) {
+      try {
+        const { data } = await supabase.from("bots").select("*").order("position");
+        setBots(data ?? []);
+      } catch {
+        // ignore
+      }
+    }
     setLoading(false);
   };
 
@@ -119,15 +138,15 @@ export default function AdminBots() {
   };
 
   const uploadImage = async (file: File) => {
-    if (!supabase) return;
     setUploading(true);
     try {
-      const path = Date.now() + "-" + file.name.replace(/\s+/g, "_");
-      const { data, error: uploadError } = await supabase.storage.from("bot-images").upload(path, file);
-      if (uploadError) throw uploadError;
-      if (data) {
-        const pub = supabase.storage.from("bot-images").getPublicUrl(data.path);
-        if (editing) setEditing({ ...editing, image_url: pub.data.publicUrl });
+      if (supabase) {
+        const path = Date.now() + "-" + file.name.replace(/\s+/g, "_");
+        const { data, error: uploadError } = await supabase.storage.from("bot-images").upload(path, file);
+        if (!uploadError && data) {
+          const pub = supabase.storage.from("bot-images").getPublicUrl(data.path);
+          if (editing) setEditing({ ...editing, image_url: pub.data.publicUrl });
+        }
       }
     } catch {
       setError("Не удалось загрузить картинку");
@@ -148,7 +167,6 @@ export default function AdminBots() {
   };
 
   const saveBot = async (bot: Bot) => {
-    if (!supabase) return;
     if (!bot.name.trim() || !bot.slug.trim()) {
       setError("Заполните Name и Slug — без них робот не сохранится");
       return;
@@ -164,10 +182,25 @@ export default function AdminBots() {
     };
     try {
       if (bot.id) {
-        await supabase.from("bots").update(payload).eq("id", bot.id);
+        await fetch(`/api/bots/${bot.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        if (supabase) {
+          await supabase.from("bots").update(payload).eq("id", bot.id);
+        }
       } else {
         const nextPos = bots.length > 0 ? Math.max(...bots.map((b) => b.position ?? 0)) + 1 : 1;
-        await supabase.from("bots").insert({ ...payload, position: nextPos });
+        const res = await fetch("/api/bots", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...payload, position: nextPos }),
+        });
+        const created = await res.json();
+        if (supabase) {
+          await supabase.from("bots").insert({ ...payload, id: created.id || payload.id, position: nextPos });
+        }
       }
       setEditing(null);
       await fetchBots();
@@ -178,22 +211,47 @@ export default function AdminBots() {
   };
 
   const deleteBot = async (id: string) => {
-    if (!supabase || !confirm("Удалить этого робота?")) return;
-    await supabase.from("bots").delete().eq("id", id);
-    setBots(bots.filter((b) => b.id !== id));
+    if (!confirm("Удалить этого робота?")) return;
+    try {
+      await fetch(`/api/bots/${id}`, { method: "DELETE" });
+      if (supabase) {
+        await supabase.from("bots").delete().eq("id", id);
+      }
+      setBots(bots.filter((b) => b.id !== id));
+    } catch (e) {
+      console.error("Delete bot error", e);
+    }
   };
 
   // Смена позиции: меняем местами с соседним роботом и сохраняем оба
   const moveBot = async (index: number, dir: -1 | 1) => {
     const target = index + dir;
-    if (!supabase || target < 0 || target >= bots.length) return;
+    if (target < 0 || target >= bots.length) return;
     const a = bots[index];
     const b = bots[target];
     const posA = a.position ?? index + 1;
     const posB = b.position ?? target + 1;
-    await supabase.from("bots").update({ position: posB }).eq("id", a.id!);
-    await supabase.from("bots").update({ position: posA }).eq("id", b.id!);
-    await fetchBots();
+
+    try {
+      await fetch(`/api/bots/${a.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ position: posB }),
+      });
+      await fetch(`/api/bots/${b.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ position: posA }),
+      });
+
+      if (supabase) {
+        await supabase.from("bots").update({ position: posB }).eq("id", a.id!);
+        await supabase.from("bots").update({ position: posA }).eq("id", b.id!);
+      }
+      await fetchBots();
+    } catch (e) {
+      console.error("Move bot error", e);
+    }
   };
 
   if (loading) return <div className="text-white">Загрузка...</div>;
