@@ -55,16 +55,44 @@ async function initDb() {
 
         CREATE TABLE IF NOT EXISTS bots (
           id TEXT PRIMARY KEY,
-          name TEXT NOT NULL,
-          description TEXT,
           slug TEXT UNIQUE,
-          roi TEXT,
+          name TEXT NOT NULL,
+          slogan TEXT,
+          short_desc TEXT,
+          full_desc TEXT,
           badge TEXT,
-          rating NUMERIC,
+          market TEXT,
+          strategy TEXT,
+          risk TEXT,
+          pairs TEXT,
           color TEXT,
+          image_url TEXT,
+          difficulty TEXT,
+          difficulty_tone TEXT,
+          features JSONB,
+          returns JSONB,
+          how_it_works JSONB,
+          example_trade JSONB,
+          i18n JSONB,
           position INT DEFAULT 0,
           created_at TIMESTAMPTZ DEFAULT NOW()
         );
+        -- Add columns if upgrading from old schema
+        ALTER TABLE bots ADD COLUMN IF NOT EXISTS slogan TEXT;
+        ALTER TABLE bots ADD COLUMN IF NOT EXISTS short_desc TEXT;
+        ALTER TABLE bots ADD COLUMN IF NOT EXISTS full_desc TEXT;
+        ALTER TABLE bots ADD COLUMN IF NOT EXISTS market TEXT;
+        ALTER TABLE bots ADD COLUMN IF NOT EXISTS strategy TEXT;
+        ALTER TABLE bots ADD COLUMN IF NOT EXISTS risk TEXT;
+        ALTER TABLE bots ADD COLUMN IF NOT EXISTS pairs TEXT;
+        ALTER TABLE bots ADD COLUMN IF NOT EXISTS image_url TEXT;
+        ALTER TABLE bots ADD COLUMN IF NOT EXISTS difficulty TEXT;
+        ALTER TABLE bots ADD COLUMN IF NOT EXISTS difficulty_tone TEXT;
+        ALTER TABLE bots ADD COLUMN IF NOT EXISTS features JSONB;
+        ALTER TABLE bots ADD COLUMN IF NOT EXISTS returns JSONB;
+        ALTER TABLE bots ADD COLUMN IF NOT EXISTS how_it_works JSONB;
+        ALTER TABLE bots ADD COLUMN IF NOT EXISTS example_trade JSONB;
+        ALTER TABLE bots ADD COLUMN IF NOT EXISTS i18n JSONB;
 
         CREATE TABLE IF NOT EXISTS site_content (
           key TEXT PRIMARY KEY,
@@ -108,7 +136,100 @@ async function initDb() {
         ON CONFLICT (email) DO UPDATE SET password_hash = $2;
       `, [defaultAdminEmail, hash]);
 
-      console.log(`[DB] Schema initialized. Admin user '${defaultAdminEmail}' configured.`);
+      // Seed second admin: coinsoft / coin2026!
+      const coinHash = crypto.createHash('sha256').update('coin2026!').digest('hex');
+      await client.query(`
+        INSERT INTO admin_users (email, password_hash, role)
+        VALUES ($1, $2, 'admin')
+        ON CONFLICT (email) DO UPDATE SET password_hash = $2;
+      `, ['coinsoft', coinHash]);
+
+      console.log(`[DB] Schema initialized. Admin users configured.`);
+
+      // Seed default bots if table is empty
+      const botsCount = await client.query('SELECT COUNT(*) FROM bots');
+      if (parseInt(botsCount.rows[0].count, 10) === 0) {
+        const defaultBots = [
+          {
+            id: 'synchrobot',
+            slug: 'synchrobot',
+            name: 'SynchroBot',
+            slogan: 'Меньше ручного анализа — больше данных для принятия торговых решений',
+            short_desc: 'Интеллектуальный криптотрейдинговый бот, который анализирует рынок в режиме реального времени, отслеживает изменения объёмов и цены по множеству торговых пар и выявляет потенциальные возможности для LONG и SHORT.',
+            full_desc: 'SynchroTrade Bot — интеллектуальный криптотрейдинговый бот, который анализирует рынок в режиме реального времени, отслеживает изменения объёмов и цены по множеству торговых пар и выявляет потенциальные возможности для LONG и SHORT.',
+            badge: 'Анализ объёмов и цен',
+            market: 'Крипта',
+            strategy: 'Анализ объёмов и цен в реальном времени',
+            risk: 'Контролируемый: математический расчёт точек входа и встроенный риск-менеджмент',
+            pairs: 'BTC/USDT, ETH/USDT, SOL/USDT, Bybit, BingX, OKX и др.',
+            color: '#00FFB2',
+            image_url: '/synchro-bot.jpg',
+            difficulty: 'Для новичков и профи',
+            difficulty_tone: 'starter',
+            features: JSON.stringify(['Анализ рынка в режиме реального времени', 'Отслеживание изменений объёмов и цены по множеству торговых пар', 'Поиск возможностей для сделок в LONG и SHORT', 'Оценка рыночной ситуации и определение точных точек входа', 'Контроль рисков и сокращение рутинного анализа трейдера']),
+            returns: JSON.stringify([{ period: '30 дней', value: '+7.9%' }, { period: '90 дней', value: '+22.8%' }, { period: '365 дней', value: '+78.4%' }]),
+            how_it_works: JSON.stringify([{ title: 'Мониторинг рынка в реальном времени', desc: 'Бот непрерывно сканирует поток котировок и изменения объёмов по множеству торговых пар' }, { title: 'Поиск возможностей LONG & SHORT', desc: 'Алгоритмы выявляют ценовые дисбалансы и подтверждённые импульсы для входа в сделку' }, { title: 'Контроль рисков', desc: 'Автоматический расчёт точек входа, выставление стоп-лоссов и защита капитала' }]),
+            example_trade: JSON.stringify([{ title: 'Всплеск объёма', desc: 'Бот фиксирует синхронный рост объёма и ценовое движение на паре' }, { title: 'Вход в сделку', desc: 'Алгоритм вычисляет оптимальную точку входа и открывает позицию в LONG или SHORT' }, { title: 'Сопровождение', desc: 'Динамический контроль рисков и сопровождение позиции по заданным параметрам' }, { title: 'Фиксация прибыли', desc: 'Сделка закрывается по тейк-профиту с защитой накопленной прибыли' }]),
+            i18n: JSON.stringify({ en: { name: 'SynchroBot', slogan: 'Less manual analysis — more actionable data for smart trading decisions', badge: 'Volume & Price AI', market: 'Crypto', strategy: 'Real-time volume & price analysis', risk: 'Controlled: mathematical entry calculation and built-in risk management', pairs: 'BTC/USDT, ETH/USDT, SOL/USDT, Bybit, BingX, OKX & more' } }),
+            position: 1,
+          },
+          {
+            id: 'megagrid-ai',
+            slug: 'megagrid-ai',
+            name: 'MEGAGRID-AI',
+            slogan: 'Высокочастотная сеточная стратегия — сотни сделок в день на автомате',
+            short_desc: 'Не обычный grid-бот. Послотная независимая модель вместо усреднения: математическая точность, ИИ сам подбирает пары и параметры.',
+            full_desc: 'MEGAGRID не использует стандартную идею усреднения позиции, как большинство простых грид-ботов. Вместо этого применяется послотовая независимая модель: каждый лот — отдельная сделка со своими параметрами.',
+            badge: 'ХИТ продаж',
+            market: 'Крипта',
+            strategy: 'Послотная сетка с ИИ',
+            risk: 'Высокая частота сделок: важна настройка риска на лот',
+            pairs: 'Топ-50 пар по объёму, подбор через ИИ',
+            color: '#FF4D6A',
+            image_url: null,
+            difficulty: 'Для продвинутых',
+            difficulty_tone: 'advanced',
+            features: JSON.stringify(['Высокочастотная сетка: сотни сделок в день на автомате', 'Послотная независимая модель — без усреднения', 'Математическая точность и предсказуемость', 'ИИ автоматически подбирает пары и параметры', 'Адаптация параметров под волатильность']),
+            returns: JSON.stringify([{ period: '30 дней', value: '+9.1%' }, { period: '90 дней', value: '+27.6%' }, { period: '365 дней', value: '+96.4%' }]),
+            how_it_works: JSON.stringify([{ title: 'ИИ подбирает пары', desc: 'Модули ИИ автоматически выбирают торгуемые пары и параметры' }, { title: 'Послотная модель', desc: 'Каждый лот независим — математическая точность вместо усреднения' }, { title: 'Сотни сделок в день', desc: 'Робот совершает сотни сделок в день без вашего участия' }]),
+            example_trade: JSON.stringify([{ title: 'Отбор пар', desc: 'ИИ выбирает торгуемые пары и параметры под текущий рынок' }, { title: 'Слоты сетки', desc: 'Робот открывает независимые слоты — каждый лот отдельная сделка' }, { title: 'TP и SL', desc: 'Для каждого слота выставляются свои тейк-профит и стоп-лосс' }, { title: 'Мониторинг', desc: 'Слоты закрываются по своим условиям, робот открывает новые' }]),
+            i18n: JSON.stringify({ en: { name: 'MEGAGRID-AI', slogan: 'High-frequency grid strategy — hundreds of trades a day on autopilot', badge: 'Best seller', market: 'Crypto', strategy: 'Slot grid with AI', risk: 'High trade frequency: per-slot risk settings matter', pairs: 'Top-50 pairs by volume, selected by AI' } }),
+            position: 2,
+          },
+          {
+            id: 'smartix',
+            slug: 'smartix',
+            name: 'SMARTIX',
+            slogan: 'Охотник за аномалиями — точечные сделки по всей бирже',
+            short_desc: 'ИИ-робот сканирует всю биржу и находит пары с резкими импульсными движениями цены. Точечные сделки в Short или Long. Никаких усреднений — только точечные входы.',
+            full_desc: 'За счёт разработанного алгоритма и встроенных модулей ИИ торговый робот сканирует всю биржу и ищет пары с определёнными закономерностями и импульсными движениями цены.',
+            badge: 'Охотник за аномалиями',
+            market: 'Крипта',
+            strategy: 'Импульсные движения, точечные сделки',
+            risk: 'Повышенная волатильность: обязательны SL по правилам риск-менеджмента',
+            pairs: 'Вся биржа — отбор по закономерностям',
+            color: '#7B61FF',
+            image_url: null,
+            difficulty: 'Высокий риск / высокая награда',
+            difficulty_tone: 'aggressive',
+            features: JSON.stringify(['Сканирует всю биржу 24/7', 'Импульсные движения и аномалии через модули ИИ', 'Только точечные сделки — без усреднений', 'Автоматические TP и SL в каждой сделке', 'Несколько сделок одновременно для диверсификации']),
+            returns: JSON.stringify([{ period: '30 дней', value: '+11.3%' }, { period: '90 дней', value: '+33.8%' }, { period: '365 дней', value: '+118.2%' }]),
+            how_it_works: JSON.stringify([{ title: 'Поиск актива', desc: 'Находит актив на бирже и открывает сделку в Short или Long' }, { title: 'TP и SL', desc: 'Выставляет тейк-профит и стоп-лосс в каждой сделке' }, { title: 'Мониторинг', desc: 'Дожидается срабатывания условий и продолжает сканирование биржи' }]),
+            example_trade: JSON.stringify([{ title: 'Сканирование', desc: 'Робот ищет на бирже пары с резкими импульсными движениями' }, { title: 'Сигнал', desc: 'Найдено совпадение с закономерностями алгоритма' }, { title: 'Вход', desc: 'Открывается точечная сделка в Long или Short' }, { title: 'TP и SL', desc: 'Выставляются тейк-профит и стоп-лосс, усреднения нет' }, { title: 'Закрытие', desc: 'Сделка закрывается по одному из условий, робот продолжает мониторинг' }]),
+            i18n: JSON.stringify({ en: { name: 'SMARTIX', slogan: 'Anomaly hunter — point trades across the whole exchange', badge: 'Anomaly hunter', market: 'Crypto', strategy: 'Impulse moves, point trades', risk: 'Elevated volatility: stop-loss required by risk-management rules', pairs: 'The whole exchange — filtered by patterns' } }),
+            position: 3,
+          },
+        ];
+
+        for (const b of defaultBots) {
+          await client.query(`
+            INSERT INTO bots (id, slug, name, slogan, short_desc, full_desc, badge, market, strategy, risk, pairs, color, image_url, difficulty, difficulty_tone, features, returns, how_it_works, example_trade, i18n, position)
+            VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21)
+            ON CONFLICT (id) DO NOTHING;
+          `, [b.id, b.slug, b.name, b.slogan, b.short_desc, b.full_desc, b.badge, b.market, b.strategy, b.risk, b.pairs, b.color, b.image_url, b.difficulty, b.difficulty_tone, b.features, b.returns, b.how_it_works, b.example_trade, b.i18n, b.position]);
+        }
+        console.log('[DB] Default bots seeded.');
+      }
     } finally {
       client.release();
     }
@@ -302,7 +423,20 @@ app.get('/api/bots', async (req, res) => {
   if (pool) {
     try {
       const q = await pool.query('SELECT * FROM bots ORDER BY position ASC, created_at ASC');
-      if (q.rows.length > 0) return res.json(q.rows);
+      if (q.rows.length > 0) {
+        // Map snake_case DB columns → camelCase expected by AdminBots.tsx
+        const rows = q.rows.map(r => ({
+          ...r,
+          shortDesc: r.short_desc || '',
+          fullDesc: r.full_desc || '',
+          how_it_works: r.how_it_works || [],
+          example_trade: r.example_trade || [],
+          features: r.features || [],
+          returns: r.returns || [],
+          i18n: r.i18n || {},
+        }));
+        return res.json(rows);
+      }
     } catch (e) {
       console.error('[Bots List Error]', e.message);
     }
@@ -310,33 +444,102 @@ app.get('/api/bots', async (req, res) => {
   res.json(memoryStore.bots);
 });
 
-// Bots: Upsert
+// Bots: Upsert (INSERT new bot)
 app.post('/api/bots', async (req, res) => {
   const bot = req.body || {};
-  if (!bot.id || !bot.name) return res.status(400).json({ error: 'Missing id or name' });
+  if (!bot.name) return res.status(400).json({ error: 'Missing name' });
+  // Auto-generate id from slug or name if not provided
+  const id = bot.id || bot.slug || bot.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 
   if (pool) {
     try {
       const q = await pool.query(`
-        INSERT INTO bots (id, name, description, slug, roi, badge, rating, color, position)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        INSERT INTO bots (id, slug, name, slogan, short_desc, full_desc, badge, market, strategy, risk, pairs, color, image_url, difficulty, difficulty_tone, features, returns, how_it_works, example_trade, i18n, position)
+        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21)
         ON CONFLICT (id) DO UPDATE SET
-          name = EXCLUDED.name,
-          description = EXCLUDED.description,
-          slug = EXCLUDED.slug,
-          roi = EXCLUDED.roi,
-          badge = EXCLUDED.badge,
-          rating = EXCLUDED.rating,
-          color = EXCLUDED.color,
+          slug = EXCLUDED.slug, name = EXCLUDED.name, slogan = EXCLUDED.slogan,
+          short_desc = EXCLUDED.short_desc, full_desc = EXCLUDED.full_desc,
+          badge = EXCLUDED.badge, market = EXCLUDED.market, strategy = EXCLUDED.strategy,
+          risk = EXCLUDED.risk, pairs = EXCLUDED.pairs, color = EXCLUDED.color,
+          image_url = EXCLUDED.image_url, difficulty = EXCLUDED.difficulty,
+          difficulty_tone = EXCLUDED.difficulty_tone, features = EXCLUDED.features,
+          returns = EXCLUDED.returns, how_it_works = EXCLUDED.how_it_works,
+          example_trade = EXCLUDED.example_trade, i18n = EXCLUDED.i18n,
           position = EXCLUDED.position
         RETURNING *;
-      `, [bot.id, bot.name, bot.description, bot.slug, bot.roi, bot.badge, bot.rating, bot.color, bot.position || 0]);
+      `, [
+        id, bot.slug || id, bot.name, bot.slogan || '', bot.shortDesc || bot.short_desc || '',
+        bot.fullDesc || bot.full_desc || '', bot.badge || '', bot.market || '', bot.strategy || '',
+        bot.risk || '', bot.pairs || '', bot.color || '#3b82f6', bot.image_url || null,
+        bot.difficulty || '', bot.difficulty_tone || '',
+        JSON.stringify(bot.features || []), JSON.stringify(bot.returns || []),
+        JSON.stringify(bot.how_it_works || []), JSON.stringify(bot.example_trade || []),
+        JSON.stringify(bot.i18n || {}), bot.position || 0,
+      ]);
       return res.json(q.rows[0]);
     } catch (e) {
       console.error('[Bots Upsert Error]', e.message);
+      return res.status(500).json({ error: e.message });
     }
   }
-  res.json(bot);
+  res.json({ ...bot, id });
+});
+
+// Bots: Update (PATCH by id)
+app.patch('/api/bots/:id', async (req, res) => {
+  const { id } = req.params;
+  const bot = req.body || {};
+  if (pool) {
+    try {
+      const q = await pool.query(`
+        UPDATE bots SET
+          slug = COALESCE($2, slug), name = COALESCE($3, name), slogan = COALESCE($4, slogan),
+          short_desc = COALESCE($5, short_desc), full_desc = COALESCE($6, full_desc),
+          badge = COALESCE($7, badge), market = COALESCE($8, market), strategy = COALESCE($9, strategy),
+          risk = COALESCE($10, risk), pairs = COALESCE($11, pairs), color = COALESCE($12, color),
+          image_url = $13, difficulty = COALESCE($14, difficulty),
+          difficulty_tone = COALESCE($15, difficulty_tone),
+          features = COALESCE($16::jsonb, features), returns = COALESCE($17::jsonb, returns),
+          how_it_works = COALESCE($18::jsonb, how_it_works), example_trade = COALESCE($19::jsonb, example_trade),
+          i18n = COALESCE($20::jsonb, i18n), position = COALESCE($21, position)
+        WHERE id = $1
+        RETURNING *;
+      `, [
+        id, bot.slug || null, bot.name || null, bot.slogan || null,
+        bot.shortDesc || bot.short_desc || null, bot.fullDesc || bot.full_desc || null,
+        bot.badge || null, bot.market || null, bot.strategy || null,
+        bot.risk || null, bot.pairs || null, bot.color || null,
+        bot.image_url !== undefined ? bot.image_url : null,
+        bot.difficulty || null, bot.difficulty_tone || null,
+        bot.features ? JSON.stringify(bot.features) : null,
+        bot.returns ? JSON.stringify(bot.returns) : null,
+        bot.how_it_works ? JSON.stringify(bot.how_it_works) : null,
+        bot.example_trade ? JSON.stringify(bot.example_trade) : null,
+        bot.i18n ? JSON.stringify(bot.i18n) : null,
+        bot.position !== undefined ? bot.position : null,
+      ]);
+      return res.json(q.rows[0] || {});
+    } catch (e) {
+      console.error('[Bots PATCH Error]', e.message);
+      return res.status(500).json({ error: e.message });
+    }
+  }
+  res.json({ ...bot, id });
+});
+
+// Bots: Delete
+app.delete('/api/bots/:id', async (req, res) => {
+  const { id } = req.params;
+  if (pool) {
+    try {
+      await pool.query('DELETE FROM bots WHERE id = $1', [id]);
+      return res.json({ success: true });
+    } catch (e) {
+      console.error('[Bots Delete Error]', e.message);
+      return res.status(500).json({ error: e.message });
+    }
+  }
+  res.json({ success: true });
 });
 
 // Site Content: Get

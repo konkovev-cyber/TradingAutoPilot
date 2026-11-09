@@ -20,11 +20,9 @@ function getInitialIsAdmin(): boolean {
     const raw = localStorage.getItem("tap_auth");
     if (raw) {
       const parsed = JSON.parse(raw);
-      const email = parsed?.user?.email || parsed?.session?.user?.email;
-      if (email && ["konkev@bk.ru", "konkovev@gmail.com"].includes(email.toLowerCase())) {
-        return true;
-      }
-      return Boolean(parsed?.user || parsed?.session?.user);
+      // Any authenticated user stored locally is an admin
+      const user = parsed?.user || parsed?.session?.user;
+      return !!user;
     }
   } catch {
     // ignore
@@ -35,29 +33,11 @@ function getInitialIsAdmin(): boolean {
 export function useAuth() {
   const [user, setUser] = useState<User | null>(getInitialUser);
   const [isAdmin, setIsAdmin] = useState<boolean>(getInitialIsAdmin);
+  // If we already have user in localStorage — no need to show loading
   const [loading, setLoading] = useState<boolean>(() => !getInitialUser());
 
   useEffect(() => {
-    // 1. Sync immediately from getSession
-    if (supabase) {
-      supabase.auth.getSession().then(({ data: { session } }: any) => {
-        if (session?.user) {
-          setUser(session.user);
-          setIsAdmin(true);
-          setLoading(false);
-        } else {
-          // Only clear if localStorage is actually empty
-          const current = getInitialUser();
-          if (!current) {
-            setUser(null);
-            setIsAdmin(false);
-            setLoading(false);
-          }
-        }
-      });
-    }
-
-    // 2. Listen to state changes
+    // Listen to custom auth state changes (from supabase.ts adapter)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event: string, session: any) => {
       if (event === "SIGNED_OUT") {
         setUser(null);
@@ -66,19 +46,17 @@ export function useAuth() {
         return;
       }
 
-      if (session?.user) {
+      if (event === "SIGNED_IN" && session?.user) {
         setUser(session.user);
         setIsAdmin(true);
         setLoading(false);
-      } else {
-        const current = getInitialUser();
-        if (!current) {
-          setUser(null);
-          setIsAdmin(false);
-          setLoading(false);
-        }
       }
     });
+
+    // If nothing in localStorage — finish loading so login page shows
+    if (!getInitialUser()) {
+      setLoading(false);
+    }
 
     return () => subscription.unsubscribe();
   }, []);
