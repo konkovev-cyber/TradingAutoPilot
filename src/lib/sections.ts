@@ -24,17 +24,32 @@ export const DEFAULT_SECTIONS: SiteSection[] = [
 ];
 
 export async function fetchSections(): Promise<SiteSection[]> {
-  if (!supabase) return DEFAULT_SECTIONS;
   try {
-    const { data, error } = await supabase
-      .from("site_sections")
-      .select("key, title, enabled, position")
-      .order("position", { ascending: true });
-    if (error || !data || data.length === 0) return DEFAULT_SECTIONS;
-    return migrateLegacySections(data as SiteSection[]);
+    const res = await fetch("/api/site-sections");
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data) && data.length > 0) {
+        return migrateLegacySections(data as SiteSection[]);
+      }
+    }
   } catch {
-    return DEFAULT_SECTIONS;
+    // fallback
   }
+
+  if (supabase) {
+    try {
+      const { data, error } = await supabase
+        .from("site_sections")
+        .select("key, title, enabled, position")
+        .order("position", { ascending: true });
+      if (!error && data && data.length > 0) {
+        return migrateLegacySections(data as SiteSection[]);
+      }
+    } catch {
+      // fallback
+    }
+  }
+  return DEFAULT_SECTIONS;
 }
 
 // Sections removed from the homepage in the redesigns.

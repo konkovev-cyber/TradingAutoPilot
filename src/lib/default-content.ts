@@ -307,3 +307,4 @@ export const DEFAULT_SITE_CONTENT: Record<string, any> = {
     },
   ],
 };
+

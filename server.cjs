@@ -258,8 +258,36 @@ async function initDb() {
           }
           console.log('[DB] Default site_content seeded successfully.');
         }
+
+        // Seed site_sections if table is empty
+        const secCount = await client.query('SELECT COUNT(*) FROM site_sections');
+        if (parseInt(secCount.rows[0].count, 10) === 0) {
+          console.log('[DB] Seeding default site_sections...');
+          const DEFAULT_SECTIONS = [
+            { key: "hero", title: "Шапка с графиком (Hero)", enabled: true, position: 1 },
+            { key: "products", title: "Наши разработки (3 бота)", enabled: true, position: 2 },
+            { key: "why", title: "Для чего нужны торговые боты", enabled: true, position: 3 },
+            { key: "connect", title: "Подключение и безопасность", enabled: true, position: 4 },
+            { key: "advantages", title: "Преимущества использования ботов", enabled: true, position: 5 },
+            { key: "benefits", title: "Почему стоит выбрать нас", enabled: true, position: 6 },
+            { key: "pricing", title: "Наши цены", enabled: true, position: 7 },
+            { key: "conclusion", title: "Заключение", enabled: true, position: 8 },
+            { key: "questions", title: "Остались вопросы?", enabled: true, position: 9 },
+            { key: "faq", title: "Частые вопросы", enabled: false, position: 10 },
+            { key: "calculator", title: "Калькулятор доходности", enabled: false, position: 11 },
+            { key: "lead", title: "Форма заявки", enabled: false, position: 12 },
+          ];
+          for (const s of DEFAULT_SECTIONS) {
+            await client.query(`
+              INSERT INTO site_sections (key, title, enabled, position)
+              VALUES ($1, $2, $3, $4)
+              ON CONFLICT (key) DO NOTHING;
+            `, [s.key, s.title, s.enabled, s.position]);
+          }
+          console.log('[DB] Default site_sections seeded.');
+        }
       } catch (err) {
-        console.error('[DB] site_content seed error:', err.message);
+        console.error('[DB] seed error:', err.message);
       }
     } finally {
       client.release();
@@ -745,6 +773,21 @@ app.post('/api/site-content', async (req, res) => {
 
 // Site Sections: Get
 app.get('/api/site-sections', async (req, res) => {
+  const fallbackSections = [
+    { key: "hero", title: "Шапка с графиком (Hero)", enabled: true, position: 1 },
+    { key: "products", title: "Наши разработки (3 бота)", enabled: true, position: 2 },
+    { key: "why", title: "Для чего нужны торговые боты", enabled: true, position: 3 },
+    { key: "connect", title: "Подключение и безопасность", enabled: true, position: 4 },
+    { key: "advantages", title: "Преимущества использования ботов", enabled: true, position: 5 },
+    { key: "benefits", title: "Почему стоит выбрать нас", enabled: true, position: 6 },
+    { key: "pricing", title: "Наши цены", enabled: true, position: 7 },
+    { key: "conclusion", title: "Заключение", enabled: true, position: 8 },
+    { key: "questions", title: "Остались вопросы?", enabled: true, position: 9 },
+    { key: "faq", title: "Частые вопросы", enabled: false, position: 10 },
+    { key: "calculator", title: "Калькулятор доходности", enabled: false, position: 11 },
+    { key: "lead", title: "Форма заявки", enabled: false, position: 12 },
+  ];
+
   if (pool) {
     try {
       const q = await pool.query('SELECT * FROM site_sections ORDER BY position ASC');
@@ -753,7 +796,7 @@ app.get('/api/site-sections', async (req, res) => {
       console.error('[Site Sections Error]', e.message);
     }
   }
-  res.json(memoryStore.siteSections || []);
+  res.json(memoryStore.siteSections && memoryStore.siteSections.length > 0 ? memoryStore.siteSections : fallbackSections);
 });
 
 // Site Sections: Save
