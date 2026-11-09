@@ -160,8 +160,10 @@ function parseContact(raw: string) {
 }
 
 function getNewBadgeText(count: number): string {
-  if (count % 10 === 1 && count % 100 !== 11) return `${count} новая`;
-  if ([2, 3, 4].includes(count % 10) && ![12, 13, 14].includes(count % 100)) return `${count} новые`;
+  const mod10 = count % 10;
+  const mod100 = count % 100;
+  if (mod10 === 1 && mod100 !== 11) return `${count} новая`;
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return `${count} новые`;
   return `${count} новых`;
 }
 
@@ -572,7 +574,7 @@ export default function AdminLeads() {
                       className="hover:bg-gray-800/40 transition-colors cursor-pointer group"
                     >
                       {/* Name */}
-                      <td className="px-5 py-4 whitespace-nowrap">
+                      <td className="px-5 py-4 align-top whitespace-nowrap">
                         <div className="flex items-center gap-3">
                           <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-blue to-indigo-600 flex items-center justify-center text-white text-xs font-bold uppercase shadow-sm shrink-0">
                             {(lead.name || "K").charAt(0)}
@@ -589,13 +591,13 @@ export default function AdminLeads() {
                       </td>
 
                       {/* Contact & Quick Communication */}
-                      <td className="px-5 py-4 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                      <td className="px-5 py-4 align-top whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                         <div className="space-y-1.5">
                           <div className="flex items-center gap-1.5">
                             <span className="text-gray-200 text-sm font-mono font-medium">{contactInfo.raw}</span>
                             <button
                               onClick={(e) => copyContact(contactInfo.raw, lead.id, e)}
-                              className="p-1 text-gray-500 hover:text-white rounded hover:bg-gray-800 transition-colors cursor-pointer"
+                              className="p-1 text-gray-400 hover:text-white rounded hover:bg-gray-800 transition-colors cursor-pointer"
                               title="Скопировать контакт"
                             >
                               {copiedId === lead.id ? (
@@ -653,7 +655,7 @@ export default function AdminLeads() {
                       </td>
 
                       {/* Bot & Message */}
-                      <td className="px-5 py-4 min-w-[200px] max-w-sm">
+                      <td className="px-5 py-4 align-top min-w-[200px] max-w-sm">
                         <div className="space-y-1.5">
                           <div className="flex items-center flex-wrap gap-1.5">
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold bg-gray-800 text-gray-200 border border-gray-700/80">
@@ -666,7 +668,7 @@ export default function AdminLeads() {
                             )}
                           </div>
                           {lead.message ? (
-                            <p className="text-gray-300 text-xs leading-relaxed line-clamp-2">
+                            <p className="text-gray-300 text-xs leading-relaxed break-words line-clamp-3">
                               {lead.message}
                             </p>
                           ) : (
@@ -676,25 +678,25 @@ export default function AdminLeads() {
                       </td>
 
                       {/* Notes Preview - Fixed clipping & direct edit */}
-                      <td className="px-5 py-4 min-w-[210px] max-w-xs">
+                      <td className="px-5 py-4 align-top min-w-[240px] max-w-sm">
                         {lead.notes ? (
                           <div
                             onClick={(e) => {
                               e.stopPropagation();
                               openLeadDetails(lead);
                             }}
-                            className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 hover:border-amber-400/50 hover:bg-amber-500/15 transition-all cursor-pointer text-xs space-y-1 group/note"
-                            title="Кликните для редактирования заметки"
+                            className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 hover:border-amber-400/60 hover:bg-amber-500/15 transition-all cursor-pointer group/note"
+                            title="Кликните для просмотра и редактирования заметки"
                           >
-                            <div className="flex items-center justify-between text-[11px] font-semibold text-amber-400">
-                              <span className="flex items-center gap-1">
+                            <div className="flex items-center justify-between text-[11px] font-semibold text-amber-400 mb-1.5">
+                              <span className="flex items-center gap-1.5">
                                 <Edit3 size={11} /> Заметка:
                               </span>
-                              <span className="text-[10px] text-amber-400/70 opacity-0 group-hover/note:opacity-100 transition-opacity">
+                              <span className="text-[10px] text-amber-300/80 bg-amber-500/20 px-1.5 py-0.5 rounded opacity-90 group-hover/note:opacity-100 transition-opacity">
                                 изменить
                               </span>
                             </div>
-                            <div className="text-gray-200 line-clamp-2 leading-snug break-words">
+                            <div className="text-gray-200 text-xs leading-relaxed break-words line-clamp-3">
                               {lead.notes}
                             </div>
                           </div>
@@ -704,7 +706,7 @@ export default function AdminLeads() {
                               e.stopPropagation();
                               openLeadDetails(lead);
                             }}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-400 hover:text-white bg-gray-800/60 hover:bg-gray-800 border border-gray-700/60 transition-colors cursor-pointer"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-amber-300/80 hover:text-amber-200 bg-amber-500/5 hover:bg-amber-500/15 border border-dashed border-amber-500/30 hover:border-amber-500/50 transition-colors cursor-pointer"
                           >
                             <Edit3 size={12} className="text-amber-400/80" />
                             <span>+ Заметка</span>
@@ -713,7 +715,7 @@ export default function AdminLeads() {
                       </td>
 
                       {/* Status Dropdown */}
-                      <td className="px-5 py-4 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                      <td className="px-5 py-4 align-top whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                         <div className="relative inline-block">
                           <select
                             value={lead.status}
@@ -735,7 +737,7 @@ export default function AdminLeads() {
                       </td>
 
                       {/* Date */}
-                      <td className="px-5 py-4 whitespace-nowrap text-gray-300 text-xs">
+                      <td className="px-5 py-4 align-top whitespace-nowrap text-gray-300 text-xs">
                         <div className="font-medium text-gray-300">
                           {new Date(lead.created_at).toLocaleDateString("ru-RU", { day: "2-digit", month: "short", year: "numeric" })}
                         </div>
@@ -745,7 +747,7 @@ export default function AdminLeads() {
                       </td>
 
                       {/* Actions */}
-                      <td className="px-5 py-4 whitespace-nowrap text-right" onClick={(e) => e.stopPropagation()}>
+                      <td className="px-5 py-4 align-top whitespace-nowrap text-right" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center justify-end gap-1.5">
                           <button
                             onClick={() => openLeadDetails(lead)}

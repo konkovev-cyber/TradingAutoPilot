@@ -52,7 +52,7 @@ export default function AdminLogin() {
           </p>
         </div>
 
-        <form onSubmit={handleLogin} className="bg-gray-900 border border-gray-800 rounded-2xl p-8 space-y-6">
+        <form noValidate onSubmit={handleLogin} className="bg-gray-900 border border-gray-800 rounded-2xl p-8 space-y-6">
           {error && (
             <div className="bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-lg text-sm">
               {error}
@@ -60,25 +60,36 @@ export default function AdminLogin() {
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Email или логин</label>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Логин или Email</label>
             <input
               type="text"
+              name="username"
+              id="admin-username"
+              autoComplete="username"
+              autoCapitalize="none"
+              spellCheck="false"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-blue"
-              placeholder="konkev@bk.ru или coinsoft"
+              placeholder="coinsoft или konkev@bk.ru"
               required
             />
+            <p className="text-[11px] text-gray-500 mt-1.5">
+              Вход доступен по логину <code className="text-gray-400">coinsoft</code> или email <code className="text-gray-400">konkev@bk.ru</code>
+            </p>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">Пароль</label>
             <input
               type="password"
+              name="password"
+              id="admin-password"
+              autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-blue"
-              placeholder=""
+              placeholder="••••••••"
               required
             />
           </div>
@@ -86,13 +97,13 @@ export default function AdminLogin() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-brand-blue hover:bg-blue-600 text-white font-semibold py-3 rounded-lg transition-colors disabled:opacity-50"
+            className="w-full bg-brand-blue hover:bg-blue-600 text-white font-semibold py-3 rounded-lg transition-colors disabled:opacity-50 cursor-pointer shadow-lg shadow-blue-500/20"
           >
             {loading ? "Вход..." : "Войти"}
           </button>
 
           <p className="text-xs text-gray-500 text-center">
-            Если у вас нет аккаунта, попросите владельца сайта добавить его в разделе Authentication.
+            Доступ только для администраторов Trading Auto Pilot
           </p>
         </form>
       </div>

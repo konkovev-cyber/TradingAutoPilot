@@ -197,11 +197,19 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-6 max-w-5xl">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-white">Обзор</h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-3xl font-bold text-white tracking-tight">Обзор</h1>
+            {authInfo?.email && (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-sm">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                <span>Администратор: <strong className="text-white font-semibold">{authInfo.email}</strong></span>
+              </span>
+            )}
+          </div>
           <p className="text-gray-400 text-sm mt-1">
-            Общая статистика: заявки посетителей, конверсия, просмотры и опубликованные роботы.
+            Общая статистика: заявки посетителей, воронка обработки, роботы и просмотры.
           </p>
         </div>
         <button
@@ -209,19 +217,11 @@ export default function AdminDashboard() {
             setRefreshing(true);
             load();
           }}
-          className="flex items-center gap-2 px-4 py-2 bg-gray-900 border border-gray-800 hover:border-gray-700 text-gray-300 hover:text-white rounded-lg text-sm transition-colors cursor-pointer"
+          className="flex items-center gap-2 px-4 py-2 bg-gray-900 border border-gray-800 hover:border-gray-700 text-gray-300 hover:text-white rounded-lg text-sm transition-colors cursor-pointer self-start sm:self-auto shadow-sm"
         >
           <RefreshCw size={16} className={refreshing ? "animate-spin text-brand-blue" : ""} /> Обновить
         </button>
       </div>
-
-      {/* Admin indicator */}
-      {authInfo && (
-        <div className="flex items-center gap-2 text-xs px-3.5 py-2 rounded-lg border bg-green-500/10 border-green-500/20 text-green-300">
-          <span>Администратор:</span>
-          <span className="font-semibold text-white">{authInfo.email}</span>
-        </div>
-      )}
 
       {error && (
         <div className="text-sm text-red-300 bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3">
@@ -236,9 +236,9 @@ export default function AdminDashboard() {
             key={label}
             to={to}
             onClick={(e) => scrollToViews(e, to)}
-            className={`group relative bg-gray-900 border rounded-xl p-5 transition-all duration-200 cursor-pointer block hover:-translate-y-1 hover:shadow-lg ${
+            className={`group relative bg-gray-900 border rounded-xl p-5 transition-all duration-200 cursor-pointer block hover:-translate-y-1 hover:shadow-xl ${
               highlight
-                ? "border-blue-500/50 bg-blue-950/20 hover:border-blue-400"
+                ? "border-blue-500/60 bg-blue-950/25 hover:border-blue-400 shadow-blue-500/10 shadow-lg"
                 : "border-gray-800 hover:border-gray-700 hover:bg-gray-800/60"
             }`}
           >
@@ -255,8 +255,8 @@ export default function AdminDashboard() {
             </div>
 
             <div className="text-3xl font-bold text-white group-hover:text-brand-blue transition-colors">{value}</div>
-            <div className="text-gray-300 text-sm mt-1 font-medium">{label}</div>
-            <div className="text-gray-500 text-xs mt-0.5 flex items-center gap-1 group-hover:text-gray-400">
+            <div className="text-gray-200 text-sm mt-1.5 font-semibold">{label}</div>
+            <div className="text-gray-400 text-xs mt-0.5 flex items-center gap-1 group-hover:text-gray-300">
               {hint}
             </div>
           </Link>
