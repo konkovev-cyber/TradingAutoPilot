@@ -159,6 +159,12 @@ function parseContact(raw: string) {
   };
 }
 
+function getNewBadgeText(count: number): string {
+  if (count % 10 === 1 && count % 100 !== 11) return `${count} новая`;
+  if ([2, 3, 4].includes(count % 10) && ![12, 13, 14].includes(count % 100)) return `${count} новые`;
+  return `${count} новых`;
+}
+
 export default function AdminLeads() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -352,7 +358,7 @@ export default function AdminLeads() {
             {stats.newCount > 0 && (
               <span className="px-2.5 py-0.5 text-xs font-bold rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30 flex items-center gap-1.5 animate-pulse">
                 <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-                {stats.newCount} новых
+                {getNewBadgeText(stats.newCount)}
               </span>
             )}
           </div>
@@ -384,38 +390,70 @@ export default function AdminLeads() {
         </div>
       </div>
 
-      {/* KPI Summary Cards */}
+      {/* KPI Summary Cards - Interactive Filters */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
+        <button
+          type="button"
+          onClick={() => setFilter("all")}
+          className={`text-left rounded-xl p-4 transition-all duration-200 cursor-pointer border ${
+            filter === "all"
+              ? "bg-blue-950/40 border-brand-blue ring-1 ring-brand-blue/40 shadow-lg shadow-blue-500/10"
+              : "bg-gray-900 border-gray-800 hover:border-gray-700 hover:bg-gray-800/60"
+          }`}
+        >
           <div className="flex items-center justify-between text-gray-400 mb-2">
             <span className="text-xs uppercase font-medium">Всего заявок</span>
             <MessageSquare size={16} className="text-blue-400" />
           </div>
           <div className="text-2xl font-bold text-white">{stats.total}</div>
-          <div className="text-xs text-gray-500 mt-1">По всем роботам</div>
-        </div>
+          <div className="text-xs text-gray-500 mt-1">По всем роботам · Нажмите для всех</div>
+        </button>
 
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
+        <button
+          type="button"
+          onClick={() => setFilter("new")}
+          className={`text-left rounded-xl p-4 transition-all duration-200 cursor-pointer border ${
+            filter === "new"
+              ? "bg-blue-950/50 border-blue-400 ring-1 ring-blue-400/50 shadow-lg shadow-blue-500/15"
+              : "bg-gray-900 border-gray-800 hover:border-gray-700 hover:bg-gray-800/60"
+          }`}
+        >
           <div className="flex items-center justify-between text-blue-400 mb-2">
             <span className="text-xs uppercase font-medium">Новые (требуют ответа)</span>
             <AlertCircle size={16} />
           </div>
           <div className="text-2xl font-bold text-blue-400">{stats.newCount}</div>
           <div className="text-xs text-gray-500 mt-1">
-            {stats.newCount > 0 ? "Ожидают первого контакта" : "Все заявки обработаны"}
+            {stats.newCount > 0 ? "Ожидают ответа · Показать" : "Все обработаны"}
           </div>
-        </div>
+        </button>
 
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
+        <button
+          type="button"
+          onClick={() => setFilter("contacted")}
+          className={`text-left rounded-xl p-4 transition-all duration-200 cursor-pointer border ${
+            filter === "contacted"
+              ? "bg-amber-950/40 border-amber-400 ring-1 ring-amber-400/50 shadow-lg shadow-amber-500/10"
+              : "bg-gray-900 border-gray-800 hover:border-gray-700 hover:bg-gray-800/60"
+          }`}
+        >
           <div className="flex items-center justify-between text-amber-400 mb-2">
             <span className="text-xs uppercase font-medium">В работе / Демо</span>
             <Clock size={16} />
           </div>
           <div className="text-2xl font-bold text-amber-400">{stats.inProgress}</div>
-          <div className="text-xs text-gray-500 mt-1">В процессе общения</div>
-        </div>
+          <div className="text-xs text-gray-500 mt-1">В процессе общения · Показать</div>
+        </button>
 
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
+        <button
+          type="button"
+          onClick={() => setFilter("converted")}
+          className={`text-left rounded-xl p-4 transition-all duration-200 cursor-pointer border ${
+            filter === "converted"
+              ? "bg-emerald-950/40 border-emerald-400 ring-1 ring-emerald-400/50 shadow-lg shadow-emerald-500/10"
+              : "bg-gray-900 border-gray-800 hover:border-gray-700 hover:bg-gray-800/60"
+          }`}
+        >
           <div className="flex items-center justify-between text-emerald-400 mb-2">
             <span className="text-xs uppercase font-medium">Закрытые сделки</span>
             <CheckCircle2 size={16} />
@@ -423,8 +461,8 @@ export default function AdminLeads() {
           <div className="text-2xl font-bold text-emerald-400">
             {stats.converted} <span className="text-xs font-normal text-gray-400">({stats.convRate}%)</span>
           </div>
-          <div className="text-xs text-gray-500 mt-1">Конверсия в оплату</div>
-        </div>
+          <div className="text-xs text-gray-500 mt-1">Конверсия в оплату · Показать</div>
+        </button>
       </div>
 
       {/* Search & Date Filter Bar */}
@@ -536,14 +574,16 @@ export default function AdminLeads() {
                       {/* Name */}
                       <td className="px-5 py-4 whitespace-nowrap">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-brand-blue to-indigo-600 flex items-center justify-center text-white text-xs font-bold uppercase shrink-0">
+                          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-blue to-indigo-600 flex items-center justify-center text-white text-xs font-bold uppercase shadow-sm shrink-0">
                             {(lead.name || "K").charAt(0)}
                           </div>
                           <div>
                             <div className="text-white font-semibold text-sm group-hover:text-brand-blue transition-colors">
                               {lead.name || "Без имени"}
                             </div>
-                            <div className="text-[11px] text-gray-500 font-mono">#{String(lead.id).slice(-6)}</div>
+                            <div className="text-[11px] text-gray-500 font-mono">
+                              ID #{String(lead.id).padStart(3, "0")}
+                            </div>
                           </div>
                         </div>
                       </td>
@@ -552,7 +592,7 @@ export default function AdminLeads() {
                       <td className="px-5 py-4 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                         <div className="space-y-1.5">
                           <div className="flex items-center gap-1.5">
-                            <span className="text-gray-300 text-sm font-mono font-medium">{contactInfo.raw}</span>
+                            <span className="text-gray-200 text-sm font-mono font-medium">{contactInfo.raw}</span>
                             <button
                               onClick={(e) => copyContact(contactInfo.raw, lead.id, e)}
                               className="p-1 text-gray-500 hover:text-white rounded hover:bg-gray-800 transition-colors cursor-pointer"
@@ -573,7 +613,7 @@ export default function AdminLeads() {
                                 href={contactInfo.tgUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs bg-sky-500/10 text-sky-400 hover:bg-sky-500/20 border border-sky-500/20 transition-colors"
+                                className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-xs font-semibold bg-sky-500/15 text-sky-400 hover:bg-sky-500/25 border border-sky-500/25 transition-colors"
                                 title="Открыть диалог в Telegram"
                               >
                                 <Send size={11} /> TG
@@ -584,7 +624,7 @@ export default function AdminLeads() {
                                 href={contactInfo.waUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/20 transition-colors"
+                                className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-xs font-semibold bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25 border border-emerald-500/25 transition-colors"
                                 title="Написать в WhatsApp"
                               >
                                 <MessageSquare size={11} /> WA
@@ -593,7 +633,7 @@ export default function AdminLeads() {
                             {contactInfo.telUrl && (
                               <a
                                 href={contactInfo.telUrl}
-                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 border border-indigo-500/20 transition-colors"
+                                className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-xs font-semibold bg-indigo-500/15 text-indigo-400 hover:bg-indigo-500/25 border border-indigo-500/25 transition-colors"
                                 title="Позвонить"
                               >
                                 <Phone size={11} /> Звонок
@@ -602,7 +642,7 @@ export default function AdminLeads() {
                             {contactInfo.mailUrl && (
                               <a
                                 href={contactInfo.mailUrl}
-                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 border border-amber-500/20 transition-colors"
+                                className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-xs font-semibold bg-amber-500/15 text-amber-400 hover:bg-amber-500/25 border border-amber-500/25 transition-colors"
                                 title="Написать email"
                               >
                                 <Mail size={11} /> Email
@@ -613,35 +653,62 @@ export default function AdminLeads() {
                       </td>
 
                       {/* Bot & Message */}
-                      <td className="px-5 py-4 max-w-xs">
-                        <div className="space-y-1">
-                          <span className="inline-block px-2 py-0.5 rounded text-xs font-medium bg-gray-800 text-gray-300 border border-gray-700/60">
-                            🤖 {lead.bot || "Любой робот"}
-                          </span>
-                          {lead.budget && (
-                            <span className="inline-block ml-1.5 px-2 py-0.5 rounded text-xs font-medium bg-emerald-500/10 text-emerald-400">
-                              💰 {lead.budget}
+                      <td className="px-5 py-4 min-w-[200px] max-w-sm">
+                        <div className="space-y-1.5">
+                          <div className="flex items-center flex-wrap gap-1.5">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold bg-gray-800 text-gray-200 border border-gray-700/80">
+                              🤖 {lead.bot || "Любой робот"}
                             </span>
-                          )}
+                            {lead.budget && (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/20">
+                                💰 {lead.budget}
+                              </span>
+                            )}
+                          </div>
                           {lead.message ? (
-                            <p className="text-gray-400 text-xs line-clamp-2 leading-relaxed">{lead.message}</p>
+                            <p className="text-gray-300 text-xs leading-relaxed line-clamp-2">
+                              {lead.message}
+                            </p>
                           ) : (
                             <span className="text-gray-600 text-xs italic">Без сообщения</span>
                           )}
                         </div>
                       </td>
 
-                      {/* Notes Preview */}
-                      <td className="px-5 py-4 max-w-xs">
+                      {/* Notes Preview - Fixed clipping & direct edit */}
+                      <td className="px-5 py-4 min-w-[210px] max-w-xs">
                         {lead.notes ? (
-                          <div className="p-2 rounded-lg bg-gray-800/80 border border-gray-700/60 text-xs text-gray-300 line-clamp-2">
-                            <span className="text-amber-400 font-medium">Заметка: </span>
-                            {lead.notes}
+                          <div
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openLeadDetails(lead);
+                            }}
+                            className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 hover:border-amber-400/50 hover:bg-amber-500/15 transition-all cursor-pointer text-xs space-y-1 group/note"
+                            title="Кликните для редактирования заметки"
+                          >
+                            <div className="flex items-center justify-between text-[11px] font-semibold text-amber-400">
+                              <span className="flex items-center gap-1">
+                                <Edit3 size={11} /> Заметка:
+                              </span>
+                              <span className="text-[10px] text-amber-400/70 opacity-0 group-hover/note:opacity-100 transition-opacity">
+                                изменить
+                              </span>
+                            </div>
+                            <div className="text-gray-200 line-clamp-2 leading-snug break-words">
+                              {lead.notes}
+                            </div>
                           </div>
                         ) : (
-                          <span className="text-gray-600 text-xs flex items-center gap-1 group-hover:text-gray-400 transition-colors">
-                            <Edit3 size={12} /> Добавить заметку...
-                          </span>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openLeadDetails(lead);
+                            }}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-400 hover:text-white bg-gray-800/60 hover:bg-gray-800 border border-gray-700/60 transition-colors cursor-pointer"
+                          >
+                            <Edit3 size={12} className="text-amber-400/80" />
+                            <span>+ Заметка</span>
+                          </button>
                         )}
                       </td>
 
@@ -651,7 +718,7 @@ export default function AdminLeads() {
                           <select
                             value={lead.status}
                             onChange={(e) => updateStatus(lead.id, e.target.value)}
-                            className={`text-xs font-semibold rounded-lg px-2.5 py-1.5 appearance-none cursor-pointer pr-7 border transition-colors ${statusConf.bg} ${statusConf.color} ${statusConf.border}`}
+                            className={`text-xs font-bold rounded-lg px-3 py-1.5 appearance-none cursor-pointer pr-7 border transition-colors ${statusConf.bg} ${statusConf.color} ${statusConf.border}`}
                             aria-label="Статус заявки"
                           >
                             {Object.entries(STATUS_CONFIG).slice(0, 5).map(([value, conf]) => (
@@ -668,29 +735,31 @@ export default function AdminLeads() {
                       </td>
 
                       {/* Date */}
-                      <td className="px-5 py-4 whitespace-nowrap text-gray-400 text-xs">
-                        <div>{new Date(lead.created_at).toLocaleDateString("ru-RU")}</div>
-                        <div className="text-[11px] text-gray-600">
+                      <td className="px-5 py-4 whitespace-nowrap text-gray-300 text-xs">
+                        <div className="font-medium text-gray-300">
+                          {new Date(lead.created_at).toLocaleDateString("ru-RU", { day: "2-digit", month: "short", year: "numeric" })}
+                        </div>
+                        <div className="text-[11px] text-gray-500 font-mono mt-0.5">
                           {new Date(lead.created_at).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })}
                         </div>
                       </td>
 
                       {/* Actions */}
                       <td className="px-5 py-4 whitespace-nowrap text-right" onClick={(e) => e.stopPropagation()}>
-                        <div className="flex items-center justify-end gap-1">
+                        <div className="flex items-center justify-end gap-1.5">
                           <button
                             onClick={() => openLeadDetails(lead)}
                             className="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors cursor-pointer"
                             title="Открыть подробную карточку"
                           >
-                            <Eye size={16} />
+                            <Eye size={17} />
                           </button>
                           <button
                             onClick={() => deleteLead(lead.id)}
-                            className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors cursor-pointer"
+                            className="p-2 text-red-400/80 hover:text-red-300 hover:bg-red-500/15 rounded-lg transition-colors cursor-pointer"
                             title="Удалить заявку"
                           >
-                            <Trash2 size={16} />
+                            <Trash2 size={17} />
                           </button>
                         </div>
                       </td>
