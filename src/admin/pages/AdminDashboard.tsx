@@ -8,7 +8,9 @@ interface Lead {
   name: string;
   contact: string;
   bot: string;
+  budget?: string | null;
   message: string | null;
+  notes?: string | null;
   status: string;
   created_at: string;
 }
@@ -31,17 +33,21 @@ const CARD_STYLES: Record<string, string> = {
 };
 
 const STATUS_LABELS: Record<string, string> = {
-  new: "новая",
-  read: "прочитана",
-  replied: "отвечена",
-  converted: "куплено",
+  new: "Новая",
+  contacted: "В работе",
+  meeting: "Консультация",
+  converted: "Оплачено",
+  rejected: "Отказ",
+  read: "В работе",
+  replied: "Консультация",
 };
 
 function statusStyle(status: string): string {
-  if (status === "new") return "bg-green-500/10 text-green-400";
-  if (status === "read") return "bg-blue-500/10 text-blue-400";
-  if (status === "replied") return "bg-purple-500/10 text-purple-400";
-  if (status === "converted") return "bg-orange-500/10 text-orange-400";
+  if (status === "new") return "bg-blue-500/10 text-blue-400 border border-blue-500/20";
+  if (status === "contacted" || status === "read") return "bg-amber-500/10 text-amber-400 border border-amber-500/20";
+  if (status === "meeting" || status === "replied") return "bg-purple-500/10 text-purple-400 border border-purple-500/20";
+  if (status === "converted") return "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
+  if (status === "rejected") return "bg-rose-500/10 text-rose-400 border border-rose-500/20";
   return "bg-gray-500/10 text-gray-400";
 }
 
@@ -147,47 +153,10 @@ try {
         </button>
       </div>
 
-      {!authInfo?.isAdmin && authInfo && (
-        <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4 mb-4">
-          <div className="flex items-start gap-3">
-            <span className="text-yellow-400 text-2xl"></span>
-            <div>
-              <div className="font-semibold text-yellow-200">Нет прав администратора</div>
-              <p className="text-yellow-200/80 text-sm mt-1">
-                Ваша учётная запись <code className="bg-yellow-500/20 px-1 rounded">{authInfo.email}</code> не имеет роли admin.
-              </p>
-              <p className="text-yellow-200/80 text-sm mt-2">
-                Чтобы получить доступ, выполните SQL в{' '}
-                <a href="https://app.supabase.com/project/zsupqrsnnegeclrlvlqg/sql" target="_blank" rel="noreferrer"
-                   className="text-yellow-300 underline hover:text-yellow-100">
-                  Supabase SQL Editor
-                </a>:
-              </p>
-              <pre className="bg-black/30 rounded-lg p-3 mt-2 text-xs text-yellow-100 overflow-x-auto">
-{`INSERT INTO user_roles (user_id, role)
-SELECT id, 'admin'
-FROM auth.users
-WHERE email = '${authInfo.email}'
-ON CONFLICT (user_id) DO UPDATE SET role = 'admin';`}
-              </pre>
-            </div>
-          </div>
-        </div>
-      )}
-
       {authInfo && (
-        <div className={`flex items-center gap-3 text-sm px-4 py-2 rounded-lg border ${
-          authInfo.isAdmin
-            ? "bg-green-500/10 border-green-500/20 text-green-300"
-            : "bg-red-500/10 border-red-500/20 text-red-300"
-        }`}>
-          {authInfo.isAdmin ? " Админ: " : " Нет прав админа: "}
-          <span className="font-medium">{authInfo.email}</span>
-          {!authInfo.isAdmin && (
-            <span className="text-gray-400">
-               добавьте строку в таблицу user_roles (user_id = ваш ID из Auth, role = admin)
-            </span>
-          )}
+        <div className="flex items-center gap-2 text-xs px-3.5 py-2 rounded-lg border bg-green-500/10 border-green-500/20 text-green-300">
+          <span>Администратор:</span>
+          <span className="font-semibold text-white">{authInfo.email}</span>
         </div>
       )}
 

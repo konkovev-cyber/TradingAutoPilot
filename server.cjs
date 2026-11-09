@@ -48,10 +48,12 @@ async function initDb() {
           budget TEXT,
           message TEXT,
           status TEXT DEFAULT 'new',
+          notes TEXT,
           created_at TIMESTAMPTZ DEFAULT NOW()
         );
         ALTER TABLE leads ADD COLUMN IF NOT EXISTS message TEXT;
         ALTER TABLE leads ADD COLUMN IF NOT EXISTS budget TEXT;
+        ALTER TABLE leads ADD COLUMN IF NOT EXISTS notes TEXT;
 
         CREATE TABLE IF NOT EXISTS bots (
           id TEXT PRIMARY KEY,
@@ -268,6 +270,87 @@ function verifyToken(token) {
 }
 
 // ─────────────────────────────────────────
+// TELEGRAM NOTIFICATIONS
+// ─────────────────────────────────────────
+function escapeHtml(str) {
+  return String(str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+async function getTelegramSettings() {
+  let token = (process.env.TELEGRAM_BOT_TOKEN || '').trim();
+  let chatId = (process.env.TELEGRAM_CHAT_ID || '').trim();
+  let enabled = true;
+
+  if (pool) {
+    try {
+      const q = await pool.query("SELECT value FROM site_content WHERE key = 'telegram_settings'");
+      if (q.rows.length > 0 && q.rows[0].value) {
+        const val = q.rows[0].value;
+        if (val.bot_token) token = String(val.bot_token).trim();
+        if (val.chat_id) chatId = String(val.chat_id).trim();
+        if (val.enabled !== undefined) enabled = Boolean(val.enabled);
+      }
+    } catch (e) {
+      // ignore
+    }
+  } else if (memoryStore.siteContent['telegram_settings']) {
+    const val = memoryStore.siteContent['telegram_settings'];
+    if (val.bot_token) token = String(val.bot_token).trim();
+    if (val.chat_id) chatId = String(val.chat_id).trim();
+    if (val.enabled !== undefined) enabled = Boolean(val.enabled);
+  }
+
+  return { token, chatId, enabled };
+}
+
+async function sendTelegramMessage(token, chatId, text) {
+  if (!token || !chatId) {
+    throw new Error('Telegram Bot Token или Chat ID не настроены');
+  }
+  const url = `https://api.telegram.org/bot${token}/sendMessage`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      chat_id: chatId,
+      text,
+      parse_mode: 'HTML',
+      disable_web_page_preview: true,
+    }),
+  });
+  const data = await res.json();
+  if (!data.ok) {
+    throw new Error(data.description || 'Telegram API returned error');
+  }
+  return true;
+}
+
+async function notifyTelegramNewLead(lead) {
+  try {
+    const { token, chatId, enabled } = await getTelegramSettings();
+    if (!enabled || !token || !chatId) return;
+
+    const time = new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' });
+    const text = `🔥 <b>Новая заявка на TradingAutoPilot!</b>\n\n` +
+      `👤 <b>Имя:</b> ${escapeHtml(lead.name || 'Не указано')}\n` +
+      `📞 <b>Контакт:</b> <code>${escapeHtml(lead.contact || '')}</code>\n` +
+      `🤖 <b>Интересует робот:</b> ${escapeHtml(lead.bot || 'Любой')}\n` +
+      (lead.budget ? `💰 <b>Бюджет:</b> ${escapeHtml(lead.budget)}\n` : '') +
+      (lead.message ? `💬 <b>Вопрос / Сообщение:</b>\n<i>${escapeHtml(lead.message)}</i>\n` : '') +
+      `\n🕒 <i>${time} (МСК)</i>`;
+
+    await sendTelegramMessage(token, chatId, text);
+    console.log(`[Telegram] Alert sent for lead #${lead.id}`);
+  } catch (err) {
+    console.error('[Telegram] Failed to send lead alert:', err.message);
+  }
+}
+
+// ─────────────────────────────────────────
 // API ROUTES
 // ─────────────────────────────────────────
 
@@ -355,22 +438,30 @@ app.post('/api/leads', async (req, res) => {
     return res.status(400).json({ error: 'Контакт обязателен' });
   }
 
+  let createdLead = null;
+
   if (pool) {
     try {
       const q = await pool.query(
         'INSERT INTO leads (name, contact, bot, budget, message, status) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
         [name || '', contact, bot || '', budget || '', message || '', 'new']
       );
-      return res.status(201).json(q.rows[0]);
+      createdLead = q.rows[0];
     } catch (e) {
       console.error('[Leads Error]', e.message);
     }
   }
 
-  // Memory fallback
-  const lead = { id: Date.now(), name, contact, bot, budget, message: message || '', status: 'new', created_at: new Date().toISOString() };
-  memoryStore.leads.unshift(lead);
-  res.status(201).json(lead);
+  if (!createdLead) {
+    // Memory fallback
+    createdLead = { id: Date.now(), name, contact, bot, budget, message: message || '', status: 'new', created_at: new Date().toISOString() };
+    memoryStore.leads.unshift(createdLead);
+  }
+
+  // Trigger Telegram notification asynchronously
+  notifyTelegramNewLead(createdLead).catch(err => console.error('[TG Notify Background]', err.message));
+
+  res.status(201).json(createdLead);
 });
 
 // Leads: List (Admin)
@@ -386,20 +477,29 @@ app.get('/api/leads', async (req, res) => {
   res.json(memoryStore.leads);
 });
 
-// Leads: Update status (Admin)
+// Leads: Update status and notes (Admin)
 app.patch('/api/leads/:id', async (req, res) => {
   const { id } = req.params;
-  const { status } = req.body || {};
+  const { status, notes } = req.body || {};
   if (pool) {
     try {
-      const q = await pool.query('UPDATE leads SET status = $1 WHERE id = $2 RETURNING *', [status, id]);
+      const q = await pool.query(`
+        UPDATE leads SET
+          status = COALESCE($1, status),
+          notes = CASE WHEN $2::text IS NOT NULL THEN $2::text ELSE notes END
+        WHERE id = $3 RETURNING *;
+      `, [status !== undefined ? status : null, notes !== undefined ? notes : null, id]);
       return res.json(q.rows[0] || {});
     } catch (e) {
       console.error('[Leads Update Error]', e.message);
+      return res.status(500).json({ error: e.message });
     }
   }
   const item = memoryStore.leads.find(l => String(l.id) === String(id));
-  if (item) item.status = status;
+  if (item) {
+    if (status !== undefined) item.status = status;
+    if (notes !== undefined) item.notes = notes;
+  }
   res.json(item || {});
 });
 
@@ -416,6 +516,30 @@ app.delete('/api/leads/:id', async (req, res) => {
   }
   memoryStore.leads = memoryStore.leads.filter(l => String(l.id) !== String(id));
   res.json({ success: true });
+});
+
+// Telegram: Test notification
+app.post('/api/telegram/test', async (req, res) => {
+  const { bot_token, chat_id } = req.body || {};
+  const current = await getTelegramSettings();
+  const token = (bot_token || current.token || '').trim();
+  const chatId = (chat_id || current.chatId || '').trim();
+
+  if (!token || !chatId) {
+    return res.status(400).json({ error: 'Пожалуйста, укажите Bot Token и Chat ID' });
+  }
+
+  try {
+    const time = new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' });
+    const text = `🔔 <b>Тестовое уведомление от CoinSoft / TradingAutoPilot!</b>\n\n` +
+      `✅ Интеграция с Telegram настроена успешно.\n` +
+      `Все новые заявки с сайта будут мгновенно приходить в этот чат.\n\n` +
+      `🕒 <i>${time} (МСК)</i>`;
+    await sendTelegramMessage(token, chatId, text);
+    res.json({ success: true, message: 'Тестовое уведомление успешно отправлено в Telegram!' });
+  } catch (err) {
+    res.status(400).json({ error: err.message || 'Ошибка отправки в Telegram' });
+  }
 });
 
 // Bots: List
@@ -636,6 +760,7 @@ app.post('/api/page-views', async (req, res) => {
 // Stats: Summary (Admin Dashboard)
 app.get('/api/stats', async (req, res) => {
   let leadsCount = 0;
+  let newLeadsCount = 0;
   let viewsCount = 0;
   let viewsToday = 0;
 
@@ -643,6 +768,8 @@ app.get('/api/stats', async (req, res) => {
     try {
       const l = await pool.query('SELECT COUNT(*) FROM leads');
       leadsCount = parseInt(l.rows[0].count, 10);
+      const nl = await pool.query("SELECT COUNT(*) FROM leads WHERE status = 'new'");
+      newLeadsCount = parseInt(nl.rows[0].count, 10);
       const v = await pool.query('SELECT COUNT(*) FROM page_views');
       viewsCount = parseInt(v.rows[0].count, 10);
       const vt = await pool.query("SELECT COUNT(*) FROM page_views WHERE created_at >= CURRENT_DATE");
@@ -652,11 +779,13 @@ app.get('/api/stats', async (req, res) => {
     }
   } else {
     leadsCount = memoryStore.leads.length;
+    newLeadsCount = memoryStore.leads.filter(l => l.status === 'new').length;
     viewsCount = memoryStore.pageViews.length;
   }
 
   res.json({
     leads: leadsCount,
+    newLeads: newLeadsCount,
     views: viewsCount,
     viewsToday,
   });

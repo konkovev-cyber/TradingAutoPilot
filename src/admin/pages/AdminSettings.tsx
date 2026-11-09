@@ -1,11 +1,12 @@
 ﻿import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { Save, Plus, Trash2, ChevronDown, Check } from "lucide-react";
+import { Save, Plus, Trash2, ChevronDown, Check, Send, ExternalLink, HelpCircle } from "lucide-react";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type Json = any;
 
 const SECTION_LABELS: Record<string, string> = {
+  telegram_settings: "Уведомления в Telegram (новые заявки)",
   meta: "SEO и мета-данные",
   nav: "Меню в шапке",
   hero: "Hero / Знакомство с проектом",
@@ -27,6 +28,7 @@ const SECTION_LABELS: Record<string, string> = {
 };
 
 const HELP_TEXT: Record<string, string> = {
+  telegram_settings: "Мгновенные оповещения в ваш Telegram при поступлении каждой новой заявки с сайта.",
   meta: "Title и Description отображаются во вкладках браузера и в поисковой выдаче.",
   nav: "Текст пунктов меню в шапке сайта.",
   hero: "Заголовок, подзаголовок и кнопки на главном экране. Поля поддерживают RU и EN.",
@@ -143,7 +145,11 @@ export default function AdminSettings() {
     if (!supabase) { setLoading(false); return; }
     supabase.from("site_content").select("*").then(({ data }) => {
       const map: Record<string, Json> = {};
-      data?.forEach((row) => { map[row.section] = row.data; });
+      data?.forEach((row) => {
+        const k = row.section || row.key;
+        const v = row.data !== undefined ? row.data : row.value;
+        if (k) map[k] = v;
+      });
       setSections(map);
       setLoading(false);
     });
@@ -154,14 +160,20 @@ export default function AdminSettings() {
   };
 
   const save = async (section: string, data: Json) => {
-    if (!supabase) return;
     setSaving(true);
-    const { error } = await supabase
-      .from("site_content")
-      .upsert({ section, data });
-    if (!error) {
+    try {
+      await fetch("/api/site-content", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ key: section, value: data }),
+      });
+      if (supabase) {
+        await supabase.from("site_content").upsert({ section, data, key: section, value: data });
+      }
       setSaved(section);
       setTimeout(() => setSaved(null), 2000);
+    } catch {
+      // ignore
     }
     setSaving(false);
   };
@@ -318,6 +330,134 @@ export default function AdminSettings() {
     );
   };
 
+  // --- Telegram Notifications Editor ---
+  const TelegramEditor = () => {
+    const d = sections.telegram_settings ?? { bot_token: "", chat_id: "", enabled: true };
+    const [testing, setTesting] = useState(false);
+    const [testResult, setTestResult] = useState<{ success?: boolean; message?: string } | null>(null);
+
+    const runTest = async () => {
+      setTesting(true);
+      setTestResult(null);
+      try {
+        const res = await fetch("/api/telegram/test", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            bot_token: d.bot_token,
+            chat_id: d.chat_id,
+          }),
+        });
+        const json = await res.json();
+        if (res.ok) {
+          setTestResult({ success: true, message: json.message || "Тестовое сообщение доставлено!" });
+        } else {
+          setTestResult({ success: false, message: json.error || "Не удалось отправить сообщение" });
+        }
+      } catch (err: any) {
+        setTestResult({ success: false, message: err.message || "Ошибка подключения к серверу" });
+      }
+      setTesting(false);
+    };
+
+    return (
+      <div className="space-y-4">
+        <div className="p-4 bg-sky-950/40 border border-sky-800/40 rounded-xl space-y-2">
+          <div className="text-sky-300 font-semibold text-sm flex items-center gap-1.5">
+            <Send size={15} /> Как настроить оповещения за 2 минуты:
+          </div>
+          <ol className="text-xs text-sky-200/80 space-y-1 list-decimal list-inside leading-relaxed">
+            <li>
+              Откройте бота{" "}
+              <a href="https://t.me/BotFather" target="_blank" rel="noopener noreferrer" className="underline font-bold text-sky-300">
+                @BotFather
+              </a>{" "}
+              в Telegram и отправьте команду <code className="bg-sky-900/60 px-1 rounded">/newbot</code>.
+            </li>
+            <li>Придумайте имя и юзернейм, скопируйте выданный <b>HTTP API Token</b> в поле ниже.</li>
+            <li>
+              Нажмите <b>Start</b> в вашем новом боте.
+            </li>
+            <li>
+              Узнайте свой цифровой <b>Chat ID</b> у бота{" "}
+              <a href="https://t.me/userinfobot" target="_blank" rel="noopener noreferrer" className="underline font-bold text-sky-300">
+                @userinfobot
+              </a>{" "}
+              (или укажите ID вашей группы, добавив туда бота).
+            </li>
+            <li>Вставьте данные и нажмите «Отправить тест в Telegram».</li>
+          </ol>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1.5">
+              Telegram Bot Token
+            </label>
+            <input
+              type="text"
+              value={d.bot_token || ""}
+              onChange={(e) => updateData("telegram_settings", { ...d, bot_token: e.target.value })}
+              placeholder="123456789:ABCdefGhIJKlmNoPQRstuVWXyz"
+              className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm font-mono placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-blue"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1.5">
+              Chat ID (получатель)
+            </label>
+            <input
+              type="text"
+              value={d.chat_id || ""}
+              onChange={(e) => updateData("telegram_settings", { ...d, chat_id: e.target.value })}
+              placeholder="Например: 123456789 или -100123456789"
+              className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm font-mono placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-blue"
+            />
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 pt-1">
+          <input
+            type="checkbox"
+            id="tg_enabled"
+            checked={d.enabled !== false}
+            onChange={(e) => updateData("telegram_settings", { ...d, enabled: e.target.checked })}
+            className="w-4 h-4 rounded bg-gray-800 border-gray-700 text-brand-blue focus:ring-brand-blue cursor-pointer"
+          />
+          <label htmlFor="tg_enabled" className="text-xs text-gray-300 cursor-pointer font-medium">
+            Включить автоматическую отправку всех новых заявок в Telegram
+          </label>
+        </div>
+
+        <div className="pt-2 flex flex-col sm:flex-row sm:items-center gap-3">
+          <button
+            type="button"
+            onClick={runTest}
+            disabled={testing || !d.bot_token || !d.chat_id}
+            className="flex items-center justify-center gap-2 px-4 py-2 bg-sky-600 hover:bg-sky-500 disabled:opacity-40 text-white rounded-lg text-xs font-semibold transition-colors cursor-pointer"
+          >
+            <Send size={14} className={testing ? "animate-pulse" : ""} />
+            {testing ? "Отправка..." : "Отправить тест в Telegram"}
+          </button>
+
+          {testResult && (
+            <div
+              className={`text-xs px-3 py-1.5 rounded-lg border flex items-center gap-1.5 ${
+                testResult.success
+                  ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
+                  : "bg-rose-500/10 border-rose-500/20 text-rose-400"
+              }`}
+            >
+              {testResult.success ? <Check size={14} /> : <HelpCircle size={14} />}
+              {testResult.message}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   // --- hero / why / choose / connect / cta / nav — текстовые секции ---
   const TEXT_SECTIONS: Record<string, Field[]> = {
     hero: [
@@ -459,6 +599,7 @@ export default function AdminSettings() {
           const isSaved = saved === section;
 
           const renderContent = () => {
+            if (section === "telegram_settings") return <TelegramEditor />;
             if (section === "meta") return <MetaEditor />;
             if (section === "stats") return <StatsEditor />;
             if (section === "exchanges") return <ExchangesEditor />;

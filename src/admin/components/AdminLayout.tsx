@@ -1,20 +1,41 @@
 import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
 import { LayoutDashboard, LayoutList, Bot, MessageSquare, FileText, LogOut, Menu, X, ExternalLink } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 
 const navItems = [
   { path: "/admin", label: "Обзор", desc: "Сколько заявок пришло и их состояния", icon: LayoutDashboard },
   { path: "/admin/sections", label: "Секции", desc: "Порядок и видимость блоков на сайте", icon: LayoutList },
   { path: "/admin/bots", label: "Роботы", desc: "Добавление и редактирование ботов", icon: Bot },
-  { path: "/admin/leads", label: "Заявки", desc: "Обращения с формы на сайте", icon: MessageSquare },
-  { path: "/admin/settings", label: "Контент", desc: "Тексты всех секций сайта", icon: FileText },
+  { path: "/admin/leads", label: "Заявки", desc: "Обращения с формы на сайте", icon: MessageSquare, badge: true },
+  { path: "/admin/settings", label: "Контент", desc: "Тексты и настройки Telegram", icon: FileText },
 ];
 
 export default function AdminLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [newLeadsCount, setNewLeadsCount] = useState<number>(0);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await fetch("/api/stats");
+        if (res.ok) {
+          const data = await res.json();
+          if (typeof data?.newLeads === "number") {
+            setNewLeadsCount(data.newLeads);
+          }
+        }
+      } catch {
+        // ignore
+      }
+    };
+
+    fetchStats();
+    const interval = setInterval(fetchStats, 20000); // refresh every 20s
+    return () => clearInterval(interval);
+  }, [location.pathname]);
 
   const handleLogout = async () => {
     if (supabase) await supabase.auth.signOut();
@@ -47,20 +68,27 @@ export default function AdminLayout() {
         </div>
 
         <nav className="p-4 space-y-1" aria-label="Разделы панели">
-          {navItems.map(({ path, label, desc, icon: Icon }) => (
+          {navItems.map(({ path, label, desc, icon: Icon, badge }) => (
             <Link
               key={path}
               to={path}
               onClick={() => setMobileOpen(false)}
-              className={`flex items-start gap-3 px-4 py-3 rounded-lg transition-colors ${
+              className={`flex items-start gap-3 px-4 py-3 rounded-lg transition-colors relative ${
                 location.pathname === path
                   ? "bg-brand-blue/10 text-brand-blue"
                   : "text-gray-400 hover:bg-gray-800 hover:text-white"
               }`}
             >
               <Icon size={20} className="mt-0.5 shrink-0" />
-              <span>
-                <span className="block font-medium">{label}</span>
+              <span className="flex-1 min-w-0">
+                <span className="flex items-center justify-between gap-1">
+                  <span className="block font-medium truncate">{label}</span>
+                  {badge && newLeadsCount > 0 && (
+                    <span className="px-2 py-0.5 text-[11px] font-bold rounded-full bg-blue-500 text-white animate-pulse">
+                      {newLeadsCount}
+                    </span>
+                  )}
+                </span>
                 <span className={`block text-xs leading-snug ${location.pathname === path ? "text-blue-300/60" : "text-gray-500"}`}>
                   {desc}
                 </span>
