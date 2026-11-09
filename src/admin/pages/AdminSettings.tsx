@@ -1,6 +1,22 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { Save, Plus, Trash2, ChevronDown, Check, Send, ExternalLink, HelpCircle } from "lucide-react";
+import { DEFAULT_SITE_CONTENT } from "@/lib/default-content";
+import {
+  Save,
+  Plus,
+  Trash2,
+  ChevronDown,
+  ChevronUp,
+  Check,
+  Send,
+  ExternalLink,
+  Search,
+  RotateCcw,
+  Sparkles,
+  Layers,
+  HelpCircle,
+  X,
+} from "lucide-react";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type Json = any;
@@ -8,48 +24,64 @@ type Json = any;
 const SECTION_LABELS: Record<string, string> = {
   telegram_settings: "Уведомления в Telegram (новые заявки)",
   meta: "SEO, поисковая оптимизация и веб-аналитика",
-  nav: "Меню в шапке",
-  hero: "Hero / Знакомство с проектом",
-  contacts: "Контакты (Telegram/WhatsApp/Email/Телефон)",
+  nav: "Меню в шапке сайта",
+  hero: "Hero / Главный экран",
+  contacts: "Контакты (Telegram, WhatsApp, Email, Телефон)",
   why: "Для чего нужны торговые боты",
   advantages: "Преимущества использования ботов",
-  benefits: "Почему стоит выбрать нас",
-  pricing: "Наши цены",
-  conclusion: "Заключение",
-  questions: "Остались вопросы?",
-  tryIt: "Просто попробуйте (CTA)",
-  connect: "Подключение и безопасность",
-  cta: "Карусель роботов",
-  stats: "Статистика",
-  exchanges: "Биржи",
-  how_it_works: "Как это работает",
-  testimonials: "Отзывы",
-  faq: "FAQ",
+  benefits: "Почему стоит выбрать нас (6 карточек)",
+  pricing: "Наши цены (условия без подписки)",
+  conclusion: "Заключение (итоги)",
+  questions: "Остались вопросы? (Консультация)",
+  tryIt: "Просто попробуйте (Секция выбора роботов)",
+  connect: "Подключение и безопасность (4 шага по API)",
+  cta: "Карусель роботов и доверие",
+  stats: "Статистика (цифры)",
+  exchanges: "Поддерживаемые биржи (BYBIT, Binance и др.)",
+  how_it_works: "Как это работает (шаги)",
+  testimonials: "Отзывы клиентов",
+  faq: "FAQ (Часто задаваемые вопросы)",
 };
 
 const HELP_TEXT: Record<string, string> = {
   telegram_settings: "Мгновенные оповещения в ваш Telegram при поступлении каждой новой заявки с сайта.",
-  meta: "Title, Description, ключевые слова, счетчики Яндекс.Метрики и Google Analytics 4, генератор sitemap.xml и редактор robots.txt.",
-  nav: "Текст пунктов меню в шапке сайта.",
-  hero: "Заголовок, подзаголовок и кнопки на главном экране. Поля поддерживают RU и EN.",
-  contacts: "Каналы связи для всего сайта: ссылки Telegram и WhatsApp, email и отображаемый телефон. WhatsApp — ссылка вида https://wa.me/79991234567 (номер без плюса-пробелов).",
-  why: "Блок «Для чего нужны торговые боты» — заголовок и пояснительный текст.",
-  advantages: "Карточки преимуществ: круглосуточная работа, отсутствие эмоций и т.д.",
+  meta: "Title, Description, ключевые слова, счетчики Яндекс.Метрики и Google Analytics 4, sitemap.xml и robots.txt.",
+  nav: "Тексты пунктов меню в шапке (О проекте, Роботы, Как работает, FAQ, Связаться).",
+  hero: "Заголовки, подзаголовок, кнопки и строки доверия на первом экране.",
+  contacts: "Каналы связи для всего сайта: прямые ссылки Telegram, WhatsApp, email и телефон.",
+  why: "Блок «Для чего нужны торговые боты» — заголовок, пояснительный текст и тезисы.",
+  advantages: "Карточки преимуществ: круглосуточная работа, отсутствие эмоций, скорость и т.д.",
   benefits: "Карточки «Почему стоит выбрать нас»: подпись-тег, заголовок и описание.",
   pricing: "Блок «Наши цены» — условия модели: без абонплаты, покупка навсегда.",
-  conclusion: "Блок «Заключение» — итоговый текст страницы.",
-  questions: "Блок «Остались вопросы?» — бесплатная консультация через Telegram.",
-  tryIt: "Финальный блок «Просто попробуйте» — карусель роботов, кнопки и строка доверия.",
-  connect: "Шаги подключения по API и строка безопасности. Ключ без права вывода.",
+  conclusion: "Блок «Заключение» — итоговые тезисы страницы перед формой.",
+  questions: "Блок «Остались вопросы?» — кнопка бесплатной консультации через Telegram.",
+  tryIt: "Секция «Просто попробуйте!» перед карточками роботов — заголовки, буллеты, кнопка.",
+  connect: "Шаги подключения по API и строка безопасности (без права вывода).",
   cta: "Карусель роботов: заголовки, кнопка связи и строка доверия.",
-  stats: "Цифры статистики на главной странице.",
-  exchanges: "Список бирж, которые поддерживает сайт.",
-  how_it_works: "Шаги Как это работает — нумеруются автоматически.",
-  testimonials: "Отзывы клиентов.",
-  faq: "Вопросы и ответы. Вопросы сортируются в том же порядке.",
+  stats: "Цифры статистики на главной странице (пользователи, объем, аптайм).",
+  exchanges: "Список бирж, с которыми совместимы торговые боты.",
+  how_it_works: "Шаги «Как это работает» с номерами и описаниями.",
+  testimonials: "Отзывы клиентов с именами, ролями и цитатами.",
+  faq: "Вопросы и ответы. Порядок отображения совпадает с порядком в списке.",
 };
 
-interface Field { key: string; label: string; multiline?: boolean; placeholder?: string; localized?: boolean; }
+const CATEGORIES = [
+  { id: "all", label: "Все секции", icon: "🌐" },
+  { id: "main", label: "Главная и меню", keys: ["nav", "hero", "stats", "exchanges"], icon: "📌" },
+  { id: "bots", label: "О роботах", keys: ["why", "advantages", "benefits", "pricing", "how_it_works", "tryIt", "cta"], icon: "🤖" },
+  { id: "trust", label: "Контакты и доверие", keys: ["contacts", "connect", "testimonials", "questions", "conclusion"], icon: "💬" },
+  { id: "faq", label: "FAQ", keys: ["faq"], icon: "❓" },
+  { id: "seo", label: "SEO и Telegram", keys: ["meta", "telegram_settings"], icon: "🔍" },
+];
+
+interface Field {
+  key: string;
+  label: string;
+  multiline?: boolean;
+  placeholder?: string;
+  localized?: boolean;
+}
+
 interface ListEditorProps {
   items: Json[];
   onChange: (items: Json[]) => void;
@@ -58,31 +90,108 @@ interface ListEditorProps {
   hint?: string;
 }
 
-function FieldInput({ label, value, onChange, multiline, placeholder, localized }: {
-  label: string; value: any; onChange: (v: any) => void;
-  multiline?: boolean; placeholder?: string; localized?: boolean;
+function FieldInput({
+  label,
+  value,
+  onChange,
+  multiline,
+  placeholder,
+  localized,
+}: {
+  label: string;
+  value: any;
+  onChange: (v: any) => void;
+  multiline?: boolean;
+  placeholder?: string;
+  localized?: boolean;
 }) {
-  const cls = "w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-blue";
+  const cls =
+    "w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-blue";
+
   if (localized) {
     const obj: { ru: string; en: string } =
       value && typeof value === "object" && !Array.isArray(value)
         ? { ru: String(value.ru ?? ""), en: String(value.en ?? "") }
         : { ru: typeof value === "string" ? value : "", en: "" };
+
     return (
-      <div className="space-y-1">
-        <span className="block text-xs font-medium text-gray-400">{label}</span>
-        <input className={cls} value={obj.ru} onChange={(e) => onChange({ ...obj, ru: e.target.value })} placeholder="RU" />
-        <input className={cls} value={obj.en} onChange={(e) => onChange({ ...obj, en: e.target.value })} placeholder="EN" />
+      <div className="space-y-1.5">
+        <span className="block text-xs font-medium text-gray-300">{label}</span>
+        {multiline ? (
+          <div className="space-y-2">
+            <div className="relative">
+              <span className="absolute top-2.5 left-2.5 text-[10px] font-bold text-gray-400 bg-gray-900/80 px-1.5 py-0.5 rounded border border-gray-700">
+                RU
+              </span>
+              <textarea
+                rows={3}
+                className={`${cls} pt-7 text-xs sm:text-sm leading-relaxed`}
+                value={obj.ru}
+                onChange={(e) => onChange({ ...obj, ru: e.target.value })}
+                placeholder={placeholder || "Текст на русском"}
+              />
+            </div>
+            <div className="relative">
+              <span className="absolute top-2.5 left-2.5 text-[10px] font-bold text-gray-400 bg-gray-900/80 px-1.5 py-0.5 rounded border border-gray-700">
+                EN
+              </span>
+              <textarea
+                rows={3}
+                className={`${cls} pt-7 text-xs sm:text-sm leading-relaxed`}
+                value={obj.en}
+                onChange={(e) => onChange({ ...obj, en: e.target.value })}
+                placeholder={placeholder || "English text"}
+              />
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div className="relative">
+              <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-gray-400 bg-gray-900/80 px-1.5 py-0.5 rounded border border-gray-700">
+                RU
+              </span>
+              <input
+                className={`${cls} pl-11 text-xs sm:text-sm`}
+                value={obj.ru}
+                onChange={(e) => onChange({ ...obj, ru: e.target.value })}
+                placeholder="На русском"
+              />
+            </div>
+            <div className="relative">
+              <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-gray-400 bg-gray-900/80 px-1.5 py-0.5 rounded border border-gray-700">
+                EN
+              </span>
+              <input
+                className={`${cls} pl-11 text-xs sm:text-sm`}
+                value={obj.en}
+                onChange={(e) => onChange({ ...obj, en: e.target.value })}
+                placeholder="In English"
+              />
+            </div>
+          </div>
+        )}
       </div>
     );
   }
+
   return (
     <div className="space-y-1">
-      <span className="block text-xs font-medium text-gray-400">{label}</span>
+      <span className="block text-xs font-medium text-gray-300">{label}</span>
       {multiline ? (
-        <textarea rows={3} className={cls} value={String(value ?? "")} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} />
+        <textarea
+          rows={3}
+          className={`${cls} text-xs sm:text-sm leading-relaxed`}
+          value={String(value ?? "")}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+        />
       ) : (
-        <input className={cls} value={String(value ?? "")} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} />
+        <input
+          className={`${cls} text-xs sm:text-sm`}
+          value={String(value ?? "")}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+        />
       )}
     </div>
   );
@@ -98,18 +207,24 @@ function ListEditor({ items, onChange, emptyItem, fields, hint }: ListEditorProp
   const addItem = () => onChange([...items, emptyItem()]);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {items.length === 0 && (
         <div className="text-gray-500 text-sm py-4 text-center bg-gray-800/50 rounded-lg border border-dashed border-gray-700">
-          {hint ?? "Список пустой. Нажмите Добавить"}
+          {hint ?? "Список пустой. Нажмите «Добавить элемент»"}
         </div>
       )}
       {items.map((item, i) => (
-        <div key={i} className="bg-gray-800 border border-gray-700 rounded-lg p-4 space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-mono text-gray-500">#{i + 1}</span>
-            <button onClick={() => removeItem(i)} className="p-1.5 text-red-400 hover:bg-red-500/10 rounded" aria-label="Удалить">
-              <Trash2 size={16} />
+        <div key={i} className="bg-gray-850 bg-gray-800/80 border border-gray-700/80 rounded-xl p-4 space-y-3 shadow-sm">
+          <div className="flex items-center justify-between pb-2 border-b border-gray-750 border-gray-700/50">
+            <span className="text-xs font-mono font-semibold text-brand-blue bg-blue-500/10 px-2 py-0.5 rounded">
+              #{i + 1}
+            </span>
+            <button
+              onClick={() => removeItem(i)}
+              className="p-1.5 text-red-400 hover:text-red-300 hover:bg-red-500/15 rounded-lg transition-colors cursor-pointer"
+              title="Удалить карточку"
+            >
+              <Trash2 size={15} />
             </button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -127,40 +242,89 @@ function ListEditor({ items, onChange, emptyItem, fields, hint }: ListEditorProp
           </div>
         </div>
       ))}
-      <button onClick={addItem} className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-lg text-sm text-gray-300 transition-colors">
-        <Plus size={16} /> Добавить
+      <button
+        onClick={addItem}
+        className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-lg text-xs sm:text-sm font-medium text-gray-200 transition-colors cursor-pointer"
+      >
+        <Plus size={15} /> Добавить элемент
       </button>
     </div>
   );
 }
 
 export default function AdminSettings() {
-  const [sections, setSections] = useState<Record<string, Json>>({});
+  const [sections, setSections] = useState<Record<string, Json>>(DEFAULT_SITE_CONTENT);
   const [loading, setLoading] = useState(true);
-  const [open, setOpen] = useState<string | null>(null);
-  const [saved, setSaved] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
+  const [openSections, setOpenSections] = useState<Set<string>>(new Set());
+  const [savedSection, setSavedSection] = useState<string | null>(null);
+  const [savingSection, setSavingSection] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeCategory, setActiveCategory] = useState("all");
 
   useEffect(() => {
-    if (!supabase) { setLoading(false); return; }
-    supabase.from("site_content").select("*").then(({ data }) => {
-      const map: Record<string, Json> = {};
-      data?.forEach((row) => {
-        const k = row.section || row.key;
-        const v = row.data !== undefined ? row.data : row.value;
-        if (k) map[k] = v;
-      });
-      setSections(map);
-      setLoading(false);
-    });
+    let mounted = true;
+    (async () => {
+      try {
+        const res = await fetch("/api/site-content");
+        if (res.ok) {
+          const apiData = await res.json();
+          if (mounted && apiData && typeof apiData === "object" && Object.keys(apiData).length > 0) {
+            setSections({ ...DEFAULT_SITE_CONTENT, ...apiData });
+            setLoading(false);
+            return;
+          }
+        }
+      } catch (e) {
+        console.warn("fetch /api/site-content error, trying supabase fallback", e);
+      }
+
+      if (supabase) {
+        try {
+          const { data } = await supabase.from("site_content").select("*");
+          if (mounted && data && data.length > 0) {
+            const map: Record<string, Json> = {};
+            data.forEach((row: any) => {
+              const k = row.section || row.key;
+              const v = row.data !== undefined ? row.data : row.value;
+              if (k) map[k] = v;
+            });
+            setSections({ ...DEFAULT_SITE_CONTENT, ...map });
+          }
+        } catch (e) {
+          console.warn("supabase error", e);
+        }
+      }
+      if (mounted) setLoading(false);
+    })();
+
+    return () => {
+      mounted = false;
+    };
   }, []);
+
+  const toggleSection = (key: string) => {
+    setOpenSections((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  };
+
+  const expandAll = () => {
+    setOpenSections(new Set(Object.keys(SECTION_LABELS)));
+  };
+
+  const collapseAll = () => {
+    setOpenSections(new Set());
+  };
 
   const updateData = (section: string, data: Json) => {
     setSections((prev) => ({ ...prev, [section]: data }));
   };
 
   const save = async (section: string, data: Json) => {
-    setSaving(true);
+    setSavingSection(section);
     try {
       await fetch("/api/site-content", {
         method: "POST",
@@ -170,20 +334,33 @@ export default function AdminSettings() {
       if (supabase) {
         await supabase.from("site_content").upsert({ section, data, key: section, value: data });
       }
-      setSaved(section);
-      setTimeout(() => setSaved(null), 2000);
-    } catch {
-      // ignore
+      setSavedSection(section);
+      setTimeout(() => setSavedSection((curr) => (curr === section ? null : curr)), 2500);
+    } catch (err: any) {
+      alert("Не удалось сохранить: " + (err?.message || "Ошибка сети"));
+    } finally {
+      setSavingSection(null);
     }
-    setSaving(false);
   };
 
-  // --- Секция: meta (SEO, OpenGraph, Robots.txt, Аналитика) ---
+  const resetToDefault = async (section: string) => {
+    const label = SECTION_LABELS[section] || section;
+    const ok = window.confirm(`Сбросить содержимое секции «${label}» к исходным значениям по умолчанию?`);
+    if (!ok) return;
+
+    const def = DEFAULT_SITE_CONTENT[section];
+    if (def !== undefined) {
+      updateData(section, def);
+      await save(section, def);
+    }
+  };
+
+  // --- Meta & SEO Editor ---
   const MetaEditor = () => {
-    const d = sections.meta ?? {};
+    const d = sections.meta ?? DEFAULT_SITE_CONTENT.meta ?? {};
     const siteUrl = String(d.site_url || "https://coinsofter.com").replace(/\/+$/, "");
     const title = String(d.title || "TradingAutoPilot — Торговые боты для криптобирж и акций");
-    const description = String(d.description || "Автоматизируйте торговлю на Bybit, Binance и фондовых рынках. 3 стратегии: от консервативной до импульсной.");
+    const description = String(d.description || "Автоматизируйте торговлю на Bybit, Binance и фондовых рынках. 3 стратегии.");
 
     const resetRobots = () => {
       const defaultRobots = [
@@ -220,13 +397,13 @@ export default function AdminSettings() {
           </div>
         </div>
 
-        {/* Core Meta */}
+        {/* Title & Description */}
         <div className="space-y-4">
           <div>
             <div className="flex justify-between text-xs text-gray-400 mb-1">
-              <span className="font-medium text-gray-300">Title (заголовок страницы в браузере и поиске)</span>
-              <span className={title.length > 60 ? "text-amber-400" : "text-emerald-400"}>
-                {title.length} / 60 симв. (рекомендуется 50–60)
+              <span className="font-medium text-gray-300">Title (заголовок страницы в браузере и поисковой выдаче)</span>
+              <span className={title.length > 65 ? "text-amber-400" : "text-emerald-400"}>
+                {title.length} / 65 симв.
               </span>
             </div>
             <input
@@ -234,15 +411,15 @@ export default function AdminSettings() {
               value={String(d.title ?? "")}
               onChange={(e) => updateData("meta", { ...d, title: e.target.value })}
               className="w-full px-3.5 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue"
-              placeholder="TradingAutoPilot — Торговые боты для криптобирж и акций"
+              placeholder="TradingAutoPilot — Торговые боты для криптобирж"
             />
           </div>
 
           <div>
             <div className="flex justify-between text-xs text-gray-400 mb-1">
-              <span className="font-medium text-gray-300">Description (описание для поисковиков)</span>
-              <span className={description.length > 160 ? "text-amber-400" : "text-emerald-400"}>
-                {description.length} / 160 симв. (рекомендуется 140–160)
+              <span className="font-medium text-gray-300">Description (описание для сниппетов)</span>
+              <span className={description.length > 165 ? "text-amber-400" : "text-emerald-400"}>
+                {description.length} / 165 симв.
               </span>
             </div>
             <textarea
@@ -250,7 +427,7 @@ export default function AdminSettings() {
               value={String(d.description ?? "")}
               onChange={(e) => updateData("meta", { ...d, description: e.target.value })}
               className="w-full px-3.5 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue"
-              placeholder="Краткое описание преимуществ, которое привлечет клики в поиске..."
+              placeholder="Краткое описание преимуществ..."
             />
           </div>
 
@@ -270,7 +447,7 @@ export default function AdminSettings() {
 
             <div>
               <label className="block text-xs font-medium text-gray-300 mb-1">
-                Канонический URL сайта (Canonical)
+                Канонический адрес сайта (URL)
               </label>
               <input
                 type="text"
@@ -284,7 +461,7 @@ export default function AdminSettings() {
 
           <div>
             <label className="block text-xs font-medium text-gray-300 mb-1">
-              OG Image URL (баннер превью в Telegram, WhatsApp, соцсетях)
+              OG Image URL (превью-картинка в мессенджерах)
             </label>
             <div className="flex gap-3 items-center">
               <input
@@ -308,8 +485,8 @@ export default function AdminSettings() {
         {/* Analytics Section */}
         <div className="pt-4 border-t border-gray-800 space-y-4">
           <div className="text-sm font-semibold text-white flex items-center gap-2">
-            <span>📊 Счётчики веб-аналитики</span>
-            <span className="text-xs text-gray-500 font-normal">(подключаются автоматически)</span>
+            <span>📊 Веб-аналитика (счетчики)</span>
+            <span className="text-xs text-gray-500 font-normal">(внедряются в шапку сайта автоматически)</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -324,9 +501,6 @@ export default function AdminSettings() {
                 className="w-full px-3.5 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue"
                 placeholder="Например: 98765432"
               />
-              <span className="text-[11px] text-gray-500 mt-1 block">
-                Скрипт метрики активируется для всех посетителей.
-              </span>
             </div>
 
             <div>
@@ -340,9 +514,6 @@ export default function AdminSettings() {
                 className="w-full px-3.5 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue"
                 placeholder="Например: G-XXXXXXXXXX"
               />
-              <span className="text-[11px] text-gray-500 mt-1 block">
-                Google Tag активируется автоматически.
-              </span>
             </div>
           </div>
         </div>
@@ -351,15 +522,13 @@ export default function AdminSettings() {
         <div className="pt-4 border-t border-gray-800 space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-sm font-semibold text-white">🤖 Редактор robots.txt</span>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={resetRobots}
-                className="text-xs text-gray-400 hover:text-white px-2.5 py-1 bg-gray-800 hover:bg-gray-700 rounded transition-colors"
-              >
-                Сбросить к рекомендованному
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={resetRobots}
+              className="text-xs text-gray-400 hover:text-white px-2.5 py-1 bg-gray-800 hover:bg-gray-700 rounded transition-colors cursor-pointer"
+            >
+              Сбросить к рекомендованному
+            </button>
           </div>
 
           <textarea
@@ -393,148 +562,9 @@ export default function AdminSettings() {
     );
   };
 
-  // --- Секция: stats ---
-  const StatsEditor = () => {
-    const d = sections.stats ?? {};
-    const rows: Field[] = [
-      { key: "users", label: "Значение", placeholder: "12400+" },
-      { key: "users_label", label: "Подпись", placeholder: "Активных пользователей" },
-      { key: "volume", label: "Значение", placeholder: "$58M+" },
-      { key: "volume_label", label: "Подпись", placeholder: "Объём торгов" },
-      { key: "uptime", label: "Значение", placeholder: "99.9%" },
-      { key: "uptime_label", label: "Подпись", placeholder: "Uptime" },
-    ];
-    return (
-      <div className="grid grid-cols-2 gap-3">
-        {rows.map((f) => (
-          <FieldInput key={f.key} label={f.label}
-            value={String(d[f.key] ?? "")}
-            onChange={(v) => updateData("stats", { ...d, [f.key]: v })}
-            placeholder={f.placeholder} />
-        ))}
-      </div>
-    );
-  };
-
-  // --- Секция: exchanges (string[]). ---
-  const ExchangesEditor = () => {
-    const items = Array.isArray(sections.exchanges) ? sections.exchanges : [];
-    return (
-      <ListEditor
-        items={items}
-        onChange={(next) => updateData("exchanges", next)}
-        emptyItem={() => ""}
-        fields={[{ key: "", label: "Название", multiline: false, placeholder: "Binance" }]}
-        hint="Простой список бирж, например: Binance, Bybit, OKX"
-      />
-    );
-  };
-
-  // ---advantages ---
-  const AdvantagesEditor = () => {
-    const items = Array.isArray(sections.advantages) ? sections.advantages : [];
-    return (
-      <ListEditor
-        items={items}
-        onChange={(next) => updateData("advantages", next)}
-        emptyItem={() => ({ title: { ru: "", en: "" }, desc: { ru: "", en: "" } })}
-        fields={[
-          { key: "title", label: "Заголовок", localized: true },
-          { key: "desc", label: "Описание", localized: true, multiline: true },
-        ]}
-      />
-    );
-  };
-
-  // --- benefits ---
-  const BenefitsEditor = () => {
-    const items = Array.isArray(sections.benefits) ? sections.benefits : [];
-    return (
-      <ListEditor
-        items={items}
-        onChange={(next) => updateData("benefits", next)}
-        emptyItem={() => ({ tag: { ru: "", en: "" }, title: { ru: "", en: "" }, desc: { ru: "", en: "" } })}
-        fields={[
-          { key: "tag", label: "Подпись-тег", localized: true },
-          { key: "title", label: "Заголовок", localized: true },
-          { key: "desc", label: "Описание", localized: true, multiline: true },
-        ]}
-      />
-    );
-  };
-
-  // --- how_it_works ---
-  const HowItWorksEditor = () => {
-    const items = Array.isArray(sections.how_it_works) ? sections.how_it_works : [];
-    return (
-      <ListEditor
-        items={items}
-        onChange={(next) => updateData("how_it_works", next)}
-        emptyItem={() => ({ step: "", title: "", description: "", icon: "bot" })}
-        fields={[
-          { key: "step", label: "Номер (01, 02...)" },
-          { key: "title", label: "Заголовок" },
-          { key: "description", label: "Описание", multiline: true },
-          { key: "icon", label: "Иконка" },
-        ]}
-      />
-    );
-  };
-
-  // --- testimonials ---
-  const TestimonialsEditor = () => {
-    const items = Array.isArray(sections.testimonials) ? sections.testimonials : [];
-    return (
-      <ListEditor
-        items={items}
-        onChange={(next) => updateData("testimonials", next)}
-        emptyItem={() => ({ name: "", role: "", text: "", initials: "", color: "primary" })}
-        fields={[
-          { key: "name", label: "Имя" },
-          { key: "role", label: "Роль / профессия" },
-          { key: "initials", label: "Инициалы (2 буквы)" },
-          { key: "color", label: "Цвет (primary/secondary/accent)" },
-          { key: "text", label: "Текст отзыва", multiline: true },
-        ]}
-      />
-    );
-  };
-
-  // --- pricing (текстовый блок «Наши цены») ---
-  const PricingEditor = () => {
-    const d = sections.pricing ?? {};
-    return (
-      <div className="space-y-3">
-        <FieldInput label="Заголовок" value={d.title ?? ""}
-          onChange={(v) => updateData("pricing", { ...d, title: v })} localized />
-        <FieldInput label="Первый абзац" value={d.text1 ?? ""}
-          onChange={(v) => updateData("pricing", { ...d, text1: v })} multiline localized />
-        <FieldInput label="Второй абзац" value={d.text2 ?? ""}
-          onChange={(v) => updateData("pricing", { ...d, text2: v })} multiline localized />
-      </div>
-    );
-  };
-
-  // --- FAQ ---
-  const FaqEditor = () => {
-    const items = Array.isArray(sections.faq) ? sections.faq : [];
-    return (
-      <ListEditor
-        items={items}
-        onChange={(next) => updateData("faq", next)}
-        emptyItem={() => ({ question: "", answer: "" })}
-        fields={[
-          { key: "question", label: "Вопрос" },
-          { key: "answer", label: "Ответ", multiline: true },
-        ]}
-        hint="Добавляйте вопросы и ответы по одному"
-      />
-    );
-  };
-
-  // --- Telegram Notifications Editor ---
+  // --- Telegram Settings Editor ---
   const TelegramEditor = () => {
-    const d = sections.telegram_settings ?? { bot_token: "", chat_id: "", enabled: true };
+    const d = sections.telegram_settings ?? DEFAULT_SITE_CONTENT.telegram_settings ?? { bot_token: "", chat_id: "", enabled: true };
     const [testing, setTesting] = useState(false);
     const [testResult, setTestResult] = useState<{ success?: boolean; message?: string } | null>(null);
 
@@ -558,171 +588,456 @@ export default function AdminSettings() {
         }
       } catch (err: any) {
         setTestResult({ success: false, message: err.message || "Ошибка подключения к серверу" });
+      } finally {
+        setTesting(false);
       }
-      setTesting(false);
     };
 
     return (
       <div className="space-y-4">
-        <div className="p-4 bg-sky-950/40 border border-sky-800/40 rounded-xl space-y-2">
-          <div className="text-sky-300 font-semibold text-sm flex items-center gap-1.5">
-            <Send size={15} /> Как настроить оповещения за 2 минуты:
-          </div>
-          <ol className="text-xs text-sky-200/80 space-y-1 list-decimal list-inside leading-relaxed">
-            <li>
-              Откройте бота{" "}
-              <a href="https://t.me/BotFather" target="_blank" rel="noopener noreferrer" className="underline font-bold text-sky-300">
-                @BotFather
-              </a>{" "}
-              в Telegram и отправьте команду <code className="bg-sky-900/60 px-1 rounded">/newbot</code>.
-            </li>
-            <li>Придумайте имя и юзернейм, скопируйте выданный <b>HTTP API Token</b> в поле ниже.</li>
-            <li>
-              Нажмите <b>Start</b> в вашем новом боте.
-            </li>
-            <li>
-              Узнайте свой цифровой <b>Chat ID</b> у бота{" "}
-              <a href="https://t.me/userinfobot" target="_blank" rel="noopener noreferrer" className="underline font-bold text-sky-300">
-                @userinfobot
-              </a>{" "}
-              (или укажите ID вашей группы, добавив туда бота).
-            </li>
-            <li>Вставьте данные и нажмите «Отправить тест в Telegram».</li>
-          </ol>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1.5">
-              Telegram Bot Token
-            </label>
-            <input
-              type="text"
-              value={d.bot_token || ""}
-              onChange={(e) => updateData("telegram_settings", { ...d, bot_token: e.target.value })}
-              placeholder="123456789:ABCdefGhIJKlmNoPQRstuVWXyz"
-              className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm font-mono placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-blue"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1.5">
-              Chat ID (получатель)
-            </label>
-            <input
-              type="text"
-              value={d.chat_id || ""}
-              onChange={(e) => updateData("telegram_settings", { ...d, chat_id: e.target.value })}
-              placeholder="Например: 123456789 или -100123456789"
-              className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm font-mono placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-blue"
-            />
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2 pt-1">
+        <div className="flex items-center gap-3 p-3 bg-gray-800/80 rounded-lg border border-gray-700">
           <input
+            id="tg-enabled"
             type="checkbox"
-            id="tg_enabled"
-            checked={d.enabled !== false}
+            checked={Boolean(d.enabled)}
             onChange={(e) => updateData("telegram_settings", { ...d, enabled: e.target.checked })}
-            className="w-4 h-4 rounded bg-gray-800 border-gray-700 text-brand-blue focus:ring-brand-blue cursor-pointer"
+            className="w-4 h-4 rounded text-brand-blue bg-gray-900 border-gray-700 focus:ring-brand-blue cursor-pointer"
           />
-          <label htmlFor="tg_enabled" className="text-xs text-gray-300 cursor-pointer font-medium">
-            Включить автоматическую отправку всех новых заявок в Telegram
+          <label htmlFor="tg-enabled" className="text-sm font-medium text-white cursor-pointer select-none">
+            Включить отправку оповещений о новых заявках в Telegram
           </label>
         </div>
 
-        <div className="pt-2 flex flex-col sm:flex-row sm:items-center gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-xs font-medium text-gray-300 mb-1">
+              Telegram Bot Token
+            </label>
+            <input
+              type="password"
+              value={String(d.bot_token ?? "")}
+              onChange={(e) => updateData("telegram_settings", { ...d, bot_token: e.target.value })}
+              className="w-full px-3.5 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue font-mono"
+              placeholder="1234567890:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
+            />
+            <span className="text-[11px] text-gray-500 mt-1 block">Получите у @BotFather в Telegram</span>
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-gray-300 mb-1">
+              Telegram Chat ID / Group ID
+            </label>
+            <input
+              type="text"
+              value={String(d.chat_id ?? "")}
+              onChange={(e) => updateData("telegram_settings", { ...d, chat_id: e.target.value })}
+              className="w-full px-3.5 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue font-mono"
+              placeholder="123456789 или -1001234567890"
+            />
+            <span className="text-[11px] text-gray-500 mt-1 block">Ваш ID или ID группы (узнать через @userinfobot)</span>
+          </div>
+        </div>
+
+        <div className="pt-2 flex items-center gap-3">
           <button
             type="button"
             onClick={runTest}
             disabled={testing || !d.bot_token || !d.chat_id}
-            className="flex items-center justify-center gap-2 px-4 py-2 bg-sky-600 hover:bg-sky-500 disabled:opacity-40 text-white rounded-lg text-xs font-semibold transition-colors cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-sky-500/15 hover:bg-sky-500/25 disabled:opacity-40 text-sky-400 border border-sky-500/25 rounded-lg text-xs font-semibold transition-colors cursor-pointer"
           >
-            <Send size={14} className={testing ? "animate-pulse" : ""} />
-            {testing ? "Отправка..." : "Отправить тест в Telegram"}
+            <Send size={13} /> {testing ? "Отправка теста..." : "Отправить тестовое сообщение"}
           </button>
-
           {testResult && (
-            <div
-              className={`text-xs px-3 py-1.5 rounded-lg border flex items-center gap-1.5 ${
-                testResult.success
-                  ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
-                  : "bg-rose-500/10 border-rose-500/20 text-rose-400"
-              }`}
-            >
-              {testResult.success ? <Check size={14} /> : <HelpCircle size={14} />}
+            <span className={`text-xs ${testResult.success ? "text-emerald-400" : "text-rose-400"}`}>
               {testResult.message}
-            </div>
+            </span>
           )}
         </div>
       </div>
     );
   };
 
-  // --- hero / why / choose / connect / cta / nav — текстовые секции ---
-  const TEXT_SECTIONS: Record<string, Field[]> = {
+  // --- Stats Editor ---
+  const StatsEditor = () => {
+    const d = sections.stats ?? DEFAULT_SITE_CONTENT.stats ?? {};
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <FieldInput
+          label="Число пользователей"
+          value={d.users}
+          onChange={(v) => updateData("stats", { ...d, users: v })}
+          placeholder="12400+"
+        />
+        <FieldInput
+          label="Подпись к пользователям"
+          value={d.users_label}
+          onChange={(v) => updateData("stats", { ...d, users_label: v })}
+          placeholder="Активных пользователей"
+        />
+        <FieldInput
+          label="Объём торгов"
+          value={d.volume}
+          onChange={(v) => updateData("stats", { ...d, volume: v })}
+          placeholder="$58M+"
+        />
+        <FieldInput
+          label="Подпись к объёму"
+          value={d.volume_label}
+          onChange={(v) => updateData("stats", { ...d, volume_label: v })}
+          placeholder="Объём торгов"
+        />
+        <FieldInput
+          label="Uptime серверов"
+          value={d.uptime}
+          onChange={(v) => updateData("stats", { ...d, uptime: v })}
+          placeholder="99.9%"
+        />
+        <FieldInput
+          label="Подпись к Uptime"
+          value={d.uptime_label}
+          onChange={(v) => updateData("stats", { ...d, uptime_label: v })}
+          placeholder="Uptime серверов"
+        />
+      </div>
+    );
+  };
+
+  // --- Exchanges Tag / Chip Editor ---
+  const ExchangesEditor = () => {
+    const items: string[] = Array.isArray(sections.exchanges)
+      ? sections.exchanges
+      : DEFAULT_SITE_CONTENT.exchanges || [];
+    const [newExchange, setNewExchange] = useState("");
+
+    const addExchange = () => {
+      const clean = newExchange.trim();
+      if (!clean) return;
+      if (!items.includes(clean)) {
+        updateData("exchanges", [...items, clean]);
+      }
+      setNewExchange("");
+    };
+
+    const removeExchange = (index: number) => {
+      updateData("exchanges", items.filter((_, i) => i !== index));
+    };
+
+    return (
+      <div className="space-y-4">
+        <div className="flex flex-wrap gap-2">
+          {items.map((ex, i) => (
+            <span
+              key={i}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-800 text-white text-xs font-semibold border border-gray-700 shadow-sm"
+            >
+              <span>{ex}</span>
+              <button
+                type="button"
+                onClick={() => removeExchange(i)}
+                className="text-gray-400 hover:text-red-400 p-0.5 rounded cursor-pointer"
+                title="Удалить"
+              >
+                <X size={13} />
+              </button>
+            </span>
+          ))}
+        </div>
+
+        <div className="flex gap-2 max-w-sm">
+          <input
+            type="text"
+            value={newExchange}
+            onChange={(e) => setNewExchange(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addExchange())}
+            placeholder="Название биржи (например: Kraken)"
+            className="flex-1 px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue"
+          />
+          <button
+            type="button"
+            onClick={addExchange}
+            className="px-4 py-2 bg-brand-blue hover:bg-blue-600 text-white rounded-lg text-xs font-medium transition-colors cursor-pointer flex items-center gap-1"
+          >
+            <Plus size={14} /> Добавить
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  // --- Advantages Editor ---
+  const AdvantagesEditor = () => {
+    const d = sections.advantages ?? DEFAULT_SITE_CONTENT.advantages ?? {};
+    const items = Array.isArray(d.items) ? d.items : [];
+
+    return (
+      <div className="space-y-4">
+        <FieldInput
+          label="Общий заголовок секции"
+          value={d.title}
+          onChange={(v) => updateData("advantages", { ...d, title: v })}
+          localized
+        />
+        <div className="pt-2">
+          <span className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
+            Карточки преимуществ ({items.length})
+          </span>
+          <ListEditor
+            items={items}
+            onChange={(next) => updateData("advantages", { ...d, items: next })}
+            emptyItem={() => ({ title: { ru: "", en: "" }, desc: { ru: "", en: "" } })}
+            fields={[
+              { key: "title", label: "Заголовок карточки", localized: true },
+              { key: "desc", label: "Описание", localized: true, multiline: true },
+            ]}
+          />
+        </div>
+      </div>
+    );
+  };
+
+  // --- Benefits Editor ---
+  const BenefitsEditor = () => {
+    const d = sections.benefits ?? DEFAULT_SITE_CONTENT.benefits ?? {};
+    const items = Array.isArray(d.items) ? d.items : [];
+
+    return (
+      <div className="space-y-4">
+        <FieldInput
+          label="Заголовок секции"
+          value={d.title}
+          onChange={(v) => updateData("benefits", { ...d, title: v })}
+          localized
+        />
+        <FieldInput
+          label="Подзаголовок секции"
+          value={d.subtitle}
+          onChange={(v) => updateData("benefits", { ...d, subtitle: v })}
+          localized
+          multiline
+        />
+        <div className="pt-2">
+          <span className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
+            Карточки преимуществ ({items.length})
+          </span>
+          <ListEditor
+            items={items}
+            onChange={(next) => updateData("benefits", { ...d, items: next })}
+            emptyItem={() => ({ tag: { ru: "", en: "" }, title: { ru: "", en: "" }, desc: { ru: "", en: "" } })}
+            fields={[
+              { key: "tag", label: "Плашка-тег (например: Без подписки)", localized: true },
+              { key: "title", label: "Заголовок", localized: true },
+              { key: "desc", label: "Описание", localized: true, multiline: true },
+            ]}
+          />
+        </div>
+      </div>
+    );
+  };
+
+  // --- Why Section Editor ---
+  const WhyEditor = () => {
+    const d = sections.why ?? DEFAULT_SITE_CONTENT.why ?? {};
+    const items = Array.isArray(d.items) ? d.items : [];
+
+    return (
+      <div className="space-y-4">
+        <FieldInput
+          label="Заголовок блока"
+          value={d.purposeTitle}
+          onChange={(v) => updateData("why", { ...d, purposeTitle: v })}
+          localized
+        />
+        <FieldInput
+          label="Основной пояснительный текст"
+          value={d.purposeText}
+          onChange={(v) => updateData("why", { ...d, purposeText: v })}
+          localized
+          multiline
+        />
+        {items.length > 0 && (
+          <div className="pt-2">
+            <span className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
+              Тезисы блока
+            </span>
+            <ListEditor
+              items={items}
+              onChange={(next) => updateData("why", { ...d, items: next })}
+              emptyItem={() => ({ title: { ru: "", en: "" }, desc: { ru: "", en: "" } })}
+              fields={[
+                { key: "title", label: "Заголовок", localized: true },
+                { key: "desc", label: "Описание", localized: true, multiline: true },
+              ]}
+            />
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // --- Connect Steps Editor ---
+  const ConnectEditor = () => {
+    const d = sections.connect ?? DEFAULT_SITE_CONTENT.connect ?? {};
+    const steps = Array.isArray(d.steps) ? d.steps : [];
+
+    return (
+      <div className="space-y-4">
+        <FieldInput
+          label="Заголовок блока"
+          value={d.title}
+          onChange={(v) => updateData("connect", { ...d, title: v })}
+          localized
+        />
+        <FieldInput
+          label="Подзаголовок"
+          value={d.subtitle}
+          onChange={(v) => updateData("connect", { ...d, subtitle: v })}
+          localized
+          multiline
+        />
+        <FieldInput
+          label="Строка безопасности (API без права вывода)"
+          value={d.note}
+          onChange={(v) => updateData("connect", { ...d, note: v })}
+          localized
+        />
+        <div className="pt-2">
+          <span className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
+            Шаги подключения ({steps.length})
+          </span>
+          <ListEditor
+            items={steps}
+            onChange={(next) => updateData("connect", { ...d, steps: next })}
+            emptyItem={() => ({ title: { ru: "", en: "" }, desc: { ru: "", en: "" } })}
+            fields={[
+              { key: "title", label: "Название шага", localized: true },
+              { key: "desc", label: "Описание шага", localized: true, multiline: true },
+            ]}
+          />
+        </div>
+      </div>
+    );
+  };
+
+  // --- FAQ Editor ---
+  const FaqEditor = () => {
+    const raw = Array.isArray(sections.faq) ? sections.faq : DEFAULT_SITE_CONTENT.faq || [];
+    const items = raw.map((item: any) => ({
+      q: item.q || item.question || "",
+      a: item.a || item.answer || "",
+    }));
+
+    return (
+      <div className="space-y-3">
+        <ListEditor
+          items={items}
+          onChange={(next) => updateData("faq", next)}
+          emptyItem={() => ({ q: "", a: "" })}
+          fields={[
+            { key: "q", label: "Вопрос" },
+            { key: "a", label: "Ответ на вопрос", multiline: true },
+          ]}
+          hint="Добавляйте вопросы и подробные ответы для ваших посетителей"
+        />
+      </div>
+    );
+  };
+
+  // --- How It Works Editor ---
+  const HowItWorksEditor = () => {
+    const items = Array.isArray(sections.how_it_works) ? sections.how_it_works : DEFAULT_SITE_CONTENT.how_it_works || [];
+    return (
+      <ListEditor
+        items={items}
+        onChange={(next) => updateData("how_it_works", next)}
+        emptyItem={() => ({ step: "01", title: "", description: "", icon: "cpu" })}
+        fields={[
+          { key: "step", label: "Номер (01, 02...)" },
+          { key: "title", label: "Заголовок шага" },
+          { key: "description", label: "Описание шага", multiline: true },
+          { key: "icon", label: "Код иконки (user, key, cpu, trending-up)" },
+        ]}
+      />
+    );
+  };
+
+  // --- Testimonials Editor ---
+  const TestimonialsEditor = () => {
+    const items = Array.isArray(sections.testimonials) ? sections.testimonials : DEFAULT_SITE_CONTENT.testimonials || [];
+    return (
+      <ListEditor
+        items={items}
+        onChange={(next) => updateData("testimonials", next)}
+        emptyItem={() => ({ name: "", role: "", initials: "", color: "primary", text: "" })}
+        fields={[
+          { key: "name", label: "Имя клиента" },
+          { key: "role", label: "Профиль (например: Частный инвестор)" },
+          { key: "initials", label: "Инициалы (2 буквы)" },
+          { key: "color", label: "Цвет бейджа (primary / secondary / accent)" },
+          { key: "text", label: "Текст отзыва", multiline: true },
+        ]}
+      />
+    );
+  };
+
+  // Field configurations for plain text/localized sections
+  const TEXT_SECTION_FIELDS: Record<string, Field[]> = {
+    nav: [
+      { key: "project", label: "О проекте", localized: true },
+      { key: "bots", label: "Роботы", localized: true },
+      { key: "how", label: "Как работает", localized: true },
+      { key: "faq", label: "FAQ", localized: true },
+      { key: "contact", label: "Связаться", localized: true },
+      { key: "cta", label: "Кнопка в шапке (Смотреть роботов)", localized: true },
+    ],
     hero: [
-      { key: "badge", label: "Плашка над заголовком", localized: true },
-      { key: "title", label: "Заголовок", localized: true },
-      { key: "subtitle", label: "Подзаголовок", localized: true, multiline: true },
-      { key: "primary", label: "Кнопка: Выбрать робота", localized: true },
-      { key: "secondary", label: "Вторая кнопка", localized: true },
-      { key: "trust1", label: "Строка доверия 1", localized: true },
-      { key: "trust2", label: "Строка доверия 2", localized: true },
-      { key: "trust3", label: "Строка доверия 3", localized: true },
+      { key: "badge", label: "Плашка над заголовком (20+ бирж · ИИ-торговля 24/7)", localized: true },
+      { key: "heading1", label: "Первая строка заголовка", localized: true },
+      { key: "heading2", label: "Вторая строка заголовка (градиент)", localized: true },
+      { key: "subtitle", label: "Главный подзаголовок", localized: true, multiline: true },
+      { key: "primary", label: "Текст кнопки 1 (Выбрать робота)", localized: true },
+      { key: "secondary", label: "Текст кнопки 2 (Как это работает)", localized: true },
+      { key: "trust1", label: "Строка доверия 1 (Без абонплаты)", localized: true },
+      { key: "trust2", label: "Строка доверия 2 (Подключение за 2 мин)", localized: true },
+      { key: "trust3", label: "Строка доверия 3 (API без права вывода)", localized: true },
     ],
-    choose: [
-      { key: "title", label: "Заголовок", localized: true },
-      { key: "subtitle", label: "Подзаголовок", localized: true, multiline: true },
+    contacts: [
+      { key: "telegram", label: "Ссылка Telegram (например: https://t.me/coinsofter)" },
+      { key: "whatsapp", label: "Ссылка WhatsApp (вид: https://wa.me/79991234567)" },
+      { key: "email", label: "Email адрес (например: info@coinsofter.com)" },
+      { key: "phone", label: "Телефон для показа на сайте (+7 999 000-00-00)" },
     ],
-    why: [
-      { key: "title", label: "Заголовок", localized: true },
-      { key: "subtitle", label: "Подзаголовок", localized: true, multiline: true },
-    ],
-    connect: [
-      { key: "title", label: "Заголовок", localized: true },
-      { key: "subtitle", label: "Подзаголовок", localized: true, multiline: true },
-      { key: "note", label: "Строка безопасности", localized: true },
-    ],
-    cta: [
-      { key: "carouselTitle", label: "Заголовок карусели", localized: true },
-      { key: "carouselSubtitle", label: "Подзаголовок карусели", localized: true },
-      { key: "contactBtn", label: "Кнопка связи с нами", localized: true },
-      { key: "trust", label: "Строка доверия под кнопками" },
-    ],
-    tryIt: [
-      { key: "title", label: "Заголовок", localized: true },
-      { key: "text", label: "Описание", localized: true, multiline: true },
-      { key: "bullet1", label: "Буллет 1", localized: true },
-      { key: "bullet2", label: "Бullet 2", localized: true },
-      { key: "btn", label: "Текст кнопки", localized: true },
+    pricing: [
+      { key: "title", label: "Заголовок блока «Наши цены»", localized: true },
+      { key: "text1", label: "Первый абзац (об отсутствии подписок)", localized: true, multiline: true },
+      { key: "text2", label: "Второй абзац (о доходности и рисках)", localized: true, multiline: true },
     ],
     conclusion: [
-      { key: "title", label: "Заголовок", localized: true },
+      { key: "title", label: "Заголовок блока «Заключение»", localized: true },
       { key: "text1", label: "Первый абзац", localized: true, multiline: true },
       { key: "text2", label: "Второй абзац", localized: true, multiline: true },
     ],
     questions: [
-      { key: "title", label: "Заголовок", localized: true },
+      { key: "title", label: "Заголовок блока", localized: true },
+      { key: "subtitle", label: "Подзаголовок (предложение консультации)", localized: true, multiline: true },
+      { key: "btn", label: "Текст кнопки связи", localized: true },
+    ],
+    tryIt: [
+      { key: "title", label: "Заголовок секции («Просто попробуйте!»)", localized: true },
+      { key: "text", label: "Описание под заголовком", localized: true, multiline: true },
+      { key: "bullet1", label: "Преимущество 1 (Без абонентской платы)", localized: true },
+      { key: "bullet2", label: "Преимущество 2 (Покупаете робота один раз)", localized: true },
+      { key: "btn", label: "Текст кнопки старта", localized: true },
+    ],
+    cta: [
+      { key: "title", label: "Заголовок карусели роботов", localized: true },
       { key: "subtitle", label: "Подзаголовок", localized: true, multiline: true },
-      { key: "btn", label: "Текст кнопки", localized: true },
-    ],
-    nav: [
-      { key: "bots", label: "Пункт меню Роботы" },
-      { key: "how", label: "Пункт меню Как работает" },
-      { key: "faq", label: "Пункт меню FAQ" },
-    ],
-    contacts: [
-      { key: "telegram", label: "Ссылка Telegram (https://t.me/имя)" },
-      { key: "whatsapp", label: "Ссылка WhatsApp (https://wa.me/номер)" },
-      { key: "email", label: "Email (mailto:адрес)" },
-      { key: "phone", label: "Телефон для отображения (+7 999 123-45-67)" },
+      { key: "trust", label: "Строка доверия (API-ключи без права вывода)" },
+      { key: "contactBtn", label: "Кнопка связи", localized: true },
     ],
   };
 
   const TextSectionEditor = ({ section, fields }: { section: string; fields: Field[] }) => {
-    const d = sections[section] ?? {};
+    const d = sections[section] ?? DEFAULT_SITE_CONTENT[section] ?? {};
     return (
       <div className="space-y-3">
         {fields.map((f) => (
@@ -733,72 +1048,157 @@ export default function AdminSettings() {
             onChange={(v) => updateData(section, { ...d, [f.key]: v })}
             multiline={f.multiline}
             localized={f.localized}
-            placeholder={`Пример: ${f.label}`}
+            placeholder={`Введите ${f.label.toLowerCase()}`}
           />
         ))}
       </div>
     );
   };
 
-  // --- why items ---
-  const WhyItemsEditor = () => {
-    const items = Array.isArray(sections.why?.items) ? sections.why.items : [];
-    return (
-      <ListEditor
-        items={items}
-        onChange={(next) => updateData("why", { ...(sections.why ?? {}), items: next })}
-        emptyItem={() => ({ title: { ru: "", en: "" }, desc: { ru: "", en: "" } })}
-        fields={[
-          { key: "title", label: "Заголовок", localized: true },
-          { key: "desc", label: "Описание", localized: true, multiline: true },
-        ]}
-      />
-    );
-  };
+  // Filter sections based on category and search query
+  const filteredSections = useMemo(() => {
+    let keys = Object.keys(SECTION_LABELS);
 
-  // --- connect steps ---
-  const ConnectStepsEditor = () => {
-    const items = Array.isArray(sections.connect?.steps) ? sections.connect.steps : [];
-    return (
-      <ListEditor
-        items={items}
-        onChange={(next) => updateData("connect", { ...(sections.connect ?? {}), steps: next })}
-        emptyItem={() => ({ title: { ru: "", en: "" }, desc: { ru: "", en: "" } })}
-        fields={[
-          { key: "title", label: "Заголовок", localized: true },
-          { key: "desc", label: "Описание", localized: true, multiline: true },
-        ]}
-      />
-    );
-  };
+    if (activeCategory !== "all") {
+      const cat = CATEGORIES.find((c) => c.id === activeCategory);
+      if (cat?.keys) {
+        keys = keys.filter((k) => cat.keys.includes(k));
+      }
+    }
 
-  // --- Render ---
-  const sectionKeys = Object.keys(SECTION_LABELS);
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      keys = keys.filter((key) => {
+        const label = (SECTION_LABELS[key] || "").toLowerCase();
+        const help = (HELP_TEXT[key] || "").toLowerCase();
+        const rawContent = JSON.stringify(sections[key] || "").toLowerCase();
+        return label.includes(q) || help.includes(q) || rawContent.includes(q);
+      });
+    }
 
-  if (loading) return <div className="text-white">Загрузка...</div>;
-  if (sectionKeys.length === 0) {
+    return keys;
+  }, [activeCategory, searchQuery, sections]);
+
+  if (loading) {
     return (
-      <div className="text-gray-400 text-center py-16">
-        Секции контента ещё не созданы. Это нормально  они появятся после первой правки.
+      <div className="text-white py-12 text-center bg-gray-900 rounded-xl border border-gray-800">
+        <Sparkles size={24} className="animate-spin text-brand-blue mx-auto mb-2" />
+        Загрузка контента сайта...
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 max-w-4xl">
-      <div>
-        <h1 className="text-3xl font-bold text-white">Контент сайта</h1>
-        <p className="text-gray-400 text-sm mt-1">
-          Редактируйте содержимое секций  изменения применяются на сайте сразу после сохранения.
-        </p>
+    <div className="space-y-6 max-w-5xl">
+      {/* Top Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-2.5">
+            <Layers className="text-brand-blue" size={28} />
+            Контент сайта
+          </h1>
+          <p className="text-gray-400 text-xs sm:text-sm mt-1">
+            Редактируйте тексты, заголовки, контакты и SEO. Изменения сохраняются в базу данных и применяются на сайте мгновенно.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            type="button"
+            onClick={openSections.size > 0 ? collapseAll : expandAll}
+            className="px-3.5 py-2 bg-gray-800 hover:bg-gray-700 text-gray-200 text-xs font-semibold rounded-lg border border-gray-700 transition-colors flex items-center gap-1.5 cursor-pointer"
+          >
+            {openSections.size > 0 ? (
+              <>
+                <ChevronUp size={15} /> Свернуть все
+              </>
+            ) : (
+              <>
+                <ChevronDown size={15} /> Развернуть все
+              </>
+            )}
+          </button>
+        </div>
       </div>
 
+      {/* Search and Filters Toolbar */}
+      <div className="bg-gray-900 border border-gray-800 rounded-xl p-3.5 sm:p-4 space-y-3 shadow-lg">
+        {/* Search input */}
+        <div className="relative">
+          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Быстрый поиск по названию секции или содержимому (например: Bybit, Telegram, FAQ, Заголовок...)"
+            className="w-full pl-10 pr-9 py-2.5 bg-gray-950 border border-gray-800 rounded-lg text-white text-xs sm:text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-blue"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+            >
+              <X size={15} />
+            </button>
+          )}
+        </div>
+
+        {/* Category Tabs */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {CATEGORIES.map((cat) => {
+            const isActive = activeCategory === cat.id;
+            return (
+              <button
+                key={cat.id}
+                onClick={() => setActiveCategory(cat.id)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5 cursor-pointer ${
+                  isActive
+                    ? "bg-brand-blue text-white shadow-sm"
+                    : "bg-gray-800/80 text-gray-400 hover:text-white hover:bg-gray-800"
+                }`}
+              >
+                <span>{cat.icon}</span>
+                <span>{cat.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Sections count indicator */}
+      <div className="flex items-center justify-between text-xs text-gray-400 px-1">
+        <span>
+          Найдено секций: <strong className="text-white">{filteredSections.length}</strong> из {Object.keys(SECTION_LABELS).length}
+        </span>
+        {searchQuery && (
+          <button
+            onClick={() => { setSearchQuery(""); setActiveCategory("all"); }}
+            className="text-brand-blue hover:underline cursor-pointer"
+          >
+            Сбросить фильтры
+          </button>
+        )}
+      </div>
+
+      {/* Empty Search Result */}
+      {filteredSections.length === 0 && (
+        <div className="text-gray-400 text-center py-16 bg-gray-900 border border-gray-800 rounded-xl">
+          <HelpCircle size={36} className="mx-auto mb-3 opacity-30 text-gray-400" />
+          <div className="text-base font-semibold text-gray-300">Ничего не найдено</div>
+          <div className="text-xs text-gray-500 mt-1">
+            Попробуйте изменить поисковый запрос или переключить категорию.
+          </div>
+        </div>
+      )}
+
+      {/* Sections Accordion List */}
       <div className="space-y-3">
-        {sectionKeys.map((section) => {
-          const label = SECTION_LABELS[section];
-          const isOpen = open === section;
-          const data = sections[section];
-          const isSaved = saved === section;
+        {filteredSections.map((section) => {
+          const label = SECTION_LABELS[section] || section;
+          const isOpen = openSections.has(section) || Boolean(searchQuery.trim());
+          const data = sections[section] ?? DEFAULT_SITE_CONTENT[section] ?? {};
+          const isSaved = savedSection === section;
+          const isSaving = savingSection === section;
 
           const renderContent = () => {
             if (section === "telegram_settings") return <TelegramEditor />;
@@ -806,57 +1206,83 @@ export default function AdminSettings() {
             if (section === "stats") return <StatsEditor />;
             if (section === "exchanges") return <ExchangesEditor />;
             if (section === "advantages") return <AdvantagesEditor />;
+            if (section === "benefits") return <BenefitsEditor />;
+            if (section === "why") return <WhyEditor />;
+            if (section === "connect") return <ConnectEditor />;
+            if (section === "faq") return <FaqEditor />;
             if (section === "how_it_works") return <HowItWorksEditor />;
             if (section === "testimonials") return <TestimonialsEditor />;
-            if (section === "pricing") return <PricingEditor />;
-            if (section === "benefits") return <BenefitsEditor />;
-            if (section === "faq") return <FaqEditor />;
-            if (section === "why") return (
-              <>
-                <TextSectionEditor section={section} fields={TEXT_SECTIONS[section]} />
-                <WhyItemsEditor />
-              </>
-            );
-            if (section === "connect") return (
-              <>
-                <TextSectionEditor section={section} fields={TEXT_SECTIONS[section]} />
-                <ConnectStepsEditor />
-              </>
-            );
-            if (TEXT_SECTIONS[section]) return <TextSectionEditor section={section} fields={TEXT_SECTIONS[section]} />;
+            if (TEXT_SECTION_FIELDS[section]) {
+              return <TextSectionEditor section={section} fields={TEXT_SECTION_FIELDS[section]} />;
+            }
             return null;
           };
 
           return (
-            <div key={section} className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
+            <div
+              key={section}
+              className={`bg-gray-900 border transition-colors rounded-xl overflow-hidden shadow-sm ${
+                isOpen ? "border-brand-blue/50 ring-1 ring-brand-blue/20" : "border-gray-800 hover:border-gray-750"
+              }`}
+            >
               <button
-                onClick={() => setOpen(isOpen ? null : section)}
-                className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-gray-800/50 transition-colors"
+                type="button"
+                onClick={() => toggleSection(section)}
+                className="w-full flex items-center justify-between px-4 sm:px-6 py-4 text-left hover:bg-gray-800/40 transition-colors cursor-pointer gap-4"
               >
-                <div>
-                  <div className="font-semibold text-white">{label}</div>
-                  <div className="text-xs text-gray-500 mt-0.5">{HELP_TEXT[section]}</div>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold text-white text-sm sm:text-base truncate">{label}</span>
+                    <span className="text-[10px] font-mono text-gray-500 uppercase px-1.5 py-0.5 rounded bg-gray-800 shrink-0">
+                      {section}
+                    </span>
+                  </div>
+                  <div className="text-xs text-gray-400 mt-1 line-clamp-1">{HELP_TEXT[section]}</div>
                 </div>
-                <ChevronDown size={18} className={`text-gray-400 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+
+                <div className="flex items-center gap-2 shrink-0">
+                  {isSaved && (
+                    <span className="text-xs text-emerald-400 flex items-center gap-1 font-medium bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                      <Check size={13} /> Сохранено
+                    </span>
+                  )}
+                  <ChevronDown
+                    size={18}
+                    className={`text-gray-400 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+                  />
+                </div>
               </button>
 
               {isOpen && (
-                <div className="px-6 pb-6 pt-2 border-t border-gray-800 space-y-4">
+                <div className="px-4 sm:px-6 pb-6 pt-3 border-t border-gray-800/80 space-y-4 bg-gray-950/40">
                   {renderContent()}
 
-                  <div className="flex items-center justify-end gap-3 pt-2">
-                    {isSaved && (
-                      <span className="text-sm text-green-400 flex items-center gap-1">
-                        <Check size={16} /> Сохранено
-                      </span>
-                    )}
+                  {/* Actions Footer */}
+                  <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-gray-800">
                     <button
-                      onClick={() => save(section, data ?? {})}
-                      disabled={saving}
-                      className="flex items-center gap-2 px-5 py-2.5 bg-brand-blue hover:bg-blue-600 disabled:opacity-50 text-white rounded-lg text-sm font-medium transition-colors"
+                      type="button"
+                      onClick={() => resetToDefault(section)}
+                      className="inline-flex items-center gap-1.5 text-xs text-gray-400 hover:text-white px-3 py-1.5 bg-gray-800 hover:bg-gray-750 rounded-lg transition-colors cursor-pointer"
+                      title="Сбросить все поля этой секции к первоначальным текстам"
                     >
-                      <Save size={16} /> {saving ? "Сохранение..." : "Сохранить"}
+                      <RotateCcw size={13} /> Сбросить по умолчанию
                     </button>
+
+                    <div className="flex items-center gap-3">
+                      {isSaved && (
+                        <span className="text-xs text-emerald-400 flex items-center gap-1 font-medium">
+                          <Check size={14} /> Сохранено в БД
+                        </span>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => save(section, data)}
+                        disabled={isSaving}
+                        className="flex items-center gap-2 px-5 py-2.5 bg-brand-blue hover:bg-blue-600 disabled:opacity-50 text-white rounded-lg text-xs sm:text-sm font-semibold transition-colors shadow-md cursor-pointer"
+                      >
+                        <Save size={15} /> {isSaving ? "Сохранение..." : "Сохранить изменения"}
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}

@@ -24,12 +24,19 @@ if (connectionString) {
   console.warn('[DB] DATABASE_URL not set, running in memory-fallback mode');
 }
 
+let DEFAULT_SITE_CONTENT = {};
+try {
+  DEFAULT_SITE_CONTENT = require('./default-site-content.cjs').DEFAULT_SITE_CONTENT || {};
+} catch (e) {
+  console.warn('[Server] Could not load default-site-content.cjs:', e.message);
+}
+
 // In-memory fallback if DB is temporarily unreachable
 const memoryStore = {
   leads: [],
   pageViews: [],
   bots: [],
-  siteContent: {},
+  siteContent: { ...DEFAULT_SITE_CONTENT },
   siteSections: [],
 };
 
@@ -235,6 +242,24 @@ async function initDb() {
           `, [b.id, b.slug, b.name, b.slogan, b.short_desc, b.full_desc, b.badge, b.market, b.strategy, b.risk, b.pairs, b.color, b.image_url, b.difficulty, b.difficulty_tone, b.features, b.returns, b.how_it_works, b.example_trade, b.i18n, b.position]);
         }
         console.log('[DB] Default bots seeded.');
+      }
+
+      // Seed site_content if empty or missing default sections
+      try {
+        const scCount = await client.query('SELECT COUNT(*) FROM site_content');
+        if (parseInt(scCount.rows[0].count, 10) < Object.keys(DEFAULT_SITE_CONTENT).length) {
+          console.log('[DB] Seeding default site_content...');
+          for (const [k, v] of Object.entries(DEFAULT_SITE_CONTENT)) {
+            await client.query(`
+              INSERT INTO site_content (key, value, updated_at)
+              VALUES ($1, $2, NOW())
+              ON CONFLICT (key) DO NOTHING;
+            `, [k, JSON.stringify(v)]);
+          }
+          console.log('[DB] Default site_content seeded successfully.');
+        }
+      } catch (err) {
+        console.error('[DB] site_content seed error:', err.message);
       }
     } finally {
       client.release();
@@ -684,17 +709,17 @@ app.delete('/api/bots/:id', async (req, res) => {
 
 // Site Content: Get
 app.get('/api/site-content', async (req, res) => {
+  const merged = { ...DEFAULT_SITE_CONTENT, ...memoryStore.siteContent };
   if (pool) {
     try {
       const q = await pool.query('SELECT * FROM site_content');
-      const obj = {};
-      q.rows.forEach(r => { obj[r.key] = r.value; });
-      return res.json(obj);
+      q.rows.forEach(r => { merged[r.key] = r.value; });
+      return res.json(merged);
     } catch (e) {
       console.error('[Site Content Error]', e.message);
     }
   }
-  res.json(memoryStore.siteContent);
+  res.json(merged);
 });
 
 // Site Content: Save

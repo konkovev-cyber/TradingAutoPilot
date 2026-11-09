@@ -2,10 +2,20 @@
 import { motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
+import { useSectionValue } from "@/lib/site-content";
 
 export default function FAQ() {
   const { t } = useI18n();
   const [open, setOpen] = useState<number | null>(0);
+  const siteFaq = useSectionValue("faq");
+
+  const rawList = Array.isArray(siteFaq) && siteFaq.length > 0 ? siteFaq : ((t("faq.items") as any[]) || []);
+  const items: Array<{ q: string; a: string }> = rawList
+    .map((item: any) => ({
+      q: item?.q || item?.question || "",
+      a: item?.a || item?.answer || "",
+    }))
+    .filter((x) => x.q || x.a);
 
   return (
     <section id="faq" className="section-padding relative overflow-hidden bg-white dark:bg-gray-950 transition-colors duration-300">
@@ -24,7 +34,7 @@ export default function FAQ() {
         </motion.div>
 
         <div className="space-y-3">
-          {t("faq.items").map((faq: { q: string; a: string }, i: number) => (
+          {items.map((faq, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, y: 12 }}
@@ -66,4 +76,3 @@ export default function FAQ() {
     </section>
   );
 }
-

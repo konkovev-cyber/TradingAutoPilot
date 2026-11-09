@@ -549,7 +549,141 @@ export default function AdminLeads() {
         </div>
       ) : (
         <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden shadow-xl">
-          <div className="overflow-x-auto">
+          {/* Mobile Card List (< md screens) */}
+          <div className="md:hidden divide-y divide-gray-800/80">
+            {filtered.slice(0, visible).map((lead) => {
+              const contactInfo = parseContact(lead.contact);
+              const statusConf = STATUS_CONFIG[lead.status] || STATUS_CONFIG.new;
+
+              return (
+                <div
+                  key={lead.id}
+                  onClick={() => openLeadDetails(lead)}
+                  className="p-4 bg-gray-900/95 hover:bg-gray-850 transition-colors cursor-pointer space-y-3"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-blue to-indigo-600 flex items-center justify-center text-white text-sm font-bold uppercase shadow-sm shrink-0">
+                        {(lead.name || "K").charAt(0)}
+                      </div>
+                      <div>
+                        <div className="text-white font-semibold text-base leading-tight">
+                          {lead.name || "Без имени"}
+                        </div>
+                        <div className="text-[11px] text-gray-500 font-mono mt-0.5">
+                          ID #{String(lead.id).padStart(3, "0")} · {new Date(lead.created_at).toLocaleDateString("ru-RU", { day: "2-digit", month: "2-digit" })} {new Date(lead.created_at).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div onClick={(e) => e.stopPropagation()}>
+                      <select
+                        value={lead.status}
+                        onChange={(e) => updateLeadStatus(lead.id, e.target.value as LeadStatus)}
+                        className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold border focus:outline-none cursor-pointer ${statusConf.color} ${statusConf.bgColor} ${statusConf.borderColor}`}
+                      >
+                        {STATUS_OPTIONS.map((opt) => (
+                          <option key={opt.id} value={opt.id} className="bg-gray-900 text-white">
+                            {opt.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Contact row and quick action buttons */}
+                  <div className="flex flex-wrap items-center gap-1.5 pt-1" onClick={(e) => e.stopPropagation()}>
+                    <span className="text-gray-200 text-xs font-mono font-medium bg-gray-800/90 px-2.5 py-1 rounded-lg border border-gray-700/70">
+                      {contactInfo.raw}
+                    </span>
+                    <button
+                      onClick={(e) => copyContact(contactInfo.raw, lead.id, e)}
+                      className="p-1.5 text-gray-400 hover:text-white rounded-lg bg-gray-800 border border-gray-700 transition-colors cursor-pointer"
+                      title="Скопировать контакт"
+                    >
+                      {copiedId === lead.id ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
+                    </button>
+
+                    {contactInfo.tgUrl && (
+                      <a
+                        href={contactInfo.tgUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-sky-500/15 text-sky-400 border border-sky-500/25"
+                      >
+                        <Send size={11} /> TG
+                      </a>
+                    )}
+                    {contactInfo.waUrl && (
+                      <a
+                        href={contactInfo.waUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/25"
+                      >
+                        <MessageSquare size={11} /> WA
+                      </a>
+                    )}
+                    {contactInfo.telUrl && (
+                      <a
+                        href={contactInfo.telUrl}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-indigo-500/15 text-indigo-400 border border-indigo-500/25"
+                      >
+                        <Phone size={11} /> Звонок
+                      </a>
+                    )}
+                  </div>
+
+                  {/* Bot & Budget badges */}
+                  <div className="flex items-center flex-wrap gap-2 text-xs">
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-gray-800 text-gray-200 border border-gray-700">
+                      🤖 {lead.bot || "Любой робот"}
+                    </span>
+                    {lead.budget && (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-400 border border-emerald-500/20">
+                        💰 {lead.budget}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Message preview */}
+                  {lead.message && (
+                    <p className="text-gray-300 text-xs leading-relaxed bg-gray-950/70 p-2.5 rounded-lg border border-gray-800 break-words">
+                      {lead.message}
+                    </p>
+                  )}
+
+                  {/* Manager Note */}
+                  {lead.notes && (
+                    <div className="p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/25 text-xs text-amber-200">
+                      <span className="font-semibold text-amber-400">Заметка: </span>
+                      {lead.notes}
+                    </div>
+                  )}
+
+                  {/* Card bottom bar */}
+                  <div className="flex items-center justify-between pt-1 border-t border-gray-800/60" onClick={(e) => e.stopPropagation()}>
+                    <button
+                      onClick={() => openLeadDetails(lead)}
+                      className="text-xs text-brand-blue hover:underline flex items-center gap-1 font-medium"
+                    >
+                      <Eye size={13} /> Карточка заявки
+                    </button>
+                    <button
+                      onClick={() => deleteLead(lead.id)}
+                      className="p-1.5 text-red-400/80 hover:text-red-300 rounded"
+                      title="Удалить заявку"
+                    >
+                      <Trash2 size={15} />
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Desktop Table (>= md screens) */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full min-w-[960px] text-left">
               <thead className="bg-gray-800/60 border-b border-gray-800">
                 <tr>
