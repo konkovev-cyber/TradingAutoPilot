@@ -28,6 +28,9 @@ interface Bot {
   example_trade?: Json;
   i18n?: Json;
   position?: number;
+  meta_title?: string;
+  meta_description?: string;
+  og_image?: string;
 }
 
 type ReturnRow = { period: string; value: string };
@@ -42,7 +45,8 @@ const DIFFICULTIES = [
 const initialBot: Bot = {
   slug: "", name: "", slogan: "", shortDesc: "", fullDesc: "", badge: "",
   market: "", strategy: "", risk: "", pairs: "", color: "#3b82f6", image_url: null,
-  difficulty: "", difficulty_tone: ""
+  difficulty: "", difficulty_tone: "",
+  meta_title: "", meta_description: "", og_image: ""
 };
 
 const EN_FIELDS: { key: string; label: string; multiline?: boolean }[] = [
@@ -65,6 +69,7 @@ export default function AdminBots() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [enOpen, setEnOpen] = useState(false);
+  const [seoOpen, setSeoOpen] = useState(false);
 
   const [extra, setExtra] = useState<{
     features: string[];
@@ -424,6 +429,72 @@ export default function AdminBots() {
                 <div className="grid md:grid-cols-2 gap-4">
                   {stepsEditor("Как работает (EN)", extra.en.how, (rows) => setExtra({ ...extra, en: { ...extra.en, how: rows } }), "Добавить шаг")}
                   {stepsEditor("Пример сделки (EN)", extra.en.example, (rows) => setExtra({ ...extra, en: { ...extra.en, example: rows } }), "Добавить шаг")}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* SEO Block */}
+          <div className="border border-gray-700/80 rounded-xl overflow-hidden bg-gray-950/40">
+            <button
+              type="button"
+              onClick={() => setSeoOpen(!seoOpen)}
+              className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-gray-800/50 transition-colors"
+            >
+              <div className="flex items-center gap-2.5">
+                <span className="text-sm font-semibold text-white">🔍 SEO настройки робота</span>
+                <span className="text-xs text-blue-400 font-mono">
+                  /bots/{editing.slug || "slug"}
+                </span>
+                {editing.meta_title && (
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                    Настроено
+                  </span>
+                )}
+              </div>
+              <ChevronDown size={16} className={`text-gray-400 transition-transform ${seoOpen ? "rotate-180" : ""}`} />
+            </button>
+            {seoOpen && (
+              <div className="px-4 pb-4 pt-2 border-t border-gray-700 space-y-3">
+                <div>
+                  <div className="flex justify-between text-xs text-gray-400 mb-1">
+                    <span>Meta Title (заголовок вкладки)</span>
+                    <span className={(editing.meta_title?.length ?? 0) > 60 ? "text-amber-400" : "text-gray-500"}>
+                      {editing.meta_title?.length ?? 0} / 60 симв.
+                    </span>
+                  </div>
+                  <input
+                    value={editing.meta_title ?? ""}
+                    onChange={(e) => setEditing({ ...editing, meta_title: e.target.value })}
+                    placeholder={`Например: ${editing.name || "Робот"} — торговый бот для Bybit и Binance`}
+                    className={`${inputCls} w-full`}
+                  />
+                </div>
+
+                <div>
+                  <div className="flex justify-between text-xs text-gray-400 mb-1">
+                    <span>Meta Description (описание в поисковике)</span>
+                    <span className={(editing.meta_description?.length ?? 0) > 160 ? "text-amber-400" : "text-gray-500"}>
+                      {editing.meta_description?.length ?? 0} / 160 симв.
+                    </span>
+                  </div>
+                  <textarea
+                    rows={2}
+                    value={editing.meta_description ?? ""}
+                    onChange={(e) => setEditing({ ...editing, meta_description: e.target.value })}
+                    placeholder="Краткое привлекательное описание для поисковой выдачи Google и Яндекс..."
+                    className={`${inputCls} w-full`}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1">OG Image URL (баннер превью в соцсетях)</label>
+                  <input
+                    value={editing.og_image ?? ""}
+                    onChange={(e) => setEditing({ ...editing, og_image: e.target.value })}
+                    placeholder="https://... или оставьте пустым, чтобы использовать картинку робота"
+                    className={`${inputCls} w-full`}
+                  />
                 </div>
               </div>
             )}

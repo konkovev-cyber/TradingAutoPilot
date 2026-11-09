@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { I18nProvider, useI18n } from "./lib/i18n";
 import { ThemeProvider } from "./lib/theme";
 import { SiteContentProvider } from "./lib/site-content";
+import Analytics from "./components/Analytics";
 
 const HomePage = lazy(() => import("./pages/HomePage"));
 const BotDetailPage = lazy(() => import("./pages/BotDetailPage"));
@@ -32,7 +33,8 @@ export default function App() {
     <ThemeProvider>
       <I18nProvider>
         <SiteContentProvider>
-        <BrowserRouter>
+        <Analytics />
+          <BrowserRouter>
           <ScrollToTop />
           <Suspense fallback={<LoadingScreen />}>
             <Routes>

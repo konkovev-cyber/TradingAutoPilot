@@ -143,6 +143,9 @@ function toBotData(row: Json): BotData {
     difficulty: String(row?.difficulty ?? stat?.difficulty ?? ""),
     difficultyTone: (String(row?.difficulty_tone ?? stat?.difficultyTone ?? "starter") as BotData["difficultyTone"]),
     i18n,
+    metaTitle: row?.meta_title ? String(row.meta_title) : undefined,
+    metaDescription: row?.meta_description ? String(row.meta_description) : undefined,
+    ogImage: row?.og_image ? String(row.og_image) : undefined,
   };
 }
 

@@ -95,6 +95,9 @@ async function initDb() {
         ALTER TABLE bots ADD COLUMN IF NOT EXISTS how_it_works JSONB;
         ALTER TABLE bots ADD COLUMN IF NOT EXISTS example_trade JSONB;
         ALTER TABLE bots ADD COLUMN IF NOT EXISTS i18n JSONB;
+        ALTER TABLE bots ADD COLUMN IF NOT EXISTS meta_title TEXT;
+        ALTER TABLE bots ADD COLUMN IF NOT EXISTS meta_description TEXT;
+        ALTER TABLE bots ADD COLUMN IF NOT EXISTS og_image TEXT;
 
         CREATE TABLE IF NOT EXISTS site_content (
           key TEXT PRIMARY KEY,
@@ -578,8 +581,8 @@ app.post('/api/bots', async (req, res) => {
   if (pool) {
     try {
       const q = await pool.query(`
-        INSERT INTO bots (id, slug, name, slogan, short_desc, full_desc, badge, market, strategy, risk, pairs, color, image_url, difficulty, difficulty_tone, features, returns, how_it_works, example_trade, i18n, position)
-        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21)
+        INSERT INTO bots (id, slug, name, slogan, short_desc, full_desc, badge, market, strategy, risk, pairs, color, image_url, difficulty, difficulty_tone, features, returns, how_it_works, example_trade, i18n, position, meta_title, meta_description, og_image)
+        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24)
         ON CONFLICT (id) DO UPDATE SET
           slug = EXCLUDED.slug, name = EXCLUDED.name, slogan = EXCLUDED.slogan,
           short_desc = EXCLUDED.short_desc, full_desc = EXCLUDED.full_desc,
@@ -589,7 +592,10 @@ app.post('/api/bots', async (req, res) => {
           difficulty_tone = EXCLUDED.difficulty_tone, features = EXCLUDED.features,
           returns = EXCLUDED.returns, how_it_works = EXCLUDED.how_it_works,
           example_trade = EXCLUDED.example_trade, i18n = EXCLUDED.i18n,
-          position = EXCLUDED.position
+          position = EXCLUDED.position,
+          meta_title = EXCLUDED.meta_title,
+          meta_description = EXCLUDED.meta_description,
+          og_image = EXCLUDED.og_image
         RETURNING *;
       `, [
         id, bot.slug || id, bot.name, bot.slogan || '', bot.shortDesc || bot.short_desc || '',
@@ -599,6 +605,9 @@ app.post('/api/bots', async (req, res) => {
         JSON.stringify(bot.features || []), JSON.stringify(bot.returns || []),
         JSON.stringify(bot.how_it_works || []), JSON.stringify(bot.example_trade || []),
         JSON.stringify(bot.i18n || {}), bot.position || 0,
+        bot.meta_title || bot.metaTitle || null,
+        bot.meta_description || bot.metaDescription || null,
+        bot.og_image || bot.ogImage || null,
       ]);
       return res.json(q.rows[0]);
     } catch (e) {
@@ -625,7 +634,10 @@ app.patch('/api/bots/:id', async (req, res) => {
           difficulty_tone = COALESCE($15, difficulty_tone),
           features = COALESCE($16::jsonb, features), returns = COALESCE($17::jsonb, returns),
           how_it_works = COALESCE($18::jsonb, how_it_works), example_trade = COALESCE($19::jsonb, example_trade),
-          i18n = COALESCE($20::jsonb, i18n), position = COALESCE($21, position)
+          i18n = COALESCE($20::jsonb, i18n), position = COALESCE($21, position),
+          meta_title = COALESCE($22, meta_title),
+          meta_description = COALESCE($23, meta_description),
+          og_image = COALESCE($24, og_image)
         WHERE id = $1
         RETURNING *;
       `, [
@@ -641,6 +653,9 @@ app.patch('/api/bots/:id', async (req, res) => {
         bot.example_trade ? JSON.stringify(bot.example_trade) : null,
         bot.i18n ? JSON.stringify(bot.i18n) : null,
         bot.position !== undefined ? bot.position : null,
+        bot.meta_title || bot.metaTitle || null,
+        bot.meta_description || bot.metaDescription || null,
+        bot.og_image || bot.ogImage || null,
       ]);
       return res.json(q.rows[0] || {});
     } catch (e) {
@@ -789,6 +804,105 @@ app.get('/api/stats', async (req, res) => {
     views: viewsCount,
     viewsToday,
   });
+});
+
+// ─────────────────────────────────────────
+// DYNAMIC SEO: SITEMAP.XML & ROBOTS.TXT
+// ─────────────────────────────────────────
+app.get('/sitemap.xml', async (req, res) => {
+  try {
+    let siteUrl = 'https://coinsofter.com';
+    let robots = [];
+
+    if (pool) {
+      try {
+        const metaQ = await pool.query("SELECT value FROM site_content WHERE key = 'meta'");
+        if (metaQ.rows.length > 0 && metaQ.rows[0].value) {
+          const m = metaQ.rows[0].value;
+          if (m.site_url) siteUrl = String(m.site_url).trim().replace(/\/+$/, '');
+        }
+        const bQ = await pool.query('SELECT slug, updated_at FROM bots ORDER BY position ASC, id ASC');
+        robots = bQ.rows;
+      } catch (e) {
+        console.error('[Sitemap Query Error]', e.message);
+      }
+    } else {
+      robots = memoryStore.bots || [];
+    }
+
+    if (!siteUrl || siteUrl === 'https://coinsofter.com') {
+      const proto = req.headers['x-forwarded-proto'] || 'https';
+      const host = req.headers['x-forwarded-host'] || req.headers.host;
+      if (host) siteUrl = `${proto}://${host}`;
+    }
+
+    const today = new Date().toISOString().slice(0, 10);
+    let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+    xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+    xml += `  <url>\n    <loc>${siteUrl}/</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>1.0</priority>\n  </url>\n`;
+
+    for (const b of robots) {
+      if (!b.slug) continue;
+      const lastmod = b.updated_at ? new Date(b.updated_at).toISOString().slice(0, 10) : today;
+      xml += `  <url>\n    <loc>${siteUrl}/bots/${encodeURIComponent(b.slug)}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
+    }
+
+    xml += `</urlset>`;
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    return res.send(xml);
+  } catch (err) {
+    console.error('[Sitemap Error]', err);
+    return res.status(500).send('Error generating sitemap');
+  }
+});
+
+app.get('/robots.txt', async (req, res) => {
+  try {
+    let siteUrl = 'https://coinsofter.com';
+    let customRobots = null;
+
+    if (pool) {
+      try {
+        const metaQ = await pool.query("SELECT value FROM site_content WHERE key = 'meta'");
+        if (metaQ.rows.length > 0 && metaQ.rows[0].value) {
+          const m = metaQ.rows[0].value;
+          if (m.site_url) siteUrl = String(m.site_url).trim().replace(/\/+$/, '');
+          if (m.robots_txt && String(m.robots_txt).trim()) customRobots = String(m.robots_txt).trim();
+        }
+      } catch (e) {
+        console.error('[Robots Query Error]', e.message);
+      }
+    }
+
+    if (!siteUrl || siteUrl === 'https://coinsofter.com') {
+      const proto = req.headers['x-forwarded-proto'] || 'https';
+      const host = req.headers['x-forwarded-host'] || req.headers.host;
+      if (host) siteUrl = `${proto}://${host}`;
+    }
+
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+
+    if (customRobots) {
+      return res.send(customRobots);
+    }
+
+    const defaultRobots = [
+      'User-agent: *',
+      'Allow: /',
+      'Disallow: /admin',
+      'Disallow: /admin/',
+      'Disallow: /api/',
+      '',
+      `Sitemap: ${siteUrl}/sitemap.xml`,
+    ].join('\n');
+
+    return res.send(defaultRobots);
+  } catch (err) {
+    console.error('[Robots Error]', err);
+    return res.status(500).send('User-agent: *\nAllow: /');
+  }
 });
 
 // ─────────────────────────────────────────

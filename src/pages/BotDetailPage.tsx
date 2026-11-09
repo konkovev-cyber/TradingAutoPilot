@@ -30,14 +30,16 @@ export default function BotDetailPage() {
   }, [slug]);
 
   useSeo({
-    title: bot ? botText(bot, lang).name + " — TradingAutoPilot" : "TradingAutoPilot",
-    description: bot ? botText(bot, lang).shortDesc : "TradingAutoPilot trading bots",
+    title: bot?.metaTitle || (bot ? botText(bot, lang).name + " — TradingAutoPilot" : "TradingAutoPilot"),
+    description: bot?.metaDescription || (bot ? botText(bot, lang).shortDesc : "TradingAutoPilot trading bots"),
+    image: bot?.ogImage || bot?.imageUrl,
+    path: bot ? `/bots/${bot.slug}` : undefined,
     jsonLd: bot
       ? {
           "@context": "https://schema.org",
           "@type": "SoftwareApplication",
           "name": botText(bot, lang).name,
-          "description": botText(bot, lang).shortDesc,
+          "description": bot?.metaDescription || botText(bot, lang).shortDesc,
           "applicationCategory": "FinanceApplication",
           "operatingSystem": "Web",
         }

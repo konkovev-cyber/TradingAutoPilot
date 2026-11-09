@@ -7,7 +7,7 @@ type Json = any;
 
 const SECTION_LABELS: Record<string, string> = {
   telegram_settings: "Уведомления в Telegram (новые заявки)",
-  meta: "SEO и мета-данные",
+  meta: "SEO, поисковая оптимизация и веб-аналитика",
   nav: "Меню в шапке",
   hero: "Hero / Знакомство с проектом",
   contacts: "Контакты (Telegram/WhatsApp/Email/Телефон)",
@@ -29,7 +29,7 @@ const SECTION_LABELS: Record<string, string> = {
 
 const HELP_TEXT: Record<string, string> = {
   telegram_settings: "Мгновенные оповещения в ваш Telegram при поступлении каждой новой заявки с сайта.",
-  meta: "Title и Description отображаются во вкладках браузера и в поисковой выдаче.",
+  meta: "Title, Description, ключевые слова, счетчики Яндекс.Метрики и Google Analytics 4, генератор sitemap.xml и редактор robots.txt.",
   nav: "Текст пунктов меню в шапке сайта.",
   hero: "Заголовок, подзаголовок и кнопки на главном экране. Поля поддерживают RU и EN.",
   contacts: "Каналы связи для всего сайта: ссылки Telegram и WhatsApp, email и отображаемый телефон. WhatsApp — ссылка вида https://wa.me/79991234567 (номер без плюса-пробелов).",
@@ -178,15 +178,217 @@ export default function AdminSettings() {
     setSaving(false);
   };
 
-  // --- Секция: meta (title, description) ---
+  // --- Секция: meta (SEO, OpenGraph, Robots.txt, Аналитика) ---
   const MetaEditor = () => {
     const d = sections.meta ?? {};
+    const siteUrl = String(d.site_url || "https://coinsofter.com").replace(/\/+$/, "");
+    const title = String(d.title || "TradingAutoPilot — Торговые боты для криптобирж и акций");
+    const description = String(d.description || "Автоматизируйте торговлю на Bybit, Binance и фондовых рынках. 3 стратегии: от консервативной до импульсной.");
+
+    const resetRobots = () => {
+      const defaultRobots = [
+        "User-agent: *",
+        "Allow: /",
+        "Disallow: /admin",
+        "Disallow: /admin/",
+        "Disallow: /api/",
+        "",
+        `Sitemap: ${siteUrl}/sitemap.xml`,
+      ].join("\n");
+      updateData("meta", { ...d, robots_txt: defaultRobots });
+    };
+
     return (
-      <div className="space-y-3">
-        <FieldInput label="Title (заголовок вкладки)" value={String(d.title ?? "")}
-          onChange={(v) => updateData("meta", { ...d, title: v })} multiline placeholder="Trading Auto Pilot  Торговые роботы..." />
-        <FieldInput label="Description (описание для поисковиков)" value={String(d.description ?? "")}
-          onChange={(v) => updateData("meta", { ...d, description: v })} multiline placeholder="Trading Auto Pilot  интеллектуальные торговые роботы..." />
+      <div className="space-y-6">
+        {/* SERP Live Preview */}
+        <div className="p-4 rounded-xl bg-gray-950 border border-gray-800 space-y-2">
+          <div className="text-xs font-semibold uppercase tracking-wider text-gray-400 flex items-center justify-between">
+            <span>Предпросмотр в поиске (Google / Яндекс)</span>
+            <span className="text-[11px] font-mono text-emerald-400">SERP Snippet</span>
+          </div>
+          <div className="p-3 bg-gray-900/80 rounded-lg border border-gray-800 text-sm">
+            <div className="text-xs text-gray-400 truncate flex items-center gap-1.5 font-mono mb-1">
+              <span className="text-emerald-400">🌐</span>
+              <span>{siteUrl}</span>
+            </div>
+            <div className="text-base font-medium text-blue-400 hover:underline cursor-pointer line-clamp-1">
+              {title}
+            </div>
+            <div className="text-xs text-gray-300 mt-1 line-clamp-2 leading-relaxed">
+              {description}
+            </div>
+          </div>
+        </div>
+
+        {/* Core Meta */}
+        <div className="space-y-4">
+          <div>
+            <div className="flex justify-between text-xs text-gray-400 mb-1">
+              <span className="font-medium text-gray-300">Title (заголовок страницы в браузере и поиске)</span>
+              <span className={title.length > 60 ? "text-amber-400" : "text-emerald-400"}>
+                {title.length} / 60 симв. (рекомендуется 50–60)
+              </span>
+            </div>
+            <input
+              type="text"
+              value={String(d.title ?? "")}
+              onChange={(e) => updateData("meta", { ...d, title: e.target.value })}
+              className="w-full px-3.5 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue"
+              placeholder="TradingAutoPilot — Торговые боты для криптобирж и акций"
+            />
+          </div>
+
+          <div>
+            <div className="flex justify-between text-xs text-gray-400 mb-1">
+              <span className="font-medium text-gray-300">Description (описание для поисковиков)</span>
+              <span className={description.length > 160 ? "text-amber-400" : "text-emerald-400"}>
+                {description.length} / 160 симв. (рекомендуется 140–160)
+              </span>
+            </div>
+            <textarea
+              rows={3}
+              value={String(d.description ?? "")}
+              onChange={(e) => updateData("meta", { ...d, description: e.target.value })}
+              className="w-full px-3.5 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue"
+              placeholder="Краткое описание преимуществ, которое привлечет клики в поиске..."
+            />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-medium text-gray-300 mb-1">
+                Ключевые слова (Keywords)
+              </label>
+              <input
+                type="text"
+                value={String(d.keywords ?? "")}
+                onChange={(e) => updateData("meta", { ...d, keywords: e.target.value })}
+                className="w-full px-3.5 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue"
+                placeholder="крипто боты, автоматическая торговля, Bybit..."
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-gray-300 mb-1">
+                Канонический URL сайта (Canonical)
+              </label>
+              <input
+                type="text"
+                value={String(d.site_url ?? "")}
+                onChange={(e) => updateData("meta", { ...d, site_url: e.target.value })}
+                className="w-full px-3.5 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue"
+                placeholder="https://coinsofter.com"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-gray-300 mb-1">
+              OG Image URL (баннер превью в Telegram, WhatsApp, соцсетях)
+            </label>
+            <div className="flex gap-3 items-center">
+              <input
+                type="text"
+                value={String(d.og_image ?? "")}
+                onChange={(e) => updateData("meta", { ...d, og_image: e.target.value })}
+                className="flex-1 px-3.5 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue"
+                placeholder="https://coinsofter.com/og-image.svg"
+              />
+              {d.og_image && (
+                <img
+                  src={String(d.og_image)}
+                  alt="OG preview"
+                  className="h-10 w-16 object-cover rounded border border-gray-700 shrink-0"
+                />
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Analytics Section */}
+        <div className="pt-4 border-t border-gray-800 space-y-4">
+          <div className="text-sm font-semibold text-white flex items-center gap-2">
+            <span>📊 Счётчики веб-аналитики</span>
+            <span className="text-xs text-gray-500 font-normal">(подключаются автоматически)</span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-medium text-gray-300 mb-1">
+                Яндекс.Метрика (Номер счётчика)
+              </label>
+              <input
+                type="text"
+                value={String(d.yandex_metrika_id ?? "")}
+                onChange={(e) => updateData("meta", { ...d, yandex_metrika_id: e.target.value })}
+                className="w-full px-3.5 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue"
+                placeholder="Например: 98765432"
+              />
+              <span className="text-[11px] text-gray-500 mt-1 block">
+                Скрипт метрики активируется для всех посетителей.
+              </span>
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-gray-300 mb-1">
+                Google Analytics 4 (Measurement ID)
+              </label>
+              <input
+                type="text"
+                value={String(d.google_analytics_id ?? "")}
+                onChange={(e) => updateData("meta", { ...d, google_analytics_id: e.target.value })}
+                className="w-full px-3.5 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue"
+                placeholder="Например: G-XXXXXXXXXX"
+              />
+              <span className="text-[11px] text-gray-500 mt-1 block">
+                Google Tag активируется автоматически.
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Robots.txt & Sitemap Section */}
+        <div className="pt-4 border-t border-gray-800 space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-semibold text-white">🤖 Редактор robots.txt</span>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={resetRobots}
+                className="text-xs text-gray-400 hover:text-white px-2.5 py-1 bg-gray-800 hover:bg-gray-700 rounded transition-colors"
+              >
+                Сбросить к рекомендованному
+              </button>
+            </div>
+          </div>
+
+          <textarea
+            rows={5}
+            value={String(d.robots_txt ?? "")}
+            onChange={(e) => updateData("meta", { ...d, robots_txt: e.target.value })}
+            className="w-full p-3 bg-gray-950 font-mono text-xs text-gray-200 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue"
+            placeholder={`User-agent: *\nAllow: /\nDisallow: /admin\n\nSitemap: ${siteUrl}/sitemap.xml`}
+          />
+
+          <div className="flex flex-wrap gap-3 pt-1">
+            <a
+              href="/sitemap.xml"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20 rounded-lg text-xs font-semibold transition-colors"
+            >
+              🌐 Открыть sitemap.xml <ExternalLink size={12} />
+            </a>
+            <a
+              href="/robots.txt"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700 rounded-lg text-xs font-semibold transition-colors"
+            >
+              📄 Открыть robots.txt <ExternalLink size={12} />
+            </a>
+          </div>
+        </div>
       </div>
     );
   };

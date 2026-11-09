@@ -33,6 +33,9 @@ export interface BotData extends Omit<BotText, "features" | "howItWorks" | "exam
   exampleTrade: BotStep[];
   returns: BotReturn[];
   i18n?: { ru?: Partial<BotText>; en?: Partial<BotText> };
+  metaTitle?: string;
+  metaDescription?: string;
+  ogImage?: string;
 }
 
 export function colorDimFrom(color: string): string {
