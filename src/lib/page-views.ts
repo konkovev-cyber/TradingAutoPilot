@@ -22,3 +22,4 @@ export function recordPageView(path = typeof window !== "undefined" ? window.loc
     } catch {}
   }
 }
+

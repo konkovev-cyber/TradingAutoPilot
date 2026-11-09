@@ -22,6 +22,7 @@ interface Stats {
   todayLeads: number;
   views7d: number;
   viewsTotal: number | null;
+  viewsToday: number;
 }
 
 const CARD_STYLES: Record<string, string> = {
@@ -68,10 +69,10 @@ export default function AdminDashboard() {
     todayLeads: 0,
     views7d: 0,
     viewsTotal: null,
+    viewsToday: 0,
   });
   const [recentLeads, setRecentLeads] = useState<Lead[]>([]);
   const [allLeads, setAllLeads] = useState<Lead[]>([]);
-  const [viewsChart, setViewsChart] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -124,33 +125,21 @@ export default function AdminDashboard() {
         }
       } catch {}
 
-      // 3. Fallback views from Supabase if serverStats didn't have chart
-      let chart: number[] = Array.isArray(serverStats?.viewsChart) ? serverStats.viewsChart : [];
       let views7d: number = serverStats?.views7d ?? 0;
       let viewsTotal: number | null = typeof serverStats?.views === "number" ? serverStats.views : null;
+      let viewsToday: number = serverStats?.viewsToday ?? 0;
 
-      if (chart.length === 0 && supabase) {
+      if (viewsTotal === null && supabase) {
         try {
           const [viewsRes, totalViewsRes] = await Promise.all([
             supabase.from("page_views").select("created_at").gte("created_at", weekAgo),
             supabase.from("page_views").select("id", { count: "exact", head: true }),
           ]);
           const views: string[] = (viewsRes.data ?? []).map((v: { created_at: string }) => v.created_at);
-          const dayKeys: string[] = [];
-          for (let i = 6; i >= 0; i--) {
-            dayKeys.push(new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString().slice(0, 10));
-          }
-          chart = dayKeys.map((k) => views.filter((v) => v.slice(0, 10) === k).length);
           views7d = views.length;
           viewsTotal = totalViewsRes.count ?? views.length;
         } catch {}
       }
-
-      if (chart.length === 0) {
-        chart = [0, 0, 0, 0, 0, 0, 0];
-      }
-
-      setViewsChart(chart);
 
       setStats({
         totalLeads: serverStats?.leads ?? leads.length,
@@ -159,6 +148,7 @@ export default function AdminDashboard() {
         todayLeads: serverStats?.todayLeads ?? leads.filter((l) => l.created_at >= dayAgo).length,
         views7d,
         viewsTotal,
+        viewsToday,
       });
 
       setAllLeads(leads);
@@ -214,22 +204,16 @@ export default function AdminDashboard() {
     },
     {
       label: "Просмотры",
-      hint: "За последние 7 дней",
-      value: stats.views7d.toString(),
+      hint: stats.viewsTotal !== null
+        ? `За 7 дней: ${stats.views7d} · Сегодня: ${stats.viewsToday}`
+        : "За последние 7 дней",
+      value: (stats.viewsTotal ?? stats.views7d).toString(),
       icon: Eye,
       color: "pink",
-      to: "#views-chart",
+      to: "/",
+      isExternal: true,
     },
   ];
-
-  const maxViews = Math.max(1, ...viewsChart);
-
-  const scrollToViews = (e: React.MouseEvent, to: string) => {
-    if (to === "#views-chart") {
-      e.preventDefault();
-      document.getElementById("views-chart")?.scrollIntoView({ behavior: "smooth" });
-    }
-  };
 
   return (
     <div className="space-y-6 max-w-5xl">
@@ -268,67 +252,41 @@ export default function AdminDashboard() {
 
       {/* 5 Clickable Stat Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
-        {statCards.map(({ label, hint, value, icon: Icon, color, to, highlight }, idx) => (
-          <Link
-            key={label}
-            to={to}
-            onClick={(e) => scrollToViews(e, to)}
-            className={`group relative bg-gray-900 border rounded-xl p-3.5 sm:p-5 transition-all duration-200 cursor-pointer block hover:-translate-y-1 hover:shadow-xl ${
-              idx === 4 ? "col-span-2 sm:col-span-1" : ""
-            } ${
-              highlight
-                ? "border-blue-500/60 bg-blue-950/25 hover:border-blue-400 shadow-blue-500/10 shadow-lg"
-                : "border-gray-800 hover:border-gray-700 hover:bg-gray-800/60"
-            }`}
-          >
-            <div className="flex items-start justify-between mb-2 sm:mb-3">
-              <div
-                className={`w-9 h-9 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center transition-transform duration-200 ${CARD_STYLES[color]}`}
-              >
-                <Icon size={18} className="sm:w-5 sm:h-5" />
-              </div>
-              <ArrowUpRight
-                size={15}
-                className="text-gray-500 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all opacity-40 group-hover:opacity-100"
-              />
-            </div>
-
-            <div className="text-2xl sm:text-3xl font-bold text-white group-hover:text-brand-blue transition-colors">{value}</div>
-            <div className="text-gray-200 text-xs sm:text-sm mt-1 sm:mt-1.5 font-semibold truncate">{label}</div>
-            <div className="text-gray-400 text-[11px] sm:text-xs mt-0.5 flex items-center gap-1 group-hover:text-gray-300 truncate">
-              {hint}
-            </div>
-          </Link>
-        ))}
-      </div>
-
-      {/* Views Chart */}
-      <div id="views-chart" className="bg-gray-900 border border-gray-800 rounded-xl p-6 scroll-mt-6">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h2 className="text-xl font-bold text-white">Просмотры за 7 дней</h2>
-            {stats.viewsTotal !== null && (
-              <p className="text-gray-500 text-xs mt-0.5">Всего просмотров за всё время: {stats.viewsTotal}</p>
-            )}
-          </div>
-        </div>
-        {stats.views7d === 0 ? (
-          <div className="text-gray-500 text-center py-8">
-            Пока нет данных о просмотрах. Они появятся, когда посетители будут открывать сайт.
-          </div>
-        ) : (
-          <div className="flex items-end gap-2 h-32">
-            {viewsChart.map((count, i) => (
-              <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                <div className="text-xs text-gray-400 tabular-nums">{count}</div>
+        {statCards.map(({ label, hint, value, icon: Icon, color, to, highlight, isExternal }, idx) => {
+          const Tag: any = isExternal ? "a" : Link;
+          const extraProps = isExternal ? { href: to, target: "_blank", rel: "noopener noreferrer" } : { to };
+          return (
+            <Tag
+              key={label}
+              {...extraProps}
+              className={`group relative bg-gray-900 border rounded-xl p-3.5 sm:p-5 transition-all duration-200 cursor-pointer block hover:-translate-y-1 hover:shadow-xl ${
+                idx === 4 ? "col-span-2 sm:col-span-1" : ""
+              } ${
+                highlight
+                  ? "border-blue-500/60 bg-blue-950/25 hover:border-blue-400 shadow-blue-500/10 shadow-lg"
+                  : "border-gray-800 hover:border-gray-700 hover:bg-gray-800/60"
+              }`}
+            >
+              <div className="flex items-start justify-between mb-2 sm:mb-3">
                 <div
-                  className="w-full bg-brand-blue/70 rounded-t-md transition-all"
-                  style={{ height: `${Math.max(4, (count / maxViews) * 100)}%` }}
+                  className={`w-9 h-9 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center transition-transform duration-200 ${CARD_STYLES[color]}`}
+                >
+                  <Icon size={18} className="sm:w-5 sm:h-5" />
+                </div>
+                <ArrowUpRight
+                  size={15}
+                  className="text-gray-500 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all opacity-40 group-hover:opacity-100"
                 />
               </div>
-            ))}
-          </div>
-        )}
+
+              <div className="text-2xl sm:text-3xl font-bold text-white group-hover:text-brand-blue transition-colors">{value}</div>
+              <div className="text-gray-200 text-xs sm:text-sm mt-1 sm:mt-1.5 font-semibold truncate">{label}</div>
+              <div className="text-gray-400 text-[11px] sm:text-xs mt-0.5 flex items-center gap-1 group-hover:text-gray-300 truncate">
+                {hint}
+              </div>
+            </Tag>
+          );
+        })}
       </div>
 
       {/* 2 Interactive Columns: Funnel & Bots */}

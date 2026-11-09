@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useI18n } from "@/lib/i18n";
 import { useContacts, DEFAULT_PHONE } from "@/lib/site-content";
 import { MessageCircle, X, ArrowUp, Send, Mail, Phone } from "lucide-react";

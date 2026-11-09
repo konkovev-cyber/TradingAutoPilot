@@ -1,4 +1,4 @@
-﻿import React, { useState } from "react";
+import React, { useState } from "react";
 import { Send, CheckCircle2, User, AtSign, Bot as BotIcon, MessageSquareText, Sparkles, ShieldCheck, Settings2, Rocket } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { useBots } from "@/lib/use-bots";
