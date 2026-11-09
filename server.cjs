@@ -74,9 +74,11 @@ async function initDb() {
 
         CREATE TABLE IF NOT EXISTS site_sections (
           key TEXT PRIMARY KEY,
+          title TEXT,
           enabled BOOLEAN DEFAULT true,
           position INT DEFAULT 0
         );
+        ALTER TABLE site_sections ADD COLUMN IF NOT EXISTS title TEXT;
 
         CREATE TABLE IF NOT EXISTS page_views (
           id SERIAL PRIMARY KEY,
@@ -371,6 +373,44 @@ app.post('/api/site-content', async (req, res) => {
   }
   memoryStore.siteContent[key] = value;
   res.json({ success: true, key });
+});
+
+// Site Sections: Get
+app.get('/api/site-sections', async (req, res) => {
+  if (pool) {
+    try {
+      const q = await pool.query('SELECT * FROM site_sections ORDER BY position ASC');
+      if (q.rows.length > 0) return res.json(q.rows);
+    } catch (e) {
+      console.error('[Site Sections Error]', e.message);
+    }
+  }
+  res.json(memoryStore.siteSections || []);
+});
+
+// Site Sections: Save
+app.post('/api/site-sections', async (req, res) => {
+  const sections = Array.isArray(req.body) ? req.body : [req.body];
+  if (pool) {
+    try {
+      for (const s of sections) {
+        if (!s.key) continue;
+        await pool.query(`
+          INSERT INTO site_sections (key, title, enabled, position)
+          VALUES ($1, $2, $3, $4)
+          ON CONFLICT (key) DO UPDATE SET
+            title = COALESCE(EXCLUDED.title, site_sections.title),
+            enabled = EXCLUDED.enabled,
+            position = EXCLUDED.position;
+        `, [s.key, s.title || '', s.enabled !== false, s.position || 0]);
+      }
+      return res.json({ success: true });
+    } catch (e) {
+      console.error('[Site Sections Save Error]', e.message);
+    }
+  }
+  memoryStore.siteSections = sections;
+  res.json({ success: true });
 });
 
 // Page Views: Record

@@ -339,21 +339,22 @@ export const supabase: any = {
 
     onAuthStateChange: (callback: AuthListener) => {
       authListeners.add(callback);
-      // Also register on realClient if available
-      let sub: any = null;
-      if (realClient) {
-        try {
-          sub = realClient.auth.onAuthStateChange(callback);
-        } catch (e) {
-          // ignore
-        }
+      // Immediately notify listener of current stored session
+      const stored = getStoredAuth();
+      if (stored?.session) {
+        setTimeout(() => {
+          try {
+            callback("SIGNED_IN", stored.session);
+          } catch {
+            // ignore
+          }
+        }, 0);
       }
       return {
         data: {
           subscription: {
             unsubscribe: () => {
               authListeners.delete(callback);
-              if (sub?.data?.subscription) sub.data.subscription.unsubscribe();
             },
           },
         },

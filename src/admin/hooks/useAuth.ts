@@ -1,85 +1,82 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
 
+function getInitialUser(): User | null {
+  try {
+    const raw = localStorage.getItem("tap_auth");
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      return parsed?.user || parsed?.session?.user || null;
+    }
+  } catch {
+    // ignore
+  }
+  return null;
+}
+
+function getInitialIsAdmin(): boolean {
+  try {
+    const raw = localStorage.getItem("tap_auth");
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      const email = parsed?.user?.email || parsed?.session?.user?.email;
+      if (email && ["konkev@bk.ru", "konkovev@gmail.com"].includes(email.toLowerCase())) {
+        return true;
+      }
+      return Boolean(parsed?.user || parsed?.session?.user);
+    }
+  } catch {
+    // ignore
+  }
+  return false;
+}
+
 export function useAuth() {
-  const [user, setUser] = useState<User | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [loading, setLoading] = useState(true);
-
-  const loadRole = async (userId: string, email?: string) => {
-    if (!supabase || !userId) {
-      setIsAdmin(false);
-      setLoading(false);
-      return;
-    }
-
-    // 0) Email whitelist: главный админ сайта всегда имеет доступ
-    const adminEmails = ["konkev@bk.ru", "konkovev@gmail.com"];
-    if (email && adminEmails.includes(email.toLowerCase())) {
-      setIsAdmin(true);
-      setLoading(false);
-      return;
-    }
-
-    try {
-      // 1) RPC is_admin
-      const { data, error } = await supabase.rpc("is_admin");
-      if (!error && data !== null) {
-        setIsAdmin(Boolean(data));
-        console.log("[Auth] RPC is_admin:", Boolean(data));
-        setLoading(false);
-        return;
-      }
-      console.error("[Auth] RPC failed, fallback to table:", error?.message);
-    } catch (e) {
-      console.error("[Auth] RPC exception:", e);
-    }
-
-    // 2) Fallback: читаем свою роль из user_roles
-    try {
-      const { data, error } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", userId)
-        .maybeSingle();
-      if (error) console.error("[Auth] table check error:", error.message);
-      if (data?.role === "admin") {
-        setIsAdmin(true);
-        setLoading(false);
-        return;
-      }
-    } catch (e) {
-      console.error("[Auth] table exception:", e);
-    }
-
-    // 3) Любой авторизованный пользователь в закрытой системе считается админом
-    setIsAdmin(true);
-    setLoading(false);
-  };
+  const [user, setUser] = useState<User | null>(getInitialUser);
+  const [isAdmin, setIsAdmin] = useState<boolean>(getInitialIsAdmin);
+  const [loading, setLoading] = useState<boolean>(() => !getInitialUser());
 
   useEffect(() => {
-    if (!supabase) {
-      setLoading(false);
-      return;
+    // 1. Sync immediately from getSession
+    if (supabase) {
+      supabase.auth.getSession().then(({ data: { session } }: any) => {
+        if (session?.user) {
+          setUser(session.user);
+          setIsAdmin(true);
+          setLoading(false);
+        } else {
+          // Only clear if localStorage is actually empty
+          const current = getInitialUser();
+          if (!current) {
+            setUser(null);
+            setIsAdmin(false);
+            setLoading(false);
+          }
+        }
+      });
     }
 
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        await loadRole(session.user.id, session.user.email);
-      } else {
-        setLoading(false);
-      }
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        loadRole(session.user.id, session.user.email);
-      } else {
+    // 2. Listen to state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: string, session: any) => {
+      if (event === "SIGNED_OUT") {
+        setUser(null);
         setIsAdmin(false);
         setLoading(false);
+        return;
+      }
+
+      if (session?.user) {
+        setUser(session.user);
+        setIsAdmin(true);
+        setLoading(false);
+      } else {
+        const current = getInitialUser();
+        if (!current) {
+          setUser(null);
+          setIsAdmin(false);
+          setLoading(false);
+        }
       }
     });
 
