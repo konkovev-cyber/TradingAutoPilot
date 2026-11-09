@@ -97,31 +97,68 @@ export default function AdminDashboard() {
     const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
     try {
-      const [leadsRes, botsRes, viewsRes, totalViewsRes] = await Promise.all([
-        supabase.from("leads").select("*").order("created_at", { ascending: false }),
-        supabase.from("bots").select("id", { count: "exact", head: true }),
-        supabase.from("page_views").select("created_at").gte("created_at", weekAgo),
-        supabase.from("page_views").select("id", { count: "exact", head: true }),
-      ]);
+      let leads: Lead[] = [];
+      let serverStats: any = null;
 
-      if (leadsRes.error) throw new Error("Заявки: " + leadsRes.error.message);
+      // 1. Fetch leads from backend API (PostgreSQL / memory)
+      try {
+        const res = await fetch("/api/leads");
+        if (res.ok) {
+          leads = await res.json();
+        }
+      } catch {}
 
-      const leads: Lead[] = (leadsRes.data as Lead[]) ?? [];
-      const views: string[] = (viewsRes.data ?? []).map((v: { created_at: string }) => v.created_at);
-
-      const dayKeys: string[] = [];
-      for (let i = 6; i >= 0; i--) {
-        dayKeys.push(new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString().slice(0, 10));
+      // Fallback to Supabase if empty
+      if (leads.length === 0 && supabase) {
+        try {
+          const leadsRes = await supabase.from("leads").select("*").order("created_at", { ascending: false });
+          if (leadsRes.data) leads = leadsRes.data as Lead[];
+        } catch {}
       }
-      setViewsChart(dayKeys.map((k) => views.filter((v) => v.slice(0, 10) === k).length));
+
+      // 2. Fetch stats from /api/stats
+      try {
+        const sRes = await fetch("/api/stats");
+        if (sRes.ok) {
+          serverStats = await sRes.json();
+        }
+      } catch {}
+
+      // 3. Fallback views from Supabase if serverStats didn't have chart
+      let chart: number[] = Array.isArray(serverStats?.viewsChart) ? serverStats.viewsChart : [];
+      let views7d: number = serverStats?.views7d ?? 0;
+      let viewsTotal: number | null = typeof serverStats?.views === "number" ? serverStats.views : null;
+
+      if (chart.length === 0 && supabase) {
+        try {
+          const [viewsRes, totalViewsRes] = await Promise.all([
+            supabase.from("page_views").select("created_at").gte("created_at", weekAgo),
+            supabase.from("page_views").select("id", { count: "exact", head: true }),
+          ]);
+          const views: string[] = (viewsRes.data ?? []).map((v: { created_at: string }) => v.created_at);
+          const dayKeys: string[] = [];
+          for (let i = 6; i >= 0; i--) {
+            dayKeys.push(new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString().slice(0, 10));
+          }
+          chart = dayKeys.map((k) => views.filter((v) => v.slice(0, 10) === k).length);
+          views7d = views.length;
+          viewsTotal = totalViewsRes.count ?? views.length;
+        } catch {}
+      }
+
+      if (chart.length === 0) {
+        chart = [0, 0, 0, 0, 0, 0, 0];
+      }
+
+      setViewsChart(chart);
 
       setStats({
-        totalLeads: leads.length,
-        newLeads: leads.filter((l) => l.status === "new").length,
-        botsCount: botsRes.count ?? (Array.isArray(botsRes.data) ? botsRes.data.length : 3),
-        todayLeads: leads.filter((l) => l.created_at >= dayAgo).length,
-        views7d: views.length,
-        viewsTotal: totalViewsRes.count ?? views.length,
+        totalLeads: serverStats?.leads ?? leads.length,
+        newLeads: serverStats?.newLeads ?? leads.filter((l) => l.status === "new").length,
+        botsCount: serverStats?.bots ?? 3,
+        todayLeads: serverStats?.todayLeads ?? leads.filter((l) => l.created_at >= dayAgo).length,
+        views7d,
+        viewsTotal,
       });
 
       setAllLeads(leads);

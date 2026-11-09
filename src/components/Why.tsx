@@ -7,8 +7,8 @@ export default function Why() {
   const c = useContent();
 
   return (
-    <section id="why" className="section-padding bg-white py-16 transition-colors duration-300 dark:bg-gray-950 md:py-20">
-      <div className="mx-auto max-w-4xl px-6 lg:px-8">
+    <section id="why" className="section-padding bg-white py-12 transition-colors duration-300 dark:bg-gray-950 sm:py-16 md:py-20">
+      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}

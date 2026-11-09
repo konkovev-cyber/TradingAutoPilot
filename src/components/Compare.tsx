@@ -20,9 +20,9 @@ export default function Compare({ id, compact = false }: { id?: string; compact?
   ];
 
   return (
-    <section id={id} className="section-padding bg-white py-16 transition-colors duration-300 dark:bg-gray-950 md:py-20">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="mb-12 text-center">
+    <section id={id} className="section-padding bg-white py-12 transition-colors duration-300 dark:bg-gray-950 sm:py-16 md:py-20">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mb-8 sm:mb-12 text-center">
           <h2 className="heading-lg mb-4 text-gray-900 dark:text-white">{title}</h2>
           <p className="mx-auto max-w-2xl text-base font-normal text-gray-500 dark:text-gray-400 md:text-lg">{subtitle}</p>
         </div>

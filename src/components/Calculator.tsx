@@ -22,14 +22,14 @@ export default function Calculator({ initialSlug, ctaTarget = "#bots" }: { initi
   if (allBots.length === 0) return null;
 
   return (
-    <section id="calculator" className="py-24 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
-      <div className="max-w-4xl mx-auto px-6 lg:px-8">
-        <div className="text-center mb-14">
+    <section id="calculator" className="py-12 sm:py-16 md:py-20 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-8 sm:mb-12">
           <h2 className="heading-lg text-gray-900 dark:text-white mb-4">{t("calculator.title")}</h2>
           <p className="text-base md:text-lg text-gray-500 dark:text-gray-500 font-normal">{t("calculator.subtitle")}</p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-12 items-center bg-white dark:bg-gray-950 p-8 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-xl card-premium">
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center bg-white dark:bg-gray-950 p-5 sm:p-8 rounded-2xl sm:rounded-3xl border border-gray-100 dark:border-gray-800 shadow-xl card-premium">
           <div className="space-y-8">
             <div>
               <div className="flex justify-between mb-4">
@@ -73,9 +73,9 @@ export default function Calculator({ initialSlug, ctaTarget = "#bots" }: { initi
             </div>
           </div>
 
-          <div className="bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-8 text-center border border-blue-100 dark:border-blue-800">
+          <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl sm:rounded-2xl p-5 sm:p-8 text-center border border-blue-100 dark:border-blue-800">
             <div className="text-sm text-blue-600 dark:text-blue-400 font-medium mb-2">{t("calculator.result")}</div>
-            <div className="text-5xl font-bold text-gray-900 dark:text-white mb-6">
+            <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
               ${Math.round(finalAmount).toLocaleString()}
             </div>
             <div className="space-y-2 mb-8">

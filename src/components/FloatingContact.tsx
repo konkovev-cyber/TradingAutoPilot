@@ -21,67 +21,79 @@ export default function FloatingContact() {
   return (
     <>
       {open && (
-        <div className="fixed bottom-24 right-5 z-[70] flex flex-col gap-2">
-          <a
-            href={contacts.telegram}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-3 bg-white dark:bg-gray-900 rounded-xl px-4 py-3 border border-gray-200 dark:border-gray-800 shadow-md hover:shadow-lg transition-all"
-          >
-            <span className="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
-              <Send size={18} className="text-brand-blue" />
-            </span>
-            <span>
-              <span className="block text-xs text-gray-400 dark:text-gray-500">{t("contact.writeIn")}</span>
-              <span className="text-sm font-semibold text-gray-900 dark:text-white">Telegram</span>
-            </span>
-          </a>
-          <a
-            href={contacts.whatsapp}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-3 bg-white dark:bg-gray-900 rounded-xl px-4 py-3 border border-gray-200 dark:border-gray-800 shadow-md hover:shadow-lg transition-all"
-          >
-            <span className="w-10 h-10 rounded-full bg-green-50 dark:bg-green-900/30 flex items-center justify-center shrink-0">
-              <MessageCircle size={18} className="text-green-600" />
-            </span>
-            <span>
-              <span className="block text-xs text-gray-400 dark:text-gray-500">{t("contact.writeIn")}</span>
-              <span className="text-sm font-semibold text-gray-900 dark:text-white">WhatsApp</span>
-            </span>
-          </a>
-          <a
-            href={contacts.email}
-            className="flex items-center gap-3 bg-white dark:bg-gray-900 rounded-xl px-4 py-3 border border-gray-200 dark:border-gray-800 shadow-md hover:shadow-lg transition-all"
-          >
-            <span className="w-10 h-10 rounded-full bg-violet-50 dark:bg-violet-900/30 flex items-center justify-center shrink-0">
-              <Mail size={18} className="text-violet-600" />
-            </span>
-            <span>
-              <span className="block text-xs text-gray-400 dark:text-gray-500">{t("contact.writeIn")}</span>
-              <span className="text-sm font-semibold text-gray-900 dark:text-white">Email</span>
-            </span>
-          </a>
-          {contacts.phone !== DEFAULT_PHONE && (
+        <>
+          {/* Backdrop on click outside for mobile */}
+          <div
+            className="fixed inset-0 z-[65] bg-black/25 backdrop-blur-[1px] transition-opacity"
+            onClick={() => setOpen(false)}
+            aria-hidden="true"
+          />
+          <div className="fixed bottom-24 right-4 sm:right-5 z-[70] flex flex-col gap-2 max-w-[280px] w-full">
             <a
-              href={`tel:${contacts.phone.replace(/[^+\d]/g, "")}`}
+              href={contacts.telegram}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setOpen(false)}
               className="flex items-center gap-3 bg-white dark:bg-gray-900 rounded-xl px-4 py-3 border border-gray-200 dark:border-gray-800 shadow-md hover:shadow-lg transition-all"
             >
-              <span className="w-10 h-10 rounded-full bg-amber-50 dark:bg-amber-900/30 flex items-center justify-center shrink-0">
-                <Phone size={18} className="text-amber-600" />
+              <span className="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
+                <Send size={18} className="text-brand-blue" />
               </span>
               <span>
-                <span className="block text-xs text-gray-400 dark:text-gray-500">{t("contact.phone")}</span>
-                <span className="text-sm font-semibold text-gray-900 dark:text-white">{contacts.phone}</span>
+                <span className="block text-xs text-gray-400 dark:text-gray-500">{t("contact.writeIn")}</span>
+                <span className="text-sm font-semibold text-gray-900 dark:text-white">Telegram</span>
               </span>
             </a>
-          )}
-        </div>
+            <a
+              href={contacts.whatsapp}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-3 bg-white dark:bg-gray-900 rounded-xl px-4 py-3 border border-gray-200 dark:border-gray-800 shadow-md hover:shadow-lg transition-all"
+            >
+              <span className="w-10 h-10 rounded-full bg-green-50 dark:bg-green-900/30 flex items-center justify-center shrink-0">
+                <MessageCircle size={18} className="text-green-600" />
+              </span>
+              <span>
+                <span className="block text-xs text-gray-400 dark:text-gray-500">{t("contact.writeIn")}</span>
+                <span className="text-sm font-semibold text-gray-900 dark:text-white">WhatsApp</span>
+              </span>
+            </a>
+            <a
+              href={contacts.email}
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-3 bg-white dark:bg-gray-900 rounded-xl px-4 py-3 border border-gray-200 dark:border-gray-800 shadow-md hover:shadow-lg transition-all"
+            >
+              <span className="w-10 h-10 rounded-full bg-violet-50 dark:bg-violet-900/30 flex items-center justify-center shrink-0">
+                <Mail size={18} className="text-violet-600" />
+              </span>
+              <span>
+                <span className="block text-xs text-gray-400 dark:text-gray-500">{t("contact.writeIn")}</span>
+                <span className="text-sm font-semibold text-gray-900 dark:text-white">Email</span>
+              </span>
+            </a>
+            {contacts.phone !== DEFAULT_PHONE && (
+              <a
+                href={`tel:${contacts.phone.replace(/[^+\d]/g, "")}`}
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-3 bg-white dark:bg-gray-900 rounded-xl px-4 py-3 border border-gray-200 dark:border-gray-800 shadow-md hover:shadow-lg transition-all"
+              >
+                <span className="w-10 h-10 rounded-full bg-amber-50 dark:bg-amber-900/30 flex items-center justify-center shrink-0">
+                  <Phone size={18} className="text-amber-600" />
+                </span>
+                <span>
+                  <span className="block text-xs text-gray-400 dark:text-gray-500">{t("contact.phone")}</span>
+                  <span className="text-sm font-semibold text-gray-900 dark:text-white">{contacts.phone}</span>
+                </span>
+              </a>
+            )}
+          </div>
+        </>
       )}
 
       <button
         onClick={top}
-        className={`fixed bottom-24 right-5 z-[70] w-11 h-11 rounded-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center text-gray-500 dark:text-gray-400 shadow-md transition-all duration-300 hover:text-gray-900 dark:hover:text-white hover:shadow-lg ${
+        className={`fixed bottom-24 right-4 sm:right-5 z-[70] w-11 h-11 rounded-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center text-gray-500 dark:text-gray-400 shadow-md transition-all duration-300 hover:text-gray-900 dark:hover:text-white hover:shadow-lg ${
           showTop && !open ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
         title={t("contact.up")}
@@ -92,7 +104,7 @@ export default function FloatingContact() {
 
       <button
         onClick={() => setOpen(!open)}
-        className="fixed bottom-5 right-5 z-[70] w-14 h-14 rounded-full bg-brand-blue flex items-center justify-center shadow-lg transition-all duration-300 hover:bg-blue-700 hover:shadow-xl"
+        className="fixed bottom-5 right-4 sm:right-5 z-[70] w-14 h-14 rounded-full bg-brand-blue flex items-center justify-center shadow-lg transition-all duration-300 hover:bg-blue-700 hover:shadow-xl cursor-pointer"
         title={t("contact.open")}
         aria-label={t("contact.open")}
       >

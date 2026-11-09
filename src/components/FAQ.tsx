@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
@@ -18,19 +18,19 @@ export default function FAQ() {
     .filter((x) => x.q || x.a);
 
   return (
-    <section id="faq" className="section-padding relative overflow-hidden bg-white dark:bg-gray-950 transition-colors duration-300">
+    <section id="faq" className="section-padding relative overflow-hidden bg-white py-12 dark:bg-gray-950 transition-colors duration-300 sm:py-16 md:py-20">
       <div className="pointer-events-none absolute -right-40 top-24 h-80 w-80 rounded-full bg-emerald-400/10 blur-3xl" aria-hidden="true" />
       <div className="pointer-events-none absolute -left-40 bottom-16 h-72 w-72 rounded-full bg-indigo-400/10 blur-3xl" aria-hidden="true" />
-      <div className="relative max-w-3xl mx-auto px-6 lg:px-8">
+      <div className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-12"
+          className="text-center mb-8 sm:mb-12"
         >
-          <h2 className="heading-lg text-gray-900 dark:text-white mb-4">{t("faq.title")}</h2>
-          <p className="text-lg text-gray-500 dark:text-gray-400">{t("faq.subtitle")}</p>
+          <h2 className="heading-lg text-gray-900 dark:text-white mb-3 sm:mb-4">{t("faq.title")}</h2>
+          <p className="text-sm sm:text-base md:text-lg text-gray-500 dark:text-gray-400">{t("faq.subtitle")}</p>
         </motion.div>
 
         <div className="space-y-3">
@@ -51,7 +51,7 @@ export default function FAQ() {
                 onClick={() => setOpen(open === i ? null : i)}
                 aria-expanded={open === i}
                 aria-controls={`faq-panel-${i}`}
-                className="w-full flex items-center justify-between gap-4 p-5 text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                className="w-full flex items-center justify-between gap-3 sm:gap-4 p-4 sm:p-5 text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
               >
                 <span className="font-medium text-gray-900 dark:text-white text-sm sm:text-base">{faq.q}</span>
                 <ChevronDown
@@ -67,7 +67,7 @@ export default function FAQ() {
                 id={`faq-panel-${i}`}
                 role="region"
               >
-                <p className="px-5 pb-5 text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{faq.a}</p>
+                <p className="px-4 pb-4 sm:px-5 sm:pb-5 text-xs sm:text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{faq.a}</p>
               </motion.div>
             </motion.div>
           ))}

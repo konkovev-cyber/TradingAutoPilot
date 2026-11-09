@@ -9,22 +9,22 @@ export default function Connect() {
   const steps = useLocalizedList("connect", "steps");
 
   return (
-    <section id="how" className="section-padding bg-gray-50 py-16 transition-colors duration-300 dark:bg-gray-900 md:py-20">
-      <div className="mx-auto max-w-5xl px-6 lg:px-8">
+    <section id="how" className="section-padding bg-gray-50 py-12 transition-colors duration-300 dark:bg-gray-900 sm:py-16 md:py-20">
+      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="mb-12 text-center"
+          className="mb-8 sm:mb-12 text-center"
         >
-          <h2 className="heading-lg mb-4 text-gray-900 dark:text-white">{c("connect", "title", t("how.title"))}</h2>
-          <p className="mx-auto max-w-2xl text-base font-normal text-gray-500 dark:text-gray-400 md:text-lg">
+          <h2 className="heading-lg mb-3 sm:mb-4 text-gray-900 dark:text-white">{c("connect", "title", t("how.title"))}</h2>
+          <p className="mx-auto max-w-2xl text-sm font-normal text-gray-500 dark:text-gray-400 sm:text-base md:text-lg">
             {c("connect", "subtitle", t("how.subtitle"))}
           </p>
         </motion.div>
 
-        <ol className="grid gap-4 sm:grid-cols-2">
+        <ol className="grid gap-3.5 sm:gap-4 sm:grid-cols-2">
           {steps.map((step, i) => (
             <motion.li
               key={i}
@@ -32,7 +32,7 @@ export default function Connect() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: i * 0.08 }}
-              className="flex gap-4 rounded-2xl border border-gray-100 bg-white p-6 shadow-soft dark:border-gray-800 dark:bg-gray-900"
+              className="flex gap-3.5 sm:gap-4 rounded-2xl border border-gray-100 bg-white p-4 sm:p-6 shadow-soft dark:border-gray-800 dark:bg-gray-900"
             >
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 font-bold text-brand-blue dark:bg-blue-950">
                 {String(i + 1).padStart(2, "0")}

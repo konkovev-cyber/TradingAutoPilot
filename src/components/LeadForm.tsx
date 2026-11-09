@@ -16,37 +16,36 @@ export default function LeadForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus("sending");
-    const sb = getSupabase();
-    if (sb) {
-      try {
-        const { error } = await sb.from("leads").insert([{
+
+    try {
+      const res = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           name: form.name,
           contact: form.contact,
           bot: form.bot,
           message: form.message,
-          created_at: new Date().toISOString()
-        }]);
-        if (error) throw error;
-        try {
-          if (supabaseUrl) {
-            const { data: { session } } = await sb.auth.getSession();
-            await fetch(`${supabaseUrl}/functions/v1/notify-lead`, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${session?.access_token ?? ""}`,
-              },
-              body: JSON.stringify({ name: form.name, contact: form.contact, bot: form.bot, message: form.message }),
-            });
-          }
-        } catch {
-          /* уведомление опционально */
-        }
-        setStatus("success");
-      } catch {
-        setStatus("error");
+        }),
+      });
+
+      if (!res.ok) throw new Error("API call failed");
+
+      // Optional mirror to Supabase if configured
+      const sb = getSupabase();
+      if (sb) {
+        sb.from("leads").insert([{
+          name: form.name,
+          contact: form.contact,
+          bot: form.bot,
+          message: form.message,
+          created_at: new Date().toISOString(),
+        }]).then(() => {}).catch(() => {});
       }
-    } else {
+
+      setStatus("success");
+    } catch {
+      // Fallback: direct telegram share
       const text = lang === "en"
         ? `Request:\nName: ${form.name}\nContact: ${form.contact}\nBot: ${form.bot}\nMessage: ${form.message}`
         : `Заявка:\nИмя: ${form.name}\nКонтакт: ${form.contact}\nБот: ${form.bot}\nСообщение: ${form.message}`;
@@ -80,17 +79,17 @@ export default function LeadForm() {
       <div className="blob animate-float-slow w-[420px] h-[420px] bg-indigo-400/15 top-10 -left-40 dark:hidden" aria-hidden="true" />
       <div className="blob w-[320px] h-[320px] bg-blue-400/15 bottom-0 -right-24 dark:hidden" aria-hidden="true" />
 
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 relative">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <form onSubmit={handleSubmit} className="grid lg:grid-cols-5 gap-8 items-stretch">
-          {/* Форма  стеклянная карточка */}
-          <div className="lg:col-span-3 glass rounded-3xl border border-gray-100/80 dark:border-gray-800 shadow-[0_20px_50px_-12px_rgba(15,23,42,0.12)] p-8 lg:p-10">
+          {/* Форма — стеклянная карточка */}
+          <div className="lg:col-span-3 glass rounded-2xl sm:rounded-3xl border border-gray-100/80 dark:border-gray-800 shadow-[0_20px_50px_-12px_rgba(15,23,42,0.12)] p-5 sm:p-8 lg:p-10">
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "linear-gradient(135deg, #3b82f6 0%, #6366f1 100%)" }}>
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: "linear-gradient(135deg, #3b82f6 0%, #6366f1 100%)" }}>
                 <Sparkles size={20} className="text-white" />
               </div>
-              <h3 className="text-3xl font-bold text-gray-900">{t("lead.title")}</h3>
+              <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{t("lead.title")}</h3>
             </div>
-            <p className="text-lg text-gray-500 mb-8">{t("lead.subtitle")}</p>
+            <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mb-6 sm:mb-8">{t("lead.subtitle")}</p>
 
             <div className="space-y-5">
               <div>

@@ -18,8 +18,8 @@ import Conclusion from "@/components/Conclusion";
 import type { ComponentType } from "react";
 import { useSections } from "@/lib/sections";
 import { useContent } from "@/lib/site-content";
-import { supabase } from "@/lib/supabase";
 import { useI18n } from "@/lib/i18n";
+import { recordPageView } from "@/lib/page-views";
 
 const componentMap: Record<string, ComponentType> = {
   hero: Hero,
@@ -52,13 +52,9 @@ export default function HomePage() {
     }
   });
 
-  // Fire-and-forget page view counter
+  // Record page view counter
   useEffect(() => {
-    if (!supabase) return;
-    supabase
-      .from("page_views")
-      .insert({ path: "/" })
-      .then(() => {}, () => {});
+    recordPageView("/");
   }, []);
 
   return (

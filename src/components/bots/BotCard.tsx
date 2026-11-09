@@ -119,7 +119,7 @@ export default function BotCard({ bot, compact = false }: { bot: BotData; compac
   }
 
   return (
-    <div className="group relative flex min-w-0 flex-col rounded-2xl border border-gray-100 bg-white p-6 shadow-soft card-premium transition-colors sm:p-7 dark:border-gray-800 dark:bg-gray-900">
+    <div className="group relative flex min-w-0 flex-col rounded-2xl border border-gray-100 bg-white p-5 shadow-soft card-premium transition-colors sm:p-7 dark:border-gray-800 dark:bg-gray-900">
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-0.5 rounded-t-2xl" style={{ background: `linear-gradient(90deg, transparent, ${bot.color}, transparent)` }} />
       <div className="mb-4">
         <BotBadges bot={b} />

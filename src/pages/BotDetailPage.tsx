@@ -15,6 +15,7 @@ import Compare from "@/components/Compare";
 import { useI18n } from "@/lib/i18n";
 import { useSeo } from "@/lib/seo";
 import { botText, colorDimFrom } from "@/data/bots";
+import { recordPageView } from "@/lib/page-views";
 
 export default function BotDetailPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -27,6 +28,7 @@ export default function BotDetailPage() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    recordPageView(`/bots/${slug || ""}`);
   }, [slug]);
 
   useSeo({
@@ -68,8 +70,8 @@ export default function BotDetailPage() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 transition-colors duration-300">
       <Header />
-      <main id="main" className="pt-28 pb-20">
-        <div className="max-w-6xl mx-auto px-6 lg:px-8">
+      <main id="main" className="pt-24 sm:pt-28 pb-16 sm:pb-20">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-8">
             <Link
               to="/"
@@ -129,7 +131,7 @@ export default function BotDetailPage() {
 
                   <p className="text-gray-500 dark:text-gray-400 text-lg leading-relaxed max-w-3xl mb-8">{botText(bot, lang).shortDesc}</p>
 
-                  <div className="bg-white dark:bg-gray-900 rounded-xl p-8 border border-gray-100 dark:border-gray-800 shadow-sm mb-8">
+                  <div className="bg-white dark:bg-gray-900 rounded-xl p-5 sm:p-8 border border-gray-100 dark:border-gray-800 shadow-sm mb-8">
                     <h3 className="heading-md text-gray-900 dark:text-white mb-4">{t("botDetail.about")}</h3>
                     <p className="text-gray-500 dark:text-gray-400 leading-relaxed whitespace-pre-line">{botText(bot, lang).fullDesc}</p>
                   </div>
@@ -182,17 +184,17 @@ export default function BotDetailPage() {
                 </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4 mb-16">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-16">
                 <a
                   href="https://t.me/coinsofter"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn-primary inline-flex items-center justify-center gap-2 px-8 py-4 text-base"
+                  className="btn-primary inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 text-sm sm:text-base w-full sm:w-auto"
                 >
                   <Send size={18} />
                   {t("botDetail.contactCta")}
                 </a>
-                <Link to="/#bots" className="btn-secondary inline-flex items-center justify-center gap-2 px-8 py-4 text-base">
+                <Link to="/#bots" className="btn-secondary inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 text-sm sm:text-base w-full sm:w-auto">
                   <ArrowLeft size={16} /> {t("botDetail.back")}
                 </Link>
               </div>

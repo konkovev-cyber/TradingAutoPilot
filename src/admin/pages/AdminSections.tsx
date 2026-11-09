@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { fetchSections, DEFAULT_SECTIONS, type SiteSection } from "@/lib/sections";
 import {

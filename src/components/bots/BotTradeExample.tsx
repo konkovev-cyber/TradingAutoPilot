@@ -9,7 +9,7 @@ export default function BotTradeExample({ bot }: { bot: BotData }) {
   if (b.exampleTrade.length === 0) return null;
 
   return (
-    <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm sm:p-8 dark:border-gray-800 dark:bg-gray-900">
+    <div className="rounded-xl border border-gray-100 bg-white p-4 sm:p-6 md:p-8 shadow-sm dark:border-gray-800 dark:bg-gray-900">
       <div className="mb-6">
         <h3 className="heading-md text-gray-900 dark:text-white">{t("botDetail.exampleTitle")}</h3>
         <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">{t("botDetail.exampleNote")}</p>

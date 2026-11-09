@@ -845,33 +845,77 @@ app.post('/api/page-views', async (req, res) => {
 app.get('/api/stats', async (req, res) => {
   let leadsCount = 0;
   let newLeadsCount = 0;
+  let todayLeadsCount = 0;
+  let botsCount = 3;
   let viewsCount = 0;
   let viewsToday = 0;
+  let views7d = 0;
+  let viewsChart = [0, 0, 0, 0, 0, 0, 0];
+
+  const dayKeys = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(Date.now() - i * 24 * 60 * 60 * 1000);
+    dayKeys.push(d.toISOString().slice(0, 10));
+  }
 
   if (pool) {
     try {
       const l = await pool.query('SELECT COUNT(*) FROM leads');
       leadsCount = parseInt(l.rows[0].count, 10);
+
       const nl = await pool.query("SELECT COUNT(*) FROM leads WHERE status = 'new'");
       newLeadsCount = parseInt(nl.rows[0].count, 10);
+
+      const tl = await pool.query("SELECT COUNT(*) FROM leads WHERE created_at >= NOW() - INTERVAL '24 HOURS'");
+      todayLeadsCount = parseInt(tl.rows[0].count, 10);
+
+      const b = await pool.query('SELECT COUNT(*) FROM bots');
+      botsCount = parseInt(b.rows[0].count, 10);
+
       const v = await pool.query('SELECT COUNT(*) FROM page_views');
       viewsCount = parseInt(v.rows[0].count, 10);
+
       const vt = await pool.query("SELECT COUNT(*) FROM page_views WHERE created_at >= CURRENT_DATE");
       viewsToday = parseInt(vt.rows[0].count, 10);
+
+      const v7 = await pool.query("SELECT COUNT(*) FROM page_views WHERE created_at >= NOW() - INTERVAL '7 DAYS'");
+      views7d = parseInt(v7.rows[0].count, 10);
+
+      const vc = await pool.query(`
+        SELECT TO_CHAR(created_at, 'YYYY-MM-DD') AS day, COUNT(*)::int AS count
+        FROM page_views
+        WHERE created_at >= CURRENT_DATE - INTERVAL '6 DAYS'
+        GROUP BY TO_CHAR(created_at, 'YYYY-MM-DD')
+      `);
+      const map = {};
+      vc.rows.forEach(r => { map[r.day] = r.count; });
+      viewsChart = dayKeys.map(k => map[k] || 0);
     } catch (e) {
-      // fallback
+      console.warn('[Stats Query Fallback]', e.message);
     }
   } else {
     leadsCount = memoryStore.leads.length;
     newLeadsCount = memoryStore.leads.filter(l => l.status === 'new').length;
+    const dayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    todayLeadsCount = memoryStore.leads.filter(l => (l.created_at || '') >= dayAgo).length;
+    botsCount = memoryStore.bots.length || 3;
     viewsCount = memoryStore.pageViews.length;
+    const todayStr = new Date().toISOString().slice(0, 10);
+    viewsToday = memoryStore.pageViews.filter(v => (v.created_at || '').slice(0, 10) === todayStr).length;
+    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    views7d = memoryStore.pageViews.filter(v => (v.created_at || '') >= weekAgo).length;
+    viewsChart = dayKeys.map(k => memoryStore.pageViews.filter(v => (v.created_at || '').slice(0, 10) === k).length);
   }
 
   res.json({
     leads: leadsCount,
     newLeads: newLeadsCount,
+    todayLeads: todayLeadsCount,
+    bots: botsCount,
     views: viewsCount,
     viewsToday,
+    views7d,
+    viewsChart,
   });
 });
 

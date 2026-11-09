@@ -14,23 +14,23 @@ export default function Products() {
   const bots = useBots();
 
   return (
-    <section id="bots" className="section-padding bg-gray-50 py-16 transition-colors duration-300 dark:bg-gray-900 md:py-20">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+    <section id="bots" className="section-padding bg-gray-50 py-12 sm:py-16 md:py-20 transition-colors duration-300 dark:bg-gray-900">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="mb-12 text-center"
+          className="mb-10 sm:mb-12 text-center"
         >
-          <h2 className="heading-lg mb-4 text-gray-900 dark:text-white">{c("tryIt", "title", t("tryIt.title"))}</h2>
-          <p className="mx-auto max-w-2xl text-base text-gray-500 dark:text-gray-400 md:text-lg">
+          <h2 className="heading-lg mb-3 sm:mb-4 text-gray-900 dark:text-white">{c("tryIt", "title", t("tryIt.title"))}</h2>
+          <p className="mx-auto max-w-2xl text-sm sm:text-base text-gray-500 dark:text-gray-400 md:text-lg">
             {c("tryIt", "subtitle", t("tryIt.subtitle"))}
           </p>
-          <div className="mt-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+          <div className="mt-4 sm:mt-5 flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
             {[c("tryIt", "bullet1", t("tryIt.bullet1")), c("tryIt", "bullet2", t("tryIt.bullet2"))].map((text, index) => (
-              <span key={index} className="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-300">
-                <Check size={16} className="text-emerald-500" />
+              <span key={index} className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                <Check size={16} className="text-emerald-500 shrink-0" />
                 {text}
               </span>
             ))}
@@ -48,7 +48,7 @@ export default function Products() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.45, delay: index * 0.08 }}
-                className="group relative flex min-w-0 flex-col overflow-hidden rounded-3xl border border-slate-200/70 bg-white/75 p-6 shadow-soft-lg backdrop-blur-xl transition-all hover:-translate-y-1 hover:shadow-soft dark:border-white/10 dark:bg-[#0d1130]/80 dark:shadow-[0_28px_80px_-32px_rgba(99,102,241,0.55)] sm:p-7"
+                className="group relative flex min-w-0 flex-col overflow-hidden rounded-2xl sm:rounded-3xl border border-slate-200/70 bg-white/75 p-5 shadow-soft-lg backdrop-blur-xl transition-all hover:-translate-y-1 hover:shadow-soft dark:border-white/10 dark:bg-[#0d1130]/80 dark:shadow-[0_28px_80px_-32px_rgba(99,102,241,0.55)] sm:p-7"
               >
                 <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-1" style={{ background: `linear-gradient(90deg, transparent, ${bot.color}, transparent)` }} />
                 <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full blur-3xl" style={{ background: bot.colorDim }} />
@@ -81,12 +81,12 @@ export default function Products() {
           })}
         </div>
 
-        <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
+        <div className="mt-10 sm:mt-12 flex flex-col items-stretch sm:items-center justify-center gap-3 sm:gap-4 sm:flex-row">
           <a
             href={contacts.telegram}
             target="_blank"
             rel="noopener noreferrer"
-            className="btn-primary inline-flex items-center gap-2 px-8 py-4 text-base"
+            className="btn-primary inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 text-sm sm:text-base w-full sm:w-auto"
           >
             <Send size={18} />
             {t("cta.contactBtn")}
@@ -96,14 +96,14 @@ export default function Products() {
             href={contacts.whatsapp}
             target="_blank"
             rel="noopener noreferrer"
-            className="btn-secondary inline-flex items-center gap-2 px-8 py-4 text-base"
+            className="btn-secondary inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 text-sm sm:text-base w-full sm:w-auto"
           >
             <Phone size={18} className="text-green-600" />
             WhatsApp
           </a>
           <a
             href={contacts.email}
-            className="btn-secondary inline-flex items-center gap-2 px-8 py-4 text-base"
+            className="btn-secondary inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 text-sm sm:text-base w-full sm:w-auto"
           >
             <Mail size={18} className="text-violet-600" />
             Email

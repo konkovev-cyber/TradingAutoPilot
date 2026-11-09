@@ -43,7 +43,7 @@ export default function Hero() {
   });
 
   return (
-    <section id="project" className="relative isolate overflow-hidden bg-white pb-28 pt-[210px] text-slate-900 transition-colors dark:bg-[#07091b] dark:text-white md:pb-32">
+    <section id="project" className="relative isolate overflow-hidden bg-white pb-20 pt-[110px] sm:pt-[150px] md:pt-[200px] text-slate-900 transition-colors dark:bg-[#07091b] dark:text-white md:pb-32">
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-[190px] overflow-hidden">
         <div className={`absolute inset-y-0 left-0 flex w-[200%] opacity-40 ${reduceMotion ? "" : "hero-wave-track-rev"}`}>
           <WaveLayer gradientId="heroWaveBack" withDefs className="h-full w-1/2" />
@@ -62,26 +62,26 @@ export default function Hero() {
         <div className="absolute inset-0 opacity-[0.035] dark:opacity-[0.05]" style={{ backgroundImage: "linear-gradient(rgba(30,64,175,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(30,64,175,0.4) 1px, transparent 1px)", backgroundSize: "42px 42px" }} />
       </div>
 
-      <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-10">
+      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
         <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
           <motion.div {...enter(0)} className="max-w-xl">
-            <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-blue-200 bg-white px-4 py-2 text-[10px] font-bold uppercase tracking-[0.16em] text-blue-700 shadow-sm dark:border-white/15 dark:bg-white/[0.08] dark:text-cyan-100">
+            <span className="mb-4 sm:mb-5 inline-flex items-center gap-2 rounded-full border border-blue-200 bg-white px-3.5 py-1.5 sm:px-4 sm:py-2 text-[10px] font-bold uppercase tracking-[0.16em] text-blue-700 shadow-sm dark:border-white/15 dark:bg-white/[0.08] dark:text-cyan-100">
               <span className="h-2 w-2 rounded-full bg-cyan-400 shadow-[0_0_12px_rgba(34,211,238,0.85)]" />
               {c("hero", "badge", t("hero.badge"))}
             </span>
-            <h1 className="text-balance text-4xl font-extrabold leading-[1.08] tracking-[-0.045em] text-slate-900 dark:text-white sm:text-[44px]">
+            <h1 className="text-balance text-3xl sm:text-4xl lg:text-[44px] font-extrabold leading-[1.12] sm:leading-[1.08] tracking-[-0.04em] sm:tracking-[-0.045em] text-slate-900 dark:text-white">
               {t("hero.heading1")}
               <span className="block bg-gradient-to-r from-blue-700 via-indigo-600 to-violet-600 bg-clip-text text-transparent dark:from-cyan-300 dark:via-blue-300 dark:to-violet-300">{t("hero.heading2")}</span>
             </h1>
-            <p className="mt-5 text-base leading-relaxed text-slate-600 dark:text-slate-300 sm:text-lg">
+            <p className="mt-4 sm:mt-5 text-sm sm:text-base md:text-lg leading-relaxed text-slate-600 dark:text-slate-300">
               {c("hero", "subtitle", t("hero.subtitle"))}
             </p>
-            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-              <a href="#bots" className="group inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-4 text-sm font-bold text-white shadow-[0_18px_40px_-16px_rgba(37,99,235,0.7)] transition-all hover:-translate-y-0.5">
+            <div className="mt-6 sm:mt-7 flex flex-col gap-3 sm:flex-row">
+              <a href="#bots" className="group inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 sm:px-8 py-3.5 sm:py-4 text-sm font-bold text-white shadow-[0_18px_40px_-16px_rgba(37,99,235,0.7)] transition-all hover:-translate-y-0.5">
                 {c("hero", "primary", t("hero.pick"))}
                 <ArrowRight size={17} className="transition-transform group-hover:translate-x-1" />
               </a>
-              <a href={contacts.telegram} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-7 py-4 text-sm font-semibold text-slate-800 transition-colors hover:border-blue-300 hover:bg-blue-50 dark:border-white/15 dark:bg-white/[0.06] dark:text-white dark:hover:bg-white/[0.12]">
+              <a href={contacts.telegram} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-6 sm:px-7 py-3.5 sm:py-4 text-sm font-semibold text-slate-800 transition-colors hover:border-blue-300 hover:bg-blue-50 dark:border-white/15 dark:bg-white/[0.06] dark:text-white dark:hover:bg-white/[0.12]">
                 <Send size={16} className="text-blue-600 dark:text-cyan-300" />
                 {t("cta.contactBtn")}
               </a>

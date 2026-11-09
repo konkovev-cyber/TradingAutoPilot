@@ -112,9 +112,9 @@ export default function Header() {
             : "bg-transparent"
         }`}
       >
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link to="/" aria-label="TradingAutoPilot" onClick={logoClick} className="group flex items-center gap-2.5">
-            <div className="relative h-12 w-12 shrink-0 transition-transform group-hover:scale-105">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+          <Link to="/" aria-label="TradingAutoPilot" onClick={logoClick} className="group flex items-center gap-2 sm:gap-2.5 shrink-0">
+            <div className="relative h-10 w-10 sm:h-12 sm:w-12 shrink-0 transition-transform group-hover:scale-105">
               <img
                 src="/logo-light.png"
                 alt="TradingAutoPilot logo"
@@ -131,7 +131,7 @@ export default function Header() {
               />
             </div>
             <span
-              className={`text-[20px] font-extrabold tracking-[-0.055em] transition-opacity group-hover:opacity-80 ${
+              className={`text-[17px] sm:text-[20px] font-extrabold tracking-[-0.055em] transition-opacity group-hover:opacity-80 ${
                 isSolid
                   ? "bg-gradient-to-r from-cyan-500 via-blue-600 to-violet-600 bg-clip-text text-transparent dark:from-cyan-300 dark:via-blue-300 dark:to-violet-300"
                   : "text-white"
@@ -156,22 +156,22 @@ export default function Header() {
             ))}
           </nav>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             <button
               onClick={toggleTheme}
-              className={`p-2.5 rounded-lg transition-colors ${controlText}`}
+              className={`p-2 sm:p-2.5 rounded-lg transition-colors ${controlText}`}
               title={theme === "dark" ? t("ui.themeLight") : t("ui.themeDark")}
               aria-label={theme === "dark" ? t("ui.themeLight") : t("ui.themeDark")}
             >
-              {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+              {theme === "dark" ? <Sun size={17} /> : <Moon size={17} />}
             </button>
 
             <button
               onClick={() => setLang(lang === "ru" ? "en" : "ru")}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${controlText}`}
+              className={`flex items-center gap-1 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors ${controlText}`}
               aria-label="Language"
             >
-              <Globe size={16} />
+              <Globe size={15} />
               <span>{lang === "ru" ? "RU" : "EN"}</span>
             </button>
 
@@ -189,7 +189,7 @@ export default function Header() {
 
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="md:hidden p-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+              className="md:hidden p-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white rounded-lg focus:outline-none"
               aria-label={t("ui.menu")}
               aria-expanded={mobileOpen}
             >
@@ -199,7 +199,7 @@ export default function Header() {
         </div>
 
         {mobileOpen && (
-          <div className="md:hidden bg-white dark:bg-gray-950 border-t border-gray-100 dark:border-gray-800 px-6 py-4 space-y-3">
+          <div className="md:hidden bg-white/95 dark:bg-gray-950/95 border-t border-gray-100 dark:border-gray-800 px-4 sm:px-6 py-4 space-y-2 backdrop-blur-xl shadow-xl">
             {navLinks.map((link) => (
               <a
                 key={link.href}
@@ -207,7 +207,7 @@ export default function Header() {
                 onClick={(e) => handleAnchor(e, link.href)}
                 target={link.href.startsWith("http") ? "_blank" : undefined}
                 rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
-                className="block text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white py-2"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-cyan-300 py-2.5 px-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors"
               >
                 {link.label}
               </a>
@@ -215,7 +215,7 @@ export default function Header() {
             <a
               href="/#bots"
               onClick={(e) => handleAnchor(e, "/#bots")}
-              className="block w-full text-center px-5 py-2.5 border border-blue-500/40 bg-blue-500/10 text-blue-600 dark:text-blue-200 dark:border-blue-300/30 dark:bg-blue-400/10 text-sm font-semibold rounded-lg cursor-pointer"
+              className="block w-full text-center px-5 py-3 border border-blue-500/40 bg-blue-500/10 text-blue-600 dark:text-blue-200 dark:border-blue-300/30 dark:bg-blue-400/10 text-sm font-semibold rounded-xl cursor-pointer"
             >
               {c("nav", "cta", lang === "en" ? "View bots" : "Смотреть роботов")}
             </a>

@@ -12,7 +12,7 @@ export default function BotStrategySteps({ bot }: { bot: BotData }) {
       {b.howItWorks.map((s, i) => (
         <div
           key={i}
-          className="flex gap-4 rounded-xl border border-gray-100 bg-white p-6 shadow-sm card-hover dark:border-gray-800 dark:bg-gray-900"
+          className="flex gap-4 rounded-xl border border-gray-100 bg-white p-4 sm:p-6 shadow-sm card-hover dark:border-gray-800 dark:bg-gray-900"
         >
           <div
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg font-bold"

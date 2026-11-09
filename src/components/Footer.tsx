@@ -19,9 +19,9 @@ export default function Footer() {
   const bots = useBots();
 
   return (
-    <footer className="py-16 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-950 transition-colors duration-300">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-10 mb-12">
+    <footer className="py-12 sm:py-16 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-950 transition-colors duration-300">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 sm:gap-10 mb-10 sm:mb-12">
           <div className="space-y-4">
             <div className="flex items-center gap-2.5">
               <div className="relative h-8 w-8 shrink-0">
