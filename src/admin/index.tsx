@@ -1,6 +1,7 @@
 ﻿import { Routes, Route } from "react-router-dom";
 import AdminGuard from "@/admin/components/AdminGuard";
 import AdminLayout from "@/admin/components/AdminLayout";
+import AdminErrorBoundary from "@/admin/components/AdminErrorBoundary";
 import AdminDashboard from "@/admin/pages/AdminDashboard";
 import AdminSections from "@/admin/pages/AdminSections";
 import AdminBots from "@/admin/pages/AdminBots";
@@ -9,14 +10,16 @@ import AdminSettings from "@/admin/pages/AdminSettings";
 
 export default function AdminRoutes() {
   return (
-    <Routes>
-      <Route element={<AdminGuard><AdminLayout /></AdminGuard>}>
-        <Route index element={<AdminDashboard />} />
-        <Route path="sections" element={<AdminSections />} />
-        <Route path="bots" element={<AdminBots />} />
-        <Route path="leads" element={<AdminLeads />} />
-        <Route path="settings" element={<AdminSettings />} />
-      </Route>
-    </Routes>
+    <AdminErrorBoundary>
+      <Routes>
+        <Route element={<AdminGuard><AdminLayout /></AdminGuard>}>
+          <Route index element={<AdminDashboard />} />
+          <Route path="sections" element={<AdminSections />} />
+          <Route path="bots" element={<AdminBots />} />
+          <Route path="leads" element={<AdminLeads />} />
+          <Route path="settings" element={<AdminSettings />} />
+        </Route>
+      </Routes>
+    </AdminErrorBoundary>
   );
 }

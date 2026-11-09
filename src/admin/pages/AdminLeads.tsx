@@ -195,15 +195,24 @@ export default function AdminLeads() {
   const [notesSavedNotice, setNotesSavedNotice] = useState(false);
 
   const fetchLeads = async () => {
-    if (!supabase) {
-      setLoading(false);
-      return;
-    }
     try {
-      const { data } = await supabase.from("leads").select("*").order("created_at", { ascending: false });
-      setLeads(data ?? []);
-    } catch {
-      // ignore
+      const res = await fetch("/api/leads");
+      if (res.ok) {
+        const data = await res.json();
+        setLeads(Array.isArray(data) ? data : []);
+        setLoading(false);
+        setRefreshing(false);
+        return;
+      }
+    } catch {}
+
+    if (supabase) {
+      try {
+        const { data } = await supabase.from("leads").select("*").order("created_at", { ascending: false });
+        setLeads(data ?? []);
+      } catch {
+        // ignore
+      }
     }
     setLoading(false);
     setRefreshing(false);
@@ -218,45 +227,71 @@ export default function AdminLeads() {
   }, [filter, dateFilter, query]);
 
   const updateStatus = async (id: string, status: string) => {
-    if (!supabase) return;
     try {
-      await supabase.from("leads").update({ status }).eq("id", id);
-      setLeads((prev) => prev.map((l) => (l.id === id ? { ...l, status } : l)));
-      if (selectedLead && selectedLead.id === id) {
-        setSelectedLead((prev) => (prev ? { ...prev, status } : null));
+      await fetch(`/api/leads/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      });
+    } catch {}
+
+    if (supabase) {
+      try {
+        await supabase.from("leads").update({ status }).eq("id", id);
+      } catch {
+        // ignore
       }
-    } catch {
-      // ignore
+    }
+
+    setLeads((prev) => prev.map((l) => (l.id === id ? { ...l, status } : l)));
+    if (selectedLead && selectedLead.id === id) {
+      setSelectedLead((prev) => (prev ? { ...prev, status } : null));
     }
   };
 
   const handleSaveNotes = async () => {
-    if (!selectedLead || !supabase) return;
+    if (!selectedLead) return;
     setSavingNotes(true);
     try {
-      await supabase.from("leads").update({ notes: editingNotes }).eq("id", selectedLead.id);
-      setLeads((prev) => prev.map((l) => (l.id === selectedLead.id ? { ...l, notes: editingNotes } : l)));
-      setSelectedLead((prev) => (prev ? { ...prev, notes: editingNotes } : null));
-      setNotesSavedNotice(true);
-      setTimeout(() => setNotesSavedNotice(false), 2000);
-    } catch {
-      // ignore
+      await fetch(`/api/leads/${selectedLead.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ notes: editingNotes }),
+      });
+    } catch {}
+
+    if (supabase) {
+      try {
+        await supabase.from("leads").update({ notes: editingNotes }).eq("id", selectedLead.id);
+      } catch {
+        // ignore
+      }
     }
+
+    setLeads((prev) => prev.map((l) => (l.id === selectedLead.id ? { ...l, notes: editingNotes } : l)));
+    setSelectedLead((prev) => (prev ? { ...prev, notes: editingNotes } : null));
+    setNotesSavedNotice(true);
+    setTimeout(() => setNotesSavedNotice(false), 2000);
     setSavingNotes(false);
   };
 
   const deleteLead = async (id: string) => {
-    if (!supabase || !confirm("Удалить эту заявку? Действие необратимо.")) return;
+    if (!confirm("Удалить эту заявку? Действие необратимо.")) return;
     try {
-      const { error } = await supabase.from("leads").delete().eq("id", id);
-      if (!error) {
-        setLeads((prev) => prev.filter((l) => l.id !== id));
-        if (selectedLead && selectedLead.id === id) {
-          setSelectedLead(null);
-        }
+      await fetch(`/api/leads/${id}`, { method: "DELETE" });
+    } catch {}
+
+    if (supabase) {
+      try {
+        const { error } = await supabase.from("leads").delete().eq("id", id);
+      } catch {
+        // ignore
       }
-    } catch {
-      // ignore
+    }
+
+    setLeads((prev) => prev.filter((l) => l.id !== id));
+    if (selectedLead && selectedLead.id === id) {
+      setSelectedLead(null);
     }
   };
 
@@ -579,12 +614,12 @@ export default function AdminLeads() {
                     <div onClick={(e) => e.stopPropagation()}>
                       <select
                         value={lead.status}
-                        onChange={(e) => updateLeadStatus(lead.id, e.target.value as LeadStatus)}
-                        className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold border focus:outline-none cursor-pointer ${statusConf.color} ${statusConf.bgColor} ${statusConf.borderColor}`}
+                        onChange={(e) => updateStatus(lead.id, e.target.value)}
+                        className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold border focus:outline-none cursor-pointer ${statusConf.color} ${statusConf.bg} ${statusConf.border}`}
                       >
-                        {STATUS_OPTIONS.map((opt) => (
-                          <option key={opt.id} value={opt.id} className="bg-gray-900 text-white">
-                            {opt.label}
+                        {Object.entries(STATUS_CONFIG).slice(0, 5).map(([value, conf]) => (
+                          <option key={value} value={value} className="bg-gray-900 text-white font-normal">
+                            {conf.label}
                           </option>
                         ))}
                       </select>
