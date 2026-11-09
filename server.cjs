@@ -98,6 +98,7 @@ async function initDb() {
         ALTER TABLE bots ADD COLUMN IF NOT EXISTS meta_title TEXT;
         ALTER TABLE bots ADD COLUMN IF NOT EXISTS meta_description TEXT;
         ALTER TABLE bots ADD COLUMN IF NOT EXISTS og_image TEXT;
+        ALTER TABLE bots ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
 
         CREATE TABLE IF NOT EXISTS site_content (
           key TEXT PRIMARY KEY,
@@ -821,10 +822,14 @@ app.get('/sitemap.xml', async (req, res) => {
           const m = metaQ.rows[0].value;
           if (m.site_url) siteUrl = String(m.site_url).trim().replace(/\/+$/, '');
         }
-        const bQ = await pool.query('SELECT slug, updated_at FROM bots ORDER BY position ASC, id ASC');
+        const bQ = await pool.query('SELECT slug, created_at, COALESCE(updated_at, created_at) as last_mod FROM bots ORDER BY position ASC, id ASC');
         robots = bQ.rows;
       } catch (e) {
         console.error('[Sitemap Query Error]', e.message);
+        try {
+          const fallbackQ = await pool.query('SELECT slug, created_at FROM bots ORDER BY position ASC, id ASC');
+          robots = fallbackQ.rows;
+        } catch {}
       }
     } else {
       robots = memoryStore.bots || [];
@@ -843,7 +848,7 @@ app.get('/sitemap.xml', async (req, res) => {
 
     for (const b of robots) {
       if (!b.slug) continue;
-      const lastmod = b.updated_at ? new Date(b.updated_at).toISOString().slice(0, 10) : today;
+      const lastmod = (b.last_mod || b.created_at) ? new Date(b.last_mod || b.created_at).toISOString().slice(0, 10) : today;
       xml += `  <url>\n    <loc>${siteUrl}/bots/${encodeURIComponent(b.slug)}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
     }
 
