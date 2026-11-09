@@ -1,4 +1,5 @@
-﻿import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import {
   Copy,
@@ -159,14 +160,25 @@ function parseContact(raw: string) {
 }
 
 export default function AdminLeads() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [leads, setLeads] = useState<Lead[]>([]);
-  const [filter, setFilter] = useState<string>("all");
-  const [dateFilter, setDateFilter] = useState<string>("all");
-  const [query, setQuery] = useState("");
+  const [filter, setFilter] = useState<string>(() => searchParams.get("filter") || "all");
+  const [dateFilter, setDateFilter] = useState<string>(() => searchParams.get("date") || "all");
+  const [query, setQuery] = useState(() => searchParams.get("q") || "");
   const [visible, setVisible] = useState(PAGE_SIZE);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  // Sync state when URL params change
+  useEffect(() => {
+    const f = searchParams.get("filter");
+    if (f !== null) setFilter(f || "all");
+    const d = searchParams.get("date");
+    if (d !== null) setDateFilter(d || "all");
+    const q = searchParams.get("q");
+    if (q !== null) setQuery(q);
+  }, [searchParams]);
 
   // Active lead for detail modal
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);

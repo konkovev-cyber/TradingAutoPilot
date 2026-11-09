@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Save, Plus, Trash2, ChevronDown, Check, Send, ExternalLink, HelpCircle } from "lucide-react";
 
