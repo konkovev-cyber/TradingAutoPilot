@@ -201,13 +201,13 @@ export const ruTranslations = {
   },
   "how": {
     "title": "Как это работает",
-    "subtitle": "От регистрации до первой сделки — 2 минуты.",
+    "subtitle": "Запустите торгового робота в несколько шагов.",
     "apiNote": "API-ключи шифруются и хранятся без права вывода — доступа к вашим средствам у нас нет.",
     "steps": [
-      { "n": "01", "title": "Регистрация", "desc": "Создайте аккаунт за минуту \u2014 нужен только email" },
-      { "n": "02", "title": "Подключение биржи", "desc": "Добавьте API-ключ с правом торговли, но без права вывода средств" },
-      { "n": "03", "title": "Выбор робота", "desc": "Выберите стратегию из готовых шаблонов и настройте риск под свой депозит" },
-      { "n": "04", "title": "Автоторговля", "desc": "Робот торгует 24/7, а прибыль остаётся на вашей бирже" }
+      { "n": "01", "title": "Выберите робота", "desc": "Выберите бота и свяжитесь с нами." },
+      { "n": "02", "title": "Подключите биржу", "desc": "Создайте API-ключ с необходимыми настройками." },
+      { "n": "03", "title": "Настройте стратегию", "desc": "Укажите торговые пары, капитал и параметры робота. Либо мы сделаем это за вас с вашим согласованием." },
+      { "n": "04", "title": "Запустите торговлю", "desc": "Следите за работой алгоритма и результатами на бирже и в роботе." }
     ]
   },
   "faq": {
@@ -467,13 +467,13 @@ export const enTranslations = {
   },
   "how": {
     "title": "How it works",
-    "subtitle": "From registration to the first trade \u2014 2 minutes.",
+    "subtitle": "Launch a trading bot in a few steps.",
     "apiNote": "API keys are encrypted and stored without withdrawal rights \u2014 we have no access to your funds.",
     "steps": [
-      { "n": "01", "title": "Registration", "desc": "Create an account in a minute \u2014 all you need is an email" },
-      { "n": "02", "title": "Exchange connection", "desc": "Add an API key with trading rights but without withdrawal rights" },
-      { "n": "03", "title": "Bot selection", "desc": "Pick a strategy from templates and tune the risk to your deposit" },
-      { "n": "04", "title": "Auto trading", "desc": "The bot trades 24/7 while profit stays on your exchange" }
+      { "n": "01", "title": "Choose a bot", "desc": "Pick a bot and contact us." },
+      { "n": "02", "title": "Connect an exchange", "desc": "Create an API key with the required settings." },
+      { "n": "03", "title": "Configure the strategy", "desc": "Specify trading pairs, capital and bot parameters. Or we will set it up for you with your approval." },
+      { "n": "04", "title": "Start trading", "desc": "Monitor the algorithm and results on the exchange and in the bot." }
     ]
   },
   "faq": {

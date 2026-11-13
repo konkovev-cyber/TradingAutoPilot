@@ -115,35 +115,42 @@ const FALLBACKS: Record<string, Json> = {
     btn: { ru: "Начать зарабатывать", en: "Start earning" },
   },
   connect: {
-    title: { ru: "Подключение и безопасность", en: "Connection and safety" },
+    title: { ru: "Запустите торгового робота в несколько шагов", en: "Launch a trading bot in a few steps" },
     subtitle: {
-      ru: "Подключение к бирже по API занимает пару минут. Ключ создаётся с правом торговли, но без права вывода средств.",
-      en: "Connecting to an exchange via API takes a couple of minutes. The key is created with trading rights but without withdrawal rights.",
+      ru: "Для работы не нужно передавать роботу деньги или переводить криптовалюту на сторонний кошелёк.",
+      en: "You do not need to transfer funds to the bot or move crypto to a third-party wallet.",
     },
     steps: [
       {
-        title: { ru: "Регистрация", en: "Registration" },
-        desc: { ru: "Создайте аккаунт за минуту — нужен только email", en: "Create an account in a minute — all you need is an email" },
-      },
-      {
-        title: { ru: "Создание API-ключа", en: "Create an API key" },
+        icon: "bot",
+        title: { ru: "Выберите робота", en: "Choose a bot" },
         desc: {
-          ru: "На бирже создайте ключ с правом торговли, но БЕЗ права вывода средств",
-          en: "On the exchange, create a key with trading rights but WITHOUT withdrawal rights",
+          ru: "Выберите бота и свяжитесь с нами.",
+          en: "Pick a bot and contact us.",
         },
       },
       {
-        title: { ru: "Подключение робота", en: "Connect the bot" },
+        icon: "plug",
+        title: { ru: "Подключите биржу", en: "Connect an exchange" },
         desc: {
-          ru: "Добавьте ключ в TradingAutoPilot и выберите робота под свой депозит",
-          en: "Add the key to TradingAutoPilot and pick a bot for your deposit",
+          ru: "Создайте API-ключ с необходимыми настройками.",
+          en: "Create an API key with the required settings.",
         },
       },
       {
-        title: { ru: "Автоторговля 24/7", en: "Auto trading 24/7" },
+        icon: "settings",
+        title: { ru: "Настройте стратегию", en: "Configure the strategy" },
         desc: {
-          ru: "Робот торгует по вашему ключу, а средства и прибыль остаются на вашей бирже",
-          en: "The bot trades via your key while funds and profit stay on your exchange",
+          ru: "Укажите торговые пары, капитал и параметры робота. Либо мы сделаем это за вас с вашим согласованием.",
+          en: "Specify trading pairs, capital and bot parameters. Or we will set it up for you with your approval.",
+        },
+      },
+      {
+        icon: "play",
+        title: { ru: "Запустите торговлю", en: "Start trading" },
+        desc: {
+          ru: "Следите за работой алгоритма и результатами на бирже и в роботе.",
+          en: "Monitor the algorithm and results on the exchange and in the bot.",
         },
       },
     ],
