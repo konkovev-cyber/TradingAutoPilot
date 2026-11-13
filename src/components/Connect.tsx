@@ -1,10 +1,10 @@
 import { motion } from "framer-motion";
-import { Bot, Cable, SlidersHorizontal, Play, ShieldCheck } from "lucide-react";
+import { IconRobot, IconApi, IconAdjustmentsHorizontal, IconPlayerPlay, IconShieldLock } from "@tabler/icons-react";
 import { useI18n } from "@/lib/i18n";
 import { useContent, useLocalizedList, localize } from "@/lib/site-content";
 import { IconTile } from "@/components/ui/IconTile";
 
-const DEFAULT_ICONS = [Bot, Cable, SlidersHorizontal, Play];
+const DEFAULT_ICONS = [IconRobot, IconApi, IconAdjustmentsHorizontal, IconPlayerPlay];
 
 export default function Connect() {
   const { lang, t } = useI18n();
@@ -39,7 +39,7 @@ export default function Connect() {
             >
               <IconTile
                 name={(step as any)?.icon}
-                fallback={DEFAULT_ICONS[i] ?? Bot}
+                fallback={DEFAULT_ICONS[i] ?? IconRobot}
                 index={i}
                 size={20}
                 className="h-11 w-11 shadow-[0_10px_24px_-12px_rgba(16,185,129,0.6)] transition-transform duration-300 group-hover:scale-105 group-hover:-rotate-3"
@@ -62,7 +62,7 @@ export default function Connect() {
           transition={{ duration: 0.45, delay: 0.15 }}
           className="mt-6 flex items-center justify-center gap-3 rounded-2xl border border-emerald-200/50 bg-emerald-50/60 px-5 py-4 dark:border-emerald-400/25 dark:bg-emerald-900/25"
         >
-          <ShieldCheck size={18} className="shrink-0 text-emerald-500 dark:text-emerald-300" />
+          <IconShieldLock size={18} className="shrink-0 text-emerald-500 dark:text-emerald-300" />
           <p className="text-sm text-gray-700 dark:text-gray-200">{c("connect", "note", t("how.apiNote"))}</p>
         </motion.div>
       </div>

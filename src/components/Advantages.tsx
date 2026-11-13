@@ -1,10 +1,10 @@
 import { motion } from "framer-motion";
-import { Clock, Brain, Zap, Workflow, ShieldCheck, type LucideIcon } from "lucide-react";
+import { IconClockHour4, IconBrain, IconBolt, IconSettingsAutomation, IconShieldLock, type Icon } from "@tabler/icons-react";
 import { useI18n } from "@/lib/i18n";
 import { useContent, useLocalizedList, localize } from "@/lib/site-content";
 import { IconTile } from "@/components/ui/IconTile";
 
-const icons: LucideIcon[] = [Clock, Brain, Zap, Workflow, ShieldCheck];
+const icons: Icon[] = [IconClockHour4, IconBrain, IconBolt, IconSettingsAutomation, IconShieldLock];
 
 export default function Advantages() {
   const { lang, t } = useI18n();

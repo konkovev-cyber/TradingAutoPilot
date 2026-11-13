@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { ArrowRight, Check, Mail, Phone, Send } from "lucide-react";
+import { ArrowRight, Check, Mail, Phone, Send, AlertTriangle } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { useContent, useContacts } from "@/lib/site-content";
 import { useBots } from "@/lib/use-bots";
@@ -134,7 +134,12 @@ export default function Products() {
           </a>
         </div>
 
-        <p className="mt-8 text-center text-xs text-gray-500 dark:text-gray-400">{c("products", "disclaimer", t("products.disclaimer"))}</p>
+        <div className="mx-auto mt-10 flex max-w-3xl items-start gap-3 rounded-2xl border border-amber-200/70 bg-amber-50/70 px-5 py-4 text-left shadow-soft dark:border-amber-400/25 dark:bg-amber-950/30 sm:px-6 sm:py-5">
+          <AlertTriangle size={18} className="mt-0.5 shrink-0 text-amber-500 dark:text-amber-400" />
+          <p className="text-xs leading-relaxed text-amber-800 dark:text-amber-200/90 sm:text-sm">
+            {c("products", "disclaimer", t("products.disclaimer"))}
+          </p>
+        </div>
       </div>
     </section>
   );

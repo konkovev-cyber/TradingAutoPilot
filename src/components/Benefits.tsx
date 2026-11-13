@@ -1,19 +1,19 @@
 import { motion } from "framer-motion";
 import {
-  BadgeDollarSign,
-  Building2,
-  MousePointerClick,
-  ShieldCheck,
-  BookOpen,
-  Headset,
-  MessageCircle,
-  Monitor,
-} from "lucide-react";
+  IconReceipt2,
+  IconBuildingStore,
+  IconClick,
+  IconShieldLock,
+  IconBook2,
+  IconHeadset,
+  IconMessageCircle2,
+  IconDeviceDesktop,
+} from "@tabler/icons-react";
 import { useI18n } from "@/lib/i18n";
 import { useContent, useLocalizedList, localize } from "@/lib/site-content";
 import { IconTile } from "@/components/ui/IconTile";
 
-const DEFAULT_ICONS = [BadgeDollarSign, Building2, MousePointerClick, ShieldCheck, BookOpen, Headset];
+const DEFAULT_ICONS = [IconReceipt2, IconBuildingStore, IconClick, IconShieldLock, IconBook2, IconHeadset];
 
 export default function Benefits() {
   const { lang, t } = useI18n();
@@ -36,8 +36,8 @@ export default function Benefits() {
           </p>
           <div className="mx-auto mt-6 flex max-w-3xl flex-wrap items-center justify-center gap-2.5">
             {[
-              { icon: MessageCircle, label: c("benefits", "formatTelegram", t("benefits.formatTelegram")) },
-              { icon: Monitor, label: c("benefits", "formatWindows", t("benefits.formatWindows")) },
+              { icon: IconMessageCircle2, label: c("benefits", "formatTelegram", t("benefits.formatTelegram")) },
+              { icon: IconDeviceDesktop, label: c("benefits", "formatWindows", t("benefits.formatWindows")) },
             ].map((f, i) => (
               <span
                 key={i}
@@ -63,7 +63,7 @@ export default function Benefits() {
               <div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 h-24 w-40 rounded-full bg-emerald-400/10 blur-3xl" />
               <IconTile
                 name={(item as any)?.icon}
-                fallback={DEFAULT_ICONS[i] ?? BadgeDollarSign}
+                fallback={DEFAULT_ICONS[i] ?? IconReceipt2}
                 index={i}
                 size={22}
                 className="mb-4 h-12 w-12 shadow-[0_10px_24px_-12px_rgba(16,185,129,0.6)] transition-transform duration-300 group-hover:scale-105 group-hover:-rotate-3"
