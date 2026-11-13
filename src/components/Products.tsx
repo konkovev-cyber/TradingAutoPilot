@@ -5,7 +5,7 @@ import { useI18n } from "@/lib/i18n";
 import { useContent, useContacts } from "@/lib/site-content";
 import { useBots } from "@/lib/use-bots";
 import { botText } from "@/data/bots";
-import { BotAvatar, BotReturns } from "@/components/bots/BotCard";
+import { BotAvatar } from "@/components/bots/BotCard";
 
 export default function Products() {
   const { t, lang } = useI18n();
@@ -64,9 +64,34 @@ export default function Products() {
                 <p className="relative mb-3 text-sm font-medium leading-snug text-gray-800 dark:text-gray-200">{b.slogan}</p>
                 <p className="relative mb-5 text-sm leading-relaxed text-gray-500 dark:text-gray-400">{b.shortDesc}</p>
 
-                <div className="relative mb-6">
-                  <BotReturns bot={bot} />
-                </div>
+                {bot.slug === "synchrobot" && (
+                  <div className="relative mb-5 space-y-3">
+                    <p className="text-sm leading-relaxed text-gray-500 dark:text-gray-400">{b.fullDesc}</p>
+                    {b.suitableFor && (
+                      <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+                        <span className="font-semibold text-gray-800 dark:text-white">Подойдёт тем, кто: </span>
+                        {b.suitableFor}
+                      </p>
+                    )}
+                    {b.exchanges && (
+                      <div>
+                        <div className="mb-1.5 text-[11px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+                          Доступные биржи
+                        </div>
+                        <div className="flex flex-wrap gap-1.5">
+                          {b.exchanges.split(",").map((x) => (
+                            <span
+                              key={x}
+                              className="rounded-md bg-gray-100 px-2.5 py-1 text-xs font-bold text-gray-700 dark:bg-gray-800 dark:text-gray-200"
+                            >
+                              {x.trim()}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 <Link
                   to={`/bots/${bot.slug}`}

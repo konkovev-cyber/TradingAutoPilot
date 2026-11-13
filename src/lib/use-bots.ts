@@ -64,6 +64,8 @@ function sanitizeOverride(raw: Json): any {
   set("strategy", raw.strategy);
   set("risk", raw.risk);
   set("pairs", raw.pairs);
+  set("suitableFor", raw.suitableFor ?? raw.suitable_for);
+  set("exchanges", raw.exchanges);
   const feats = normalizeFeatures(raw.features);
   if (feats) out.features = feats;
   const how = normalizeSteps(raw.howItWorks ?? raw.how_it_works);
@@ -135,6 +137,8 @@ function toBotData(row: Json): BotData {
     pairs: colPair.pairs.ru || stat?.pairs || "",
     market: colPair.market.ru || stat?.market || "",
     strategy: colPair.strategy.ru || stat?.strategy || "",
+    suitableFor: str(row?.suitable_for) || stat?.suitableFor,
+    exchanges: str(row?.exchanges) || stat?.exchanges,
     color,
     colorDim: colorDimFrom(color),
     imageUrl: row?.image_url ? String(row.image_url) : (stat?.imageUrl ?? undefined),

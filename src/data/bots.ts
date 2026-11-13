@@ -12,6 +12,8 @@ export interface BotText {
   strategy: string;
   risk: string;
   pairs: string;
+  suitableFor?: string;
+  exchanges?: string;
   features: string[];
   howItWorks: BotStep[];
   exampleTrade: BotStep[];
@@ -61,6 +63,8 @@ export function botText(bot: BotData, lang: Lang): BotData {
     strategy: ov.strategy || bot.strategy,
     risk: ov.risk || bot.risk,
     pairs: ov.pairs || bot.pairs,
+    suitableFor: ov.suitableFor || bot.suitableFor,
+    exchanges: ov.exchanges || bot.exchanges,
     features: ov.features && ov.features.length > 0 ? ov.features : bot.features,
     howItWorks: ov.howItWorks && ov.howItWorks.length > 0 ? ov.howItWorks : bot.howItWorks,
     exampleTrade: ov.exampleTrade && ov.exampleTrade.length > 0 ? ov.exampleTrade : bot.exampleTrade,
@@ -109,6 +113,8 @@ export const bots: BotData[] = [
     colorDim: "rgba(0, 255, 178, 0.12)",
     difficulty: "Для новичков и профи",
     difficultyTone: "starter",
+    suitableFor: "хочет автоматизировать поиск торговых возможностей и анализировать большое количество рынков",
+    exchanges: "BYBIT, BINGX, OKX",
     i18n: {
       en: {
         name: "SynchroBot",
@@ -120,6 +126,8 @@ export const bots: BotData[] = [
         strategy: "Real-time volume & price analysis",
         risk: "Controlled: mathematical entry calculation and built-in risk management",
         pairs: "BTC/USDT, ETH/USDT, SOL/USDT, Bybit, BingX, OKX & more",
+        suitableFor: "who want to automate trade opportunity discovery and analyze a large number of markets",
+        exchanges: "BYBIT, BINGX, OKX",
         features: [
           "Real-time market depth and price stream analysis",
           "Tracking volume surges and price dynamics across multiple pairs",

@@ -18,6 +18,8 @@ interface Bot {
   strategy: string;
   risk: string;
   pairs: string;
+  suitable_for?: string;
+  exchanges?: string;
   color: string;
   image_url: string | null;
   difficulty?: string;
@@ -44,7 +46,7 @@ const DIFFICULTIES = [
 
 const initialBot: Bot = {
   slug: "", name: "", slogan: "", shortDesc: "", fullDesc: "", badge: "",
-  market: "", strategy: "", risk: "", pairs: "", color: "#3b82f6", image_url: null,
+  market: "", strategy: "", risk: "", pairs: "", suitable_for: "", exchanges: "", color: "#3b82f6", image_url: null,
   difficulty: "", difficulty_tone: "",
   meta_title: "", meta_description: "", og_image: ""
 };
@@ -59,6 +61,7 @@ const EN_FIELDS: { key: string; label: string; multiline?: boolean }[] = [
   { key: "pairs", label: "Пары" },
   { key: "shortDesc", label: "Краткое описание", multiline: true },
   { key: "fullDesc", label: "Полное описание (алгоритм)", multiline: true },
+  { key: "suitableFor", label: "Подойдёт тем, кто (EN)", multiline: true },
 ];
 
 export default function AdminBots() {
@@ -179,6 +182,8 @@ export default function AdminBots() {
       how_it_works: extra.how.filter((s) => s.title.trim() !== "" || s.desc.trim() !== ""),
       example_trade: extra.example.filter((s) => s.title.trim() !== "" || s.desc.trim() !== ""),
       i18n: buildI18n(i18n),
+      suitable_for: bot.suitable_for?.trim() ? bot.suitable_for : "",
+      exchanges: bot.exchanges?.trim() ? bot.exchanges : "",
     };
     try {
       if (bot.id) {
@@ -435,6 +440,24 @@ export default function AdminBots() {
               <textarea placeholder="Краткое описание — 1-2 предложения" value={editing.shortDesc} onChange={(e) => setEditing({ ...editing, shortDesc: e.target.value })} className={`${inputCls} w-full`} rows={3} />
               <textarea placeholder="Полное описание — подробное объяснение алгоритма" value={editing.fullDesc ?? ""} onChange={(e) => setEditing({ ...editing, fullDesc: e.target.value })} className={`${inputCls} w-full`} rows={5} />
               <input placeholder="Риск — описание уровня риска" value={editing.risk} onChange={(e) => setEditing({ ...editing, risk: e.target.value })} className={`${inputCls} w-full`} />
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Подойдёт тем, кто (карточка на главной)</label>
+                <input
+                  value={editing.suitable_for ?? ""}
+                  onChange={(e) => setEditing({ ...editing, suitable_for: e.target.value })}
+                  placeholder="хочет автоматизировать поиск торговых возможностей и анализировать большое количество рынков"
+                  className={`${inputCls} w-full`}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Доступные биржи (через запятую, карточка на главной)</label>
+                <input
+                  value={editing.exchanges ?? ""}
+                  onChange={(e) => setEditing({ ...editing, exchanges: e.target.value })}
+                  placeholder="BYBIT, BINGX, OKX"
+                  className={`${inputCls} w-full`}
+                />
+              </div>
             </div>
           )}
 

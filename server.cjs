@@ -101,6 +101,8 @@ async function initDb() {
         ALTER TABLE bots ADD COLUMN IF NOT EXISTS returns JSONB;
         ALTER TABLE bots ADD COLUMN IF NOT EXISTS how_it_works JSONB;
         ALTER TABLE bots ADD COLUMN IF NOT EXISTS example_trade JSONB;
+        ALTER TABLE bots ADD COLUMN IF NOT EXISTS suitable_for TEXT;
+        ALTER TABLE bots ADD COLUMN IF NOT EXISTS exchanges TEXT;
         ALTER TABLE bots ADD COLUMN IF NOT EXISTS i18n JSONB;
         ALTER TABLE bots ADD COLUMN IF NOT EXISTS meta_title TEXT;
         ALTER TABLE bots ADD COLUMN IF NOT EXISTS meta_description TEXT;
@@ -179,11 +181,13 @@ async function initDb() {
             image_url: '/synchro-bot.jpg',
             difficulty: 'Для новичков и профи',
             difficulty_tone: 'starter',
+            suitable_for: 'хочет автоматизировать поиск торговых возможностей и анализировать большое количество рынков',
+            exchanges: 'BYBIT, BINGX, OKX',
             features: JSON.stringify(['Анализ рынка в режиме реального времени', 'Отслеживание изменений объёмов и цены по множеству торговых пар', 'Поиск возможностей для сделок в LONG и SHORT', 'Оценка рыночной ситуации и определение точных точек входа', 'Контроль рисков и сокращение рутинного анализа трейдера']),
             returns: JSON.stringify([{ period: '30 дней', value: '+7.9%' }, { period: '90 дней', value: '+22.8%' }, { period: '365 дней', value: '+78.4%' }]),
             how_it_works: JSON.stringify([{ title: 'Мониторинг рынка в реальном времени', desc: 'Бот непрерывно сканирует поток котировок и изменения объёмов по множеству торговых пар' }, { title: 'Поиск возможностей LONG & SHORT', desc: 'Алгоритмы выявляют ценовые дисбалансы и подтверждённые импульсы для входа в сделку' }, { title: 'Контроль рисков', desc: 'Автоматический расчёт точек входа, выставление стоп-лоссов и защита капитала' }]),
             example_trade: JSON.stringify([{ title: 'Всплеск объёма', desc: 'Бот фиксирует синхронный рост объёма и ценовое движение на паре' }, { title: 'Вход в сделку', desc: 'Алгоритм вычисляет оптимальную точку входа и открывает позицию в LONG или SHORT' }, { title: 'Сопровождение', desc: 'Динамический контроль рисков и сопровождение позиции по заданным параметрам' }, { title: 'Фиксация прибыли', desc: 'Сделка закрывается по тейк-профиту с защитой накопленной прибыли' }]),
-            i18n: JSON.stringify({ en: { name: 'SynchroBot', slogan: 'Less manual analysis — more actionable data for smart trading decisions', badge: 'Volume & Price AI', market: 'Crypto', strategy: 'Real-time volume & price analysis', risk: 'Controlled: mathematical entry calculation and built-in risk management', pairs: 'BTC/USDT, ETH/USDT, SOL/USDT, Bybit, BingX, OKX & more' } }),
+            i18n: JSON.stringify({ en: { name: 'SynchroBot', slogan: 'Less manual analysis — more actionable data for smart trading decisions', badge: 'Volume & Price AI', market: 'Crypto', strategy: 'Real-time volume & price analysis', risk: 'Controlled: mathematical entry calculation and built-in risk management', pairs: 'BTC/USDT, ETH/USDT, SOL/USDT, Bybit, BingX, OKX & more', suitable_for: 'who want to automate trade opportunity discovery and analyze a large number of markets', exchanges: 'BYBIT, BINGX, OKX' } }),
             position: 1,
           },
           {
@@ -236,10 +240,10 @@ async function initDb() {
 
         for (const b of defaultBots) {
           await client.query(`
-            INSERT INTO bots (id, slug, name, slogan, short_desc, full_desc, badge, market, strategy, risk, pairs, color, image_url, difficulty, difficulty_tone, features, returns, how_it_works, example_trade, i18n, position)
-            VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21)
+            INSERT INTO bots (id, slug, name, slogan, short_desc, full_desc, badge, market, strategy, risk, pairs, color, image_url, difficulty, difficulty_tone, features, returns, how_it_works, example_trade, i18n, position, suitable_for, exchanges)
+            VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23)
             ON CONFLICT (id) DO NOTHING;
-          `, [b.id, b.slug, b.name, b.slogan, b.short_desc, b.full_desc, b.badge, b.market, b.strategy, b.risk, b.pairs, b.color, b.image_url, b.difficulty, b.difficulty_tone, b.features, b.returns, b.how_it_works, b.example_trade, b.i18n, b.position]);
+          `, [b.id, b.slug, b.name, b.slogan, b.short_desc, b.full_desc, b.badge, b.market, b.strategy, b.risk, b.pairs, b.color, b.image_url, b.difficulty, b.difficulty_tone, b.features, b.returns, b.how_it_works, b.example_trade, b.i18n, b.position, b.suitable_for ?? null, b.exchanges ?? null]);
         }
         console.log('[DB] Default bots seeded.');
       }
@@ -635,8 +639,8 @@ app.post('/api/bots', async (req, res) => {
   if (pool) {
     try {
       const q = await pool.query(`
-        INSERT INTO bots (id, slug, name, slogan, short_desc, full_desc, badge, market, strategy, risk, pairs, color, image_url, difficulty, difficulty_tone, features, returns, how_it_works, example_trade, i18n, position, meta_title, meta_description, og_image)
-        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24)
+        INSERT INTO bots (id, slug, name, slogan, short_desc, full_desc, badge, market, strategy, risk, pairs, color, image_url, difficulty, difficulty_tone, features, returns, how_it_works, example_trade, i18n, position, meta_title, meta_description, og_image, suitable_for, exchanges)
+        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26)
         ON CONFLICT (id) DO UPDATE SET
           slug = EXCLUDED.slug, name = EXCLUDED.name, slogan = EXCLUDED.slogan,
           short_desc = EXCLUDED.short_desc, full_desc = EXCLUDED.full_desc,
@@ -649,7 +653,9 @@ app.post('/api/bots', async (req, res) => {
           position = EXCLUDED.position,
           meta_title = EXCLUDED.meta_title,
           meta_description = EXCLUDED.meta_description,
-          og_image = EXCLUDED.og_image
+          og_image = EXCLUDED.og_image,
+          suitable_for = EXCLUDED.suitable_for,
+          exchanges = EXCLUDED.exchanges
         RETURNING *;
       `, [
         id, bot.slug || id, bot.name, bot.slogan || '', bot.shortDesc || bot.short_desc || '',
@@ -662,6 +668,8 @@ app.post('/api/bots', async (req, res) => {
         bot.meta_title || bot.metaTitle || null,
         bot.meta_description || bot.metaDescription || null,
         bot.og_image || bot.ogImage || null,
+        bot.suitable_for || bot.suitableFor || null,
+        bot.exchanges || null,
       ]);
       return res.json(q.rows[0]);
     } catch (e) {
@@ -691,7 +699,9 @@ app.patch('/api/bots/:id', async (req, res) => {
           i18n = COALESCE($20::jsonb, i18n), position = COALESCE($21, position),
           meta_title = COALESCE($22, meta_title),
           meta_description = COALESCE($23, meta_description),
-          og_image = COALESCE($24, og_image)
+          og_image = COALESCE($24, og_image),
+          suitable_for = COALESCE($25, suitable_for),
+          exchanges = COALESCE($26, exchanges)
         WHERE id = $1
         RETURNING *;
       `, [
@@ -710,6 +720,8 @@ app.patch('/api/bots/:id', async (req, res) => {
         bot.meta_title || bot.metaTitle || null,
         bot.meta_description || bot.metaDescription || null,
         bot.og_image || bot.ogImage || null,
+        bot.suitable_for !== undefined ? (bot.suitable_for || bot.suitableFor) : null,
+        bot.exchanges !== undefined ? bot.exchanges : null,
       ]);
       return res.json(q.rows[0] || {});
     } catch (e) {
