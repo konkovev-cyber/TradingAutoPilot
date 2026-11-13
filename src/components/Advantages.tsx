@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Clock, Brain, Zap, Workflow, ShieldCheck, type LucideIcon } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { useContent, useLocalizedList, localize } from "@/lib/site-content";
+import { IconTile } from "@/components/ui/IconTile";
 
 const icons: LucideIcon[] = [Clock, Brain, Zap, Workflow, ShieldCheck];
 
@@ -24,28 +25,26 @@ export default function Advantages() {
         </motion.div>
 
         <div className="grid gap-4 sm:gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {items.map((item, i) => {
-            const Icon = icons[i % icons.length];
-            return (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: i * 0.08 }}
-                className="rounded-2xl border border-gray-100 bg-white p-5 sm:p-6 shadow-soft dark:border-gray-800 dark:bg-gray-900"
-              >
-                <div
-                  className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl"
-                  style={{ background: "linear-gradient(135deg, rgba(16,185,129,0.16), rgba(59,130,246,0.10))" }}
-                >
-                  <Icon size={20} className="text-emerald-500" />
-                </div>
-                <h3 className="mb-2 font-semibold text-gray-900 dark:text-white">{localize(item?.title, "", lang)}</h3>
-                <p className="text-sm leading-relaxed text-gray-500 dark:text-gray-400">{localize(item?.desc, "", lang)}</p>
-              </motion.div>
-            );
-          })}
+          {items.map((item, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: i * 0.08 }}
+              className="group rounded-2xl border border-gray-100 bg-white p-5 sm:p-6 shadow-soft transition-all hover:-translate-y-0.5 dark:border-gray-700/60 dark:bg-gray-800"
+            >
+              <IconTile
+                name={(item as any)?.icon}
+                fallback={icons[i % icons.length]}
+                index={i}
+                size={22}
+                className="mb-4 h-12 w-12 shadow-[0_10px_24px_-12px_rgba(16,185,129,0.6)] transition-transform duration-300 group-hover:scale-105 group-hover:-rotate-3"
+              />
+              <h3 className="mb-2 font-semibold text-gray-900 dark:text-white">{localize(item?.title, "", lang)}</h3>
+              <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-200">{localize(item?.desc, "", lang)}</p>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>
