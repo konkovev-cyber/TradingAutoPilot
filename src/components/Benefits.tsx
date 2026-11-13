@@ -1,19 +1,21 @@
 import { motion } from "framer-motion";
 import {
-  IconReceipt2,
-  IconBuildingStore,
-  IconClick,
-  IconShieldLock,
-  IconBook2,
-  IconHeadset,
   IconMessageCircle2,
   IconDeviceDesktop,
 } from "@tabler/icons-react";
 import { useI18n } from "@/lib/i18n";
 import { useContent, useLocalizedList, localize } from "@/lib/site-content";
-import { IconTile } from "@/components/ui/IconTile";
+import {
+  Illustration,
+  subscriptions,
+  businessShop,
+  clickInteraction,
+  securityOn,
+  sharingKnowledge,
+  instantSupport,
+} from "@/components/ui/Illustration";
 
-const DEFAULT_ICONS = [IconReceipt2, IconBuildingStore, IconClick, IconShieldLock, IconBook2, IconHeadset];
+const DEFAULT_ILLUS = [subscriptions, businessShop, clickInteraction, securityOn, sharingKnowledge, instantSupport];
 
 export default function Benefits() {
   const { lang, t } = useI18n();
@@ -61,12 +63,11 @@ export default function Benefits() {
               className="group relative overflow-hidden rounded-2xl border border-gray-100 bg-white p-5 shadow-soft transition-all hover:-translate-y-0.5 hover:border-emerald-300/40 dark:border-gray-700/60 dark:bg-gray-800"
             >
               <div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 h-24 w-40 rounded-full bg-emerald-400/10 blur-3xl" />
-              <IconTile
+              <Illustration
                 name={(item as any)?.icon}
-                fallback={DEFAULT_ICONS[i] ?? IconReceipt2}
-                index={i}
-                size={22}
-                className="mb-4 h-12 w-12 shadow-[0_10px_24px_-12px_rgba(16,185,129,0.6)] transition-transform duration-300 group-hover:scale-105 group-hover:-rotate-3"
+                fallback={DEFAULT_ILLUS[i] ?? subscriptions}
+                title={localize(item?.title, "", lang)}
+                className="mb-4 h-28 w-full transition-transform duration-300 group-hover:scale-[1.03]"
               />
               {item?.tag ? (
                 <span className="mb-3 inline-block rounded-md bg-emerald-50 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-200">

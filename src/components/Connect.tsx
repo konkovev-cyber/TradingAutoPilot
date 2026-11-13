@@ -1,10 +1,16 @@
 import { motion } from "framer-motion";
-import { IconRobot, IconApi, IconAdjustmentsHorizontal, IconPlayerPlay, IconShieldLock } from "@tabler/icons-react";
+import { IconShieldLock } from "@tabler/icons-react";
 import { useI18n } from "@/lib/i18n";
 import { useContent, useLocalizedList, localize } from "@/lib/site-content";
-import { IconTile } from "@/components/ui/IconTile";
+import {
+  Illustration,
+  robot,
+  api,
+  strategy,
+  launch,
+} from "@/components/ui/Illustration";
 
-const DEFAULT_ICONS = [IconRobot, IconApi, IconAdjustmentsHorizontal, IconPlayerPlay];
+const DEFAULT_ILLUS = [robot, api, strategy, launch];
 
 export default function Connect() {
   const { lang, t } = useI18n();
@@ -35,22 +41,21 @@ export default function Connect() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: i * 0.08 }}
-              className="group flex gap-3.5 sm:gap-4 rounded-2xl border border-gray-100 bg-white p-4 sm:p-6 shadow-soft transition-all hover:-translate-y-0.5 dark:border-gray-700/60 dark:bg-gray-800"
+              className="group flex flex-col gap-3 rounded-2xl border border-gray-100 bg-white p-4 sm:p-6 shadow-soft transition-all hover:-translate-y-0.5 dark:border-gray-700/60 dark:bg-gray-800"
             >
-              <IconTile
-                name={(step as any)?.icon}
-                fallback={DEFAULT_ICONS[i] ?? IconRobot}
-                index={i}
-                size={20}
-                className="h-11 w-11 shadow-[0_10px_24px_-12px_rgba(16,185,129,0.6)] transition-transform duration-300 group-hover:scale-105 group-hover:-rotate-3"
-              />
-              <div className="min-w-0">
-                <div className="mb-0.5 flex items-center gap-2">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
                   <span className="text-xs font-bold text-brand-blue dark:text-cyan-400">{String(i + 1).padStart(2, "0")}</span>
                   <h3 className="font-semibold text-gray-900 dark:text-white">{localize(step?.title, "", lang)}</h3>
                 </div>
-                <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-200">{localize(step?.desc, "", lang)}</p>
+                <Illustration
+                  name={(step as any)?.icon}
+                  fallback={DEFAULT_ILLUS[i] ?? robot}
+                  title={localize(step?.title, "", lang)}
+                  className="h-14 w-20 shrink-0 transition-transform duration-300 group-hover:scale-105"
+                />
               </div>
+              <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-200">{localize(step?.desc, "", lang)}</p>
             </motion.li>
           ))}
         </ol>
