@@ -24,13 +24,13 @@ export const DEFAULT_SITE_CONTENT: Record<string, any> = {
     cta: { ru: "Смотреть роботов", en: "View bots" },
   },
   hero: {
-    badge: { ru: "20+ бирж · ИИ-торговля 24/7", en: "20+ exchanges · AI trading 24/7" },
-    heading1: { ru: "Торговые боты для криптобирж", en: "Trading bots for crypto exchanges" },
-    heading2: { ru: "и акций", en: "and stocks" },
+    badge: { ru: "Уникальные алгоритмы · AI-торговля 24/7", en: "Unique algorithms · AI trading 24/7" },
+    heading1: { ru: "Торговые роботы нового уровня", en: "Next-level trading robots" },
+    heading2: { ru: "для криптовалют и акций", en: "for crypto and stocks" },
     title: { ru: "Три специализированных торговых робота", en: "Three specialized trading bots" },
     subtitle: {
-      ru: "TradingAutoPilot — автоматическая торговля через API биржи. Три робота с разными подходами работают 24/7: вы управляете своим счётом на бирже, робот торгует по вашему API-ключу без права вывода средств.",
-      en: "TradingAutoPilot — automated trading through exchange APIs. Three bots with different approaches work 24/7: you stay in control of your exchange account while the bot trades via your API key without withdrawal rights.",
+      ru: "Автоматизируйте торговлю и освободите своё время с помощью роботов TradingAutoPilot. Наша команда занимается разработками алгоритмов, готовых роботов, проводит бэктесты и подбирает настройки. Полная тех.поддержка 24/7 каждому пользователю.",
+      en: "Automate your trading and free up your time with TradingAutoPilot robots. Our team develops algorithms, ready-made bots, runs backtests and fine-tunes settings. Full 24/7 technical support for every user.",
     },
     primary: { ru: "Выбрать робота", en: "Choose a bot" },
     secondary: { ru: "Как это работает", en: "How it works" },
@@ -216,6 +216,29 @@ export const DEFAULT_SITE_CONTENT: Record<string, any> = {
     trust: "API-ключи без права вывода. Средства остаются на вашей бирже",
     contactBtn: { ru: "Связаться с нами", en: "Contact us" },
   },
+  // Hero page carousel slides (editable from admin)
+  hero_slides: [
+    {
+      eyebrow: "TradingAutoPilot",
+      title: "Торгуйте без рутины",
+      desc: "Выберите свой бот среди наших специализированных торговых инструментов. Каждый алгоритм уникален и имеет свой потенциал для использования на рынке. Свяжитесь с нами — мы поможем вам выбрать подходящий.",
+    },
+    {
+      eyebrow: "Как это работает",
+      title: "Безопасность и контроль",
+      desc: "Торговля всех роботов производится через API-ключи биржи с запретом на вывод средств. Ваши средства в безопасности, стабильная связь ботов с биржей гарантировано обеспечивается.",
+    },
+    {
+      eyebrow: "Преимущество",
+      title: "Без подписки — робот остаётся с вами",
+      desc: "Вы получаете бессрочный доступ к роботу без необходимости оплачивать подписку. Обновления и техническая поддержка предоставляются каждому пользователю.",
+    },
+    {
+      eyebrow: "Начните сейчас",
+      title: "Выберите стратегию под свой рынок",
+      desc: "Гибрид акций и крипты, высокочастотная сетка или поиск импульсов — все детали и статистика доступны на странице бота.",
+    },
+  ],
   stats: {
     users: "12400+",
     users_label: "Активных пользователей",

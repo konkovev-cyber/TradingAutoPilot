@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Link } from "react-router-dom";
-import { Plus, Edit2, Trash2, Save, X, ArrowUp, ArrowDown, ImageOff, ChevronDown } from "lucide-react";
+import { Plus, Edit2, Trash2, Save, X, ArrowUp, ArrowDown, ImageOff } from "lucide-react";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type Json = any;
@@ -68,8 +68,7 @@ export default function AdminBots() {
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const [enOpen, setEnOpen] = useState(false);
-  const [seoOpen, setSeoOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<string>("main");
 
   const [extra, setExtra] = useState<{
     features: string[];
@@ -112,6 +111,7 @@ export default function AdminBots() {
   const openEditor = (bot: Bot) => {
     setEditing(bot);
     setError("");
+    setActiveTab("main");
     setI18n(bot.i18n && typeof bot.i18n === "object" ? { ...bot.i18n } : {});
     const en = bot.i18n?.en ?? {};
     setExtra({
@@ -258,6 +258,17 @@ export default function AdminBots() {
 
   const inputCls = "bg-gray-800 border border-gray-700 text-white px-4 py-2 rounded-lg";
 
+  const BOT_TABS = [
+    { id: "main", label: "Основное" },
+    { id: "desc", label: "Описание" },
+    { id: "features", label: "Особенности" },
+    { id: "returns", label: "Доходность" },
+    { id: "how", label: "Как работает" },
+    { id: "example", label: "Пример сделки" },
+    { id: "seo", label: "SEO" },
+    { id: "en", label: "EN версия" },
+  ];
+
   const stepsEditor = (
     label: string,
     rows: StepRow[],
@@ -306,7 +317,7 @@ export default function AdminBots() {
             Порядок роботов на сайте задаётся стрелками. Картинка, доходность и шаги показываются в карточках и на детальной странице.
           </p>
         </div>
-        <button onClick={() => { setEditing({ ...initialBot }); setEnOpen(false); }}
+        <button onClick={() => { setEditing({ ...initialBot }); setActiveTab("main"); }}
           className="flex items-center gap-2 px-4 py-2 bg-brand-blue hover:bg-blue-600 text-white rounded-lg transition-colors shrink-0">
           <Plus size={18} /> Добавить робота
         </button>
@@ -319,273 +330,289 @@ export default function AdminBots() {
             <button onClick={() => setEditing(null)}><X size={20} className="text-gray-400" /></button>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-4">
-            <input placeholder="Name — название, например CryptoSuperStock" value={editing.name} onChange={(e) => setEditing({ ...editing, name: e.target.value })} className={inputCls} />
-            <input placeholder="Slug — адрес страницы, например megagrid-ai" value={editing.slug} onChange={(e) => setEditing({ ...editing, slug: e.target.value.replace(/[^a-zA-Z0-9-]/g, "") })} className={inputCls} />
-            <input placeholder="Бейдж — плашка, например ХИТ продаж" value={editing.badge} onChange={(e) => setEditing({ ...editing, badge: e.target.value })} className={inputCls} />
-            <input placeholder="Рынок, например Крипта" value={editing.market} onChange={(e) => setEditing({ ...editing, market: e.target.value })} className={inputCls} />
-            <input placeholder="Стратегия, например Послотная сетка с ИИ" value={editing.strategy} onChange={(e) => setEditing({ ...editing, strategy: e.target.value })} className={inputCls} />
-            <input placeholder="Пары, например BTC/USDT, ETH/USDT" value={editing.pairs} onChange={(e) => setEditing({ ...editing, pairs: e.target.value })} className={inputCls} />
-          </div>
-
-          <input placeholder="Слоган — короткая фраза под названием" value={editing.slogan} onChange={(e) => setEditing({ ...editing, slogan: e.target.value })} className={`${inputCls} w-full`} />
-          <textarea placeholder="Краткое описание — 1-2 предложения" value={editing.shortDesc} onChange={(e) => setEditing({ ...editing, shortDesc: e.target.value })} className={`${inputCls} w-full`} rows={3} />
-          <textarea placeholder="Полное описание — подробное объяснение алгоритма" value={editing.fullDesc ?? ""} onChange={(e) => setEditing({ ...editing, fullDesc: e.target.value })} className={`${inputCls} w-full`} rows={5} />
-          <input placeholder="Риск — описание уровня риска" value={editing.risk} onChange={(e) => setEditing({ ...editing, risk: e.target.value })} className={`${inputCls} w-full`} />
-
-          <div className="grid md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Уровень сложности (бейдж на карточке)</label>
-              <select
-                value={editing.difficulty ?? ""}
-                onChange={(e) => {
-                  const d = DIFFICULTIES.find((x) => x.label === e.target.value);
-                  setEditing({ ...editing, difficulty: e.target.value, difficulty_tone: d?.tone ?? "" });
-                }}
-                className={`${inputCls} w-full appearance-none cursor-pointer`}
-                aria-label="Уровень сложности"
+          {/* Таб-навигация */}
+          <div className="flex flex-wrap gap-1 border-b border-gray-700 pb-2">
+            {BOT_TABS.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-3 py-1.5 rounded-t-lg text-sm font-medium transition-colors cursor-pointer ${
+                  activeTab === tab.id
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700"
+                }`}
               >
-                <option value="">Не указан</option>
-                {DIFFICULTIES.map((d) => (
-                  <option key={d.tone} value={d.label}>{d.label}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Цвет робота (точки, иконки, чипы)</label>
-              <div className="flex items-center gap-3">
-                <input
-                  type="color"
-                  value={/^#[0-9a-fA-F]{6}$/.test(editing.color) ? editing.color : "#3b82f6"}
-                  onChange={(e) => setEditing({ ...editing, color: e.target.value })}
-                  className="h-10 w-14 rounded-lg border border-gray-700 bg-gray-800 cursor-pointer"
-                  aria-label="Цвет робота"
-                />
-                <input
-                  value={editing.color}
-                  onChange={(e) => setEditing({ ...editing, color: e.target.value })}
-                  placeholder="#3b82f6"
-                  className={inputCls + " flex-1"}
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Преимущества</label>
-              <div className="space-y-2">
-                {extra.features.map((f, i) => (
-                  <div key={i} className="flex gap-2 items-center">
-                    <input
-                      value={f}
-                      onChange={(e) => setExtra({ ...extra, features: extra.features.map((v, j) => (j === i ? e.target.value : v)) })}
-                      className="flex-1 bg-gray-800 border border-gray-700 text-white px-3 py-2 rounded-lg text-sm"
-                    />
-                    <button onClick={() => setExtra({ ...extra, features: extra.features.filter((_, j) => j !== i) })}
-                      className="p-2 text-red-400 hover:text-red-300" aria-label="Удалить">
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-              <button onClick={() => setExtra({ ...extra, features: [...extra.features, ""] })}
-                className="mt-2 flex items-center gap-1 text-sm text-blue-400 hover:text-blue-300">
-                <Plus size={14} /> Добавить
+                {tab.label}
               </button>
-            </div>
+            ))}
+          </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Доходность</label>
-              <div className="space-y-2">
-                {extra.returns.map((r, i) => (
-                  <div key={i} className="flex gap-2 items-center">
-                    <input
-                      value={r.period}
-                      placeholder="30 дней"
-                      onChange={(e) => setExtra({ ...extra, returns: extra.returns.map((v, j) => (j === i ? { ...v, period: e.target.value } : v)) })}
-                      className="w-24 bg-gray-800 border border-gray-700 text-white px-3 py-2 rounded-lg text-sm"
-                    />
-                    <input
-                      value={r.value}
-                      placeholder="+6.8%"
-                      onChange={(e) => setExtra({ ...extra, returns: extra.returns.map((v, j) => (j === i ? { ...v, value: e.target.value } : v)) })}
-                      className="flex-1 bg-gray-800 border border-gray-700 text-white px-3 py-2 rounded-lg text-sm"
-                    />
-                    <button onClick={() => setExtra({ ...extra, returns: extra.returns.filter((_, j) => j !== i) })}
-                      className="p-2 text-red-400 hover:text-red-300" aria-label="Удалить">
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-                ))}
+          {/* ТАБ: Основное */}
+          {activeTab === "main" && (
+            <div className="space-y-4">
+              <div className="grid md:grid-cols-2 gap-4">
+                <input placeholder="Name — название, например CryptoSuperStock" value={editing.name} onChange={(e) => setEditing({ ...editing, name: e.target.value })} className={inputCls} />
+                <input placeholder="Slug — адрес страницы, например megagrid-ai" value={editing.slug} onChange={(e) => setEditing({ ...editing, slug: e.target.value.replace(/[^a-zA-Z0-9-]/g, "") })} className={inputCls} />
+                <input placeholder="Бейдж — плашка, например ХИТ продаж" value={editing.badge} onChange={(e) => setEditing({ ...editing, badge: e.target.value })} className={inputCls} />
+                <input placeholder="Рынок, например Крипта" value={editing.market} onChange={(e) => setEditing({ ...editing, market: e.target.value })} className={inputCls} />
+                <input placeholder="Стратегия, например Послотная сетка с ИИ" value={editing.strategy} onChange={(e) => setEditing({ ...editing, strategy: e.target.value })} className={inputCls} />
+                <input placeholder="Пары, например BTC/USDT, ETH/USDT" value={editing.pairs} onChange={(e) => setEditing({ ...editing, pairs: e.target.value })} className={inputCls} />
               </div>
-              <button onClick={() => setExtra({ ...extra, returns: [...extra.returns, { period: "", value: "" }] })}
-                className="mt-2 flex items-center gap-1 text-sm text-blue-400 hover:text-blue-300">
-                <Plus size={14} /> Добавить
-              </button>
+
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Уровень сложности (бейдж на карточке)</label>
+                  <select
+                    value={editing.difficulty ?? ""}
+                    onChange={(e) => {
+                      const d = DIFFICULTIES.find((x) => x.label === e.target.value);
+                      setEditing({ ...editing, difficulty: e.target.value, difficulty_tone: d?.tone ?? "" });
+                    }}
+                    className={`${inputCls} w-full appearance-none cursor-pointer`}
+                    aria-label="Уровень сложности"
+                  >
+                    <option value="">Не указан</option>
+                    {DIFFICULTIES.map((d) => (
+                      <option key={d.tone} value={d.label}>{d.label}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Цвет робота (точки, иконки, чипы)</label>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="color"
+                      value={/^#[0-9a-fA-F]{6}$/.test(editing.color) ? editing.color : "#3b82f6"}
+                      onChange={(e) => setEditing({ ...editing, color: e.target.value })}
+                      className="h-10 w-14 rounded-lg border border-gray-700 bg-gray-800 cursor-pointer"
+                      aria-label="Цвет робота"
+                    />
+                    <input
+                      value={editing.color}
+                      onChange={(e) => setEditing({ ...editing, color: e.target.value })}
+                      placeholder="#3b82f6"
+                      className={inputCls + " flex-1"}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4 items-center">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Картинка робота (JPEG/PNG, кнопка сама зальёт в Storage)</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f) uploadImage(f);
+                    }}
+                    className="block w-full text-sm text-gray-400 file:mr-3 file:px-3 file:py-2 file:rounded-lg file:border-0 file:bg-gray-700 file:text-white file:cursor-pointer"
+                  />
+                  {uploading && <span className="text-xs text-gray-400">Загрузка...</span>}
+                </div>
+                <div className="flex items-center gap-3">
+                  {editing.image_url ? (
+                    <img src={editing.image_url} alt={editing.name} className="h-20 w-auto rounded-lg border border-gray-700" />
+                  ) : (
+                    <div className="h-20 w-32 rounded-lg border border-dashed border-gray-700 flex items-center justify-center text-gray-600">
+                      <ImageOff size={20} />
+                    </div>
+                  )}
+                  {editing.image_url && (
+                    <button onClick={() => setEditing({ ...editing, image_url: null })}
+                      className="text-xs text-red-400 hover:text-red-300">Убрать картинку</button>
+                  )}
+                </div>
+              </div>
             </div>
-          </div>
+          )}
 
-          <div className="grid md:grid-cols-2 gap-4">
-            {stepsEditor("Как работает (шаги)", extra.how, (rows) => setExtra({ ...extra, how: rows }), "Добавить шаг")}
-            {stepsEditor("Пример сделки (концептуальные шаги)", extra.example, (rows) => setExtra({ ...extra, example: rows }), "Добавить шаг")}
-          </div>
+          {/* ТАБ: Описание */}
+          {activeTab === "desc" && (
+            <div className="space-y-4">
+              <input placeholder="Слоган — короткая фраза под названием" value={editing.slogan} onChange={(e) => setEditing({ ...editing, slogan: e.target.value })} className={`${inputCls} w-full`} />
+              <textarea placeholder="Краткое описание — 1-2 предложения" value={editing.shortDesc} onChange={(e) => setEditing({ ...editing, shortDesc: e.target.value })} className={`${inputCls} w-full`} rows={3} />
+              <textarea placeholder="Полное описание — подробное объяснение алгоритма" value={editing.fullDesc ?? ""} onChange={(e) => setEditing({ ...editing, fullDesc: e.target.value })} className={`${inputCls} w-full`} rows={5} />
+              <input placeholder="Риск — описание уровня риска" value={editing.risk} onChange={(e) => setEditing({ ...editing, risk: e.target.value })} className={`${inputCls} w-full`} />
+            </div>
+          )}
 
-          <div className="border border-gray-700 rounded-xl overflow-hidden">
-            <button
-              onClick={() => setEnOpen(!enOpen)}
-              className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-800/50 transition-colors"
-            >
-              <span className="font-semibold text-white text-sm">Английская версия (EN)</span>
-              <ChevronDown size={18} className={`text-gray-400 transition-transform ${enOpen ? "rotate-180" : ""}`} />
-            </button>
-            {enOpen && (
-              <div className="px-4 pb-4 pt-2 border-t border-gray-700 space-y-4">
-                <div className="grid md:grid-cols-2 gap-3">
-                  {EN_FIELDS.map((f) => (
-                    <div key={f.key} className={f.multiline ? "md:col-span-2" : ""}>
-                      <label className="block text-xs font-medium text-gray-400 mb-1">{f.label}</label>
-                      {f.multiline ? (
-                        <textarea
-                          rows={3}
-                          value={String(i18n[f.key] ?? "")}
-                          onChange={(e) => setI18n({ ...i18n, [f.key]: e.target.value })}
-                          className="w-full bg-gray-800 border border-gray-700 text-white px-3 py-2 rounded-lg text-sm"
-                        />
-                      ) : (
-                        <input
-                          value={String(i18n[f.key] ?? "")}
-                          onChange={(e) => setI18n({ ...i18n, [f.key]: e.target.value })}
-                          className="w-full bg-gray-800 border border-gray-700 text-white px-3 py-2 rounded-lg text-sm"
-                        />
-                      )}
+          {/* ТАБ: Особенности */}
+          {activeTab === "features" && (
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Преимущества</label>
+                <div className="space-y-2">
+                  {extra.features.map((f, i) => (
+                    <div key={i} className="flex gap-2 items-center">
+                      <input
+                        value={f}
+                        onChange={(e) => setExtra({ ...extra, features: extra.features.map((v, j) => (j === i ? e.target.value : v)) })}
+                        className="flex-1 bg-gray-800 border border-gray-700 text-white px-3 py-2 rounded-lg text-sm"
+                      />
+                      <button onClick={() => setExtra({ ...extra, features: extra.features.filter((_, j) => j !== i) })}
+                        className="p-2 text-red-400 hover:text-red-300" aria-label="Удалить">
+                        <Trash2 size={16} />
+                      </button>
                     </div>
                   ))}
                 </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-400 mb-1">Преимущества (EN)</label>
-                  <div className="space-y-2">
-                    {extra.en.features.map((f, i) => (
-                      <div key={i} className="flex gap-2 items-center">
-                        <input
-                          value={f}
-                          onChange={(e) => setExtra({ ...extra, en: { ...extra.en, features: extra.en.features.map((v, j) => (j === i ? e.target.value : v)) } })}
-                          className="flex-1 bg-gray-800 border border-gray-700 text-white px-3 py-2 rounded-lg text-sm"
-                        />
-                        <button onClick={() => setExtra({ ...extra, en: { ...extra.en, features: extra.en.features.filter((_, j) => j !== i) } })}
-                          className="p-2 text-red-400 hover:text-red-300" aria-label="Удалить">
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                  <button onClick={() => setExtra({ ...extra, en: { ...extra.en, features: [...extra.en.features, ""] } })}
-                    className="mt-2 flex items-center gap-1 text-sm text-blue-400 hover:text-blue-300">
-                    <Plus size={14} /> Добавить
-                  </button>
-                </div>
-                <div className="grid md:grid-cols-2 gap-4">
-                  {stepsEditor("Как работает (EN)", extra.en.how, (rows) => setExtra({ ...extra, en: { ...extra.en, how: rows } }), "Добавить шаг")}
-                  {stepsEditor("Пример сделки (EN)", extra.en.example, (rows) => setExtra({ ...extra, en: { ...extra.en, example: rows } }), "Добавить шаг")}
-                </div>
+                <button onClick={() => setExtra({ ...extra, features: [...extra.features, ""] })}
+                  className="mt-2 flex items-center gap-1 text-sm text-blue-400 hover:text-blue-300">
+                  <Plus size={14} /> Добавить
+                </button>
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
-          {/* SEO Block */}
-          <div className="border border-gray-700/80 rounded-xl overflow-hidden bg-gray-950/40">
-            <button
-              type="button"
-              onClick={() => setSeoOpen(!seoOpen)}
-              className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-gray-800/50 transition-colors"
-            >
-              <div className="flex items-center gap-2.5">
-                <span className="text-sm font-semibold text-white">🔍 SEO настройки робота</span>
-                <span className="text-xs text-blue-400 font-mono">
-                  /bots/{editing.slug || "slug"}
-                </span>
-                {editing.meta_title && (
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                    Настроено
+          {/* ТАБ: Доходность */}
+          {activeTab === "returns" && (
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Доходность</label>
+                <div className="space-y-2">
+                  {extra.returns.map((r, i) => (
+                    <div key={i} className="flex gap-2 items-center">
+                      <input
+                        value={r.period}
+                        placeholder="30 дней"
+                        onChange={(e) => setExtra({ ...extra, returns: extra.returns.map((v, j) => (j === i ? { ...v, period: e.target.value } : v)) })}
+                        className="w-24 bg-gray-800 border border-gray-700 text-white px-3 py-2 rounded-lg text-sm"
+                      />
+                      <input
+                        value={r.value}
+                        placeholder="+6.8%"
+                        onChange={(e) => setExtra({ ...extra, returns: extra.returns.map((v, j) => (j === i ? { ...v, value: e.target.value } : v)) })}
+                        className="flex-1 bg-gray-800 border border-gray-700 text-white px-3 py-2 rounded-lg text-sm"
+                      />
+                      <button onClick={() => setExtra({ ...extra, returns: extra.returns.filter((_, j) => j !== i) })}
+                        className="p-2 text-red-400 hover:text-red-300" aria-label="Удалить">
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                <button onClick={() => setExtra({ ...extra, returns: [...extra.returns, { period: "", value: "" }] })}
+                  className="mt-2 flex items-center gap-1 text-sm text-blue-400 hover:text-blue-300">
+                  <Plus size={14} /> Добавить
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* ТАБ: Как работает */}
+          {activeTab === "how" && (
+            <div className="space-y-4">
+              {stepsEditor("Как работает (шаги)", extra.how, (rows) => setExtra({ ...extra, how: rows }), "Добавить шаг")}
+            </div>
+          )}
+
+          {/* ТАБ: Пример сделки */}
+          {activeTab === "example" && (
+            <div className="space-y-4">
+              {stepsEditor("Пример сделки (концептуальные шаги)", extra.example, (rows) => setExtra({ ...extra, example: rows }), "Добавить шаг")}
+            </div>
+          )}
+
+          {/* ТАБ: SEO */}
+          {activeTab === "seo" && (
+            <div className="space-y-4">
+              <div>
+                <div className="flex justify-between text-xs text-gray-400 mb-1">
+                  <span>Meta Title (заголовок вкладки)</span>
+                  <span className={(editing.meta_title?.length ?? 0) > 60 ? "text-amber-400" : "text-gray-500"}>
+                    {editing.meta_title?.length ?? 0} / 60 симв.
                   </span>
-                )}
+                </div>
+                <input
+                  value={editing.meta_title ?? ""}
+                  onChange={(e) => setEditing({ ...editing, meta_title: e.target.value })}
+                  placeholder={`Например: ${editing.name || "Робот"} — торговый бот для Bybit и Binance`}
+                  className={`${inputCls} w-full`}
+                />
               </div>
-              <ChevronDown size={16} className={`text-gray-400 transition-transform ${seoOpen ? "rotate-180" : ""}`} />
-            </button>
-            {seoOpen && (
-              <div className="px-4 pb-4 pt-2 border-t border-gray-700 space-y-3">
-                <div>
-                  <div className="flex justify-between text-xs text-gray-400 mb-1">
-                    <span>Meta Title (заголовок вкладки)</span>
-                    <span className={(editing.meta_title?.length ?? 0) > 60 ? "text-amber-400" : "text-gray-500"}>
-                      {editing.meta_title?.length ?? 0} / 60 симв.
-                    </span>
-                  </div>
-                  <input
-                    value={editing.meta_title ?? ""}
-                    onChange={(e) => setEditing({ ...editing, meta_title: e.target.value })}
-                    placeholder={`Например: ${editing.name || "Робот"} — торговый бот для Bybit и Binance`}
-                    className={`${inputCls} w-full`}
-                  />
-                </div>
 
-                <div>
-                  <div className="flex justify-between text-xs text-gray-400 mb-1">
-                    <span>Meta Description (описание в поисковике)</span>
-                    <span className={(editing.meta_description?.length ?? 0) > 160 ? "text-amber-400" : "text-gray-500"}>
-                      {editing.meta_description?.length ?? 0} / 160 симв.
-                    </span>
-                  </div>
-                  <textarea
-                    rows={2}
-                    value={editing.meta_description ?? ""}
-                    onChange={(e) => setEditing({ ...editing, meta_description: e.target.value })}
-                    placeholder="Краткое привлекательное описание для поисковой выдачи Google и Яндекс..."
-                    className={`${inputCls} w-full`}
-                  />
+              <div>
+                <div className="flex justify-between text-xs text-gray-400 mb-1">
+                  <span>Meta Description (описание в поисковике)</span>
+                  <span className={(editing.meta_description?.length ?? 0) > 160 ? "text-amber-400" : "text-gray-500"}>
+                    {editing.meta_description?.length ?? 0} / 160 симв.
+                  </span>
                 </div>
-
-                <div>
-                  <label className="block text-xs text-gray-400 mb-1">OG Image URL (баннер превью в соцсетях)</label>
-                  <input
-                    value={editing.og_image ?? ""}
-                    onChange={(e) => setEditing({ ...editing, og_image: e.target.value })}
-                    placeholder="https://... или оставьте пустым, чтобы использовать картинку робота"
-                    className={`${inputCls} w-full`}
-                  />
-                </div>
+                <textarea
+                  rows={2}
+                  value={editing.meta_description ?? ""}
+                  onChange={(e) => setEditing({ ...editing, meta_description: e.target.value })}
+                  placeholder="Краткое привлекательное описание для поисковой выдачи Google и Яндекс..."
+                  className={`${inputCls} w-full`}
+                />
               </div>
-            )}
-          </div>
 
-          <div className="grid md:grid-cols-2 gap-4 items-center">
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Картинка робота (JPEG/PNG, кнопка сама зальёт в Storage)</label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => {
-                  const f = e.target.files?.[0];
-                  if (f) uploadImage(f);
-                }}
-                className="block w-full text-sm text-gray-400 file:mr-3 file:px-3 file:py-2 file:rounded-lg file:border-0 file:bg-gray-700 file:text-white file:cursor-pointer"
-              />
-              {uploading && <span className="text-xs text-gray-400">Загрузка...</span>}
+              <div>
+                <label className="block text-xs text-gray-400 mb-1">OG Image URL (баннер превью в соцсетях)</label>
+                <input
+                  value={editing.og_image ?? ""}
+                  onChange={(e) => setEditing({ ...editing, og_image: e.target.value })}
+                  placeholder="https://... или оставьте пустым, чтобы использовать картинку робота"
+                  className={`${inputCls} w-full`}
+                />
+              </div>
             </div>
-            <div className="flex items-center gap-3">
-              {editing.image_url ? (
-                <img src={editing.image_url} alt={editing.name} className="h-20 w-auto rounded-lg border border-gray-700" />
-              ) : (
-                <div className="h-20 w-32 rounded-lg border border-dashed border-gray-700 flex items-center justify-center text-gray-600">
-                  <ImageOff size={20} />
+          )}
+
+          {/* ТАБ: EN версия */}
+          {activeTab === "en" && (
+            <div className="space-y-4">
+              <div className="grid md:grid-cols-2 gap-3">
+                {EN_FIELDS.map((f) => (
+                  <div key={f.key} className={f.multiline ? "md:col-span-2" : ""}>
+                    <label className="block text-xs font-medium text-gray-400 mb-1">{f.label}</label>
+                    {f.multiline ? (
+                      <textarea
+                        rows={3}
+                        value={String(i18n[f.key] ?? "")}
+                        onChange={(e) => setI18n({ ...i18n, [f.key]: e.target.value })}
+                        className="w-full bg-gray-800 border border-gray-700 text-white px-3 py-2 rounded-lg text-sm"
+                      />
+                    ) : (
+                      <input
+                        value={String(i18n[f.key] ?? "")}
+                        onChange={(e) => setI18n({ ...i18n, [f.key]: e.target.value })}
+                        className="w-full bg-gray-800 border border-gray-700 text-white px-3 py-2 rounded-lg text-sm"
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-400 mb-1">Преимущества (EN)</label>
+                <div className="space-y-2">
+                  {extra.en.features.map((f, i) => (
+                    <div key={i} className="flex gap-2 items-center">
+                      <input
+                        value={f}
+                        onChange={(e) => setExtra({ ...extra, en: { ...extra.en, features: extra.en.features.map((v, j) => (j === i ? e.target.value : v)) } })}
+                        className="flex-1 bg-gray-800 border border-gray-700 text-white px-3 py-2 rounded-lg text-sm"
+                      />
+                      <button onClick={() => setExtra({ ...extra, en: { ...extra.en, features: extra.en.features.filter((_, j) => j !== i) } })}
+                        className="p-2 text-red-400 hover:text-red-300" aria-label="Удалить">
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  ))}
                 </div>
-              )}
-              {editing.image_url && (
-                <button onClick={() => setEditing({ ...editing, image_url: null })}
-                  className="text-xs text-red-400 hover:text-red-300">Убрать картинку</button>
-              )}
+                <button onClick={() => setExtra({ ...extra, en: { ...extra.en, features: [...extra.en.features, ""] } })}
+                  className="mt-2 flex items-center gap-1 text-sm text-blue-400 hover:text-blue-300">
+                  <Plus size={14} /> Добавить
+                </button>
+              </div>
+              <div className="grid md:grid-cols-2 gap-4">
+                {stepsEditor("Как работает (EN)", extra.en.how, (rows) => setExtra({ ...extra, en: { ...extra.en, how: rows } }), "Добавить шаг")}
+                {stepsEditor("Пример сделки (EN)", extra.en.example, (rows) => setExtra({ ...extra, en: { ...extra.en, example: rows } }), "Добавить шаг")}
+              </div>
             </div>
-          </div>
+          )}
 
           {error && <div className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-2">{error}</div>}
 

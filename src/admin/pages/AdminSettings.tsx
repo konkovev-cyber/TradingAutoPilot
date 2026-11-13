@@ -26,6 +26,7 @@ const SECTION_LABELS: Record<string, string> = {
   meta: "SEO, поисковая оптимизация и веб-аналитика",
   nav: "Меню в шапке сайта",
   hero: "Hero / Главный экран",
+  hero_slides: "Карусель на главной странице (4 слайда)",
   contacts: "Контакты (Telegram, WhatsApp, Email, Телефон)",
   why: "Для чего нужны торговые боты",
   advantages: "Преимущества использования ботов",
@@ -48,6 +49,7 @@ const HELP_TEXT: Record<string, string> = {
   meta: "Title, Description, ключевые слова, счетчики Яндекс.Метрики и Google Analytics 4, sitemap.xml и robots.txt.",
   nav: "Тексты пунктов меню в шапке (О проекте, Роботы, Как работает, FAQ, Связаться).",
   hero: "Заголовки, подзаголовок, кнопки и строки доверия на первом экране.",
+  hero_slides: "4 слайда карусели: тег/бейдж слайда, заголовок и текст описания. Порядок — порядок показа.",
   contacts: "Каналы связи для всего сайта: прямые ссылки Telegram, WhatsApp, email и телефон.",
   why: "Блок «Для чего нужны торговые боты» — заголовок, пояснительный текст и тезисы.",
   advantages: "Карточки преимуществ: круглосуточная работа, отсутствие эмоций, скорость и т.д.",
@@ -67,7 +69,7 @@ const HELP_TEXT: Record<string, string> = {
 
 const CATEGORIES = [
   { id: "all", label: "Все секции", icon: "🌐" },
-  { id: "main", label: "Главная и меню", keys: ["nav", "hero", "stats", "exchanges"], icon: "📌" },
+  { id: "main", label: "Главная и меню", keys: ["nav", "hero", "hero_slides", "stats", "exchanges"], icon: "📌" },
   { id: "bots", label: "О роботах", keys: ["why", "advantages", "benefits", "pricing", "how_it_works", "tryIt", "cta"], icon: "🤖" },
   { id: "trust", label: "Контакты и доверие", keys: ["contacts", "connect", "testimonials", "questions", "conclusion"], icon: "💬" },
   { id: "faq", label: "FAQ", keys: ["faq"], icon: "❓" },
@@ -949,6 +951,25 @@ export default function AdminSettings() {
     );
   };
 
+  // --- Hero Slides Editor ---
+  const HeroSlidesEditor = () => {
+    const items = Array.isArray(sections.hero_slides)
+      ? sections.hero_slides
+      : (DEFAULT_SITE_CONTENT.hero_slides as any[]) || [];
+    return (
+      <ListEditor
+        items={items}
+        onChange={(next) => updateData("hero_slides", next)}
+        emptyItem={() => ({ eyebrow: "", title: "", desc: "" })}
+        fields={[
+          { key: "eyebrow", label: "Тег / бейдж слайда (например: Преимущество)" },
+          { key: "title", label: "Заголовок слайда" },
+          { key: "desc", label: "Описание слайда", multiline: true },
+        ]}
+      />
+    );
+  };
+
   // --- How It Works Editor ---
   const HowItWorksEditor = () => {
     const items = Array.isArray(sections.how_it_works) ? sections.how_it_works : DEFAULT_SITE_CONTENT.how_it_works || [];
@@ -1223,6 +1244,7 @@ export default function AdminSettings() {
           const renderContent = () => {
             if (section === "telegram_settings") return <TelegramEditor />;
             if (section === "meta") return <MetaEditor />;
+            if (section === "hero_slides") return <HeroSlidesEditor />;
             if (section === "stats") return <StatsEditor />;
             if (section === "exchanges") return <ExchangesEditor />;
             if (section === "advantages") return <AdvantagesEditor />;

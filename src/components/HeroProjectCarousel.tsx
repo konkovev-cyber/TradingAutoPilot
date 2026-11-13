@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Bot, ShieldCheck, Infinity, Rocket, ChevronLeft, ChevronRight, type LucideIcon } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
+import { useSectionValue } from "@/lib/site-content";
 
 const icons: LucideIcon[] = [Bot, ShieldCheck, Infinity, Rocket];
 
@@ -14,7 +15,11 @@ interface ProjectSlide {
 export default function HeroProjectCarousel() {
   const { t } = useI18n();
   const reduceMotion = useReducedMotion();
-  const slides = t("hero.projectSlides") as ProjectSlide[];
+  const rawSlides = useSectionValue("hero_slides");
+  const slides: ProjectSlide[] =
+    Array.isArray(rawSlides) && rawSlides.length > 0
+      ? rawSlides
+      : (t("hero.projectSlides") as ProjectSlide[]);
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const count = slides.length;

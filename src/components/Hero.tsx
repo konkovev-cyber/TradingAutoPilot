@@ -70,8 +70,8 @@ export default function Hero() {
               {c("hero", "badge", t("hero.badge"))}
             </span>
             <h1 className="text-balance text-3xl sm:text-4xl lg:text-[44px] font-extrabold leading-[1.12] sm:leading-[1.08] tracking-[-0.04em] sm:tracking-[-0.045em] text-slate-900 dark:text-white">
-              {t("hero.heading1")}
-              <span className="block bg-gradient-to-r from-blue-700 via-indigo-600 to-violet-600 bg-clip-text text-transparent dark:from-cyan-300 dark:via-blue-300 dark:to-violet-300">{t("hero.heading2")}</span>
+              {c("hero", "heading1", t("hero.heading1"))}
+              <span className="block bg-gradient-to-r from-blue-700 via-indigo-600 to-violet-600 bg-clip-text text-transparent dark:from-cyan-300 dark:via-blue-300 dark:to-violet-300">{c("hero", "heading2", t("hero.heading2"))}</span>
             </h1>
             <p className="mt-4 sm:mt-5 text-sm sm:text-base md:text-lg leading-relaxed text-slate-600 dark:text-slate-300">
               {c("hero", "subtitle", t("hero.subtitle"))}
