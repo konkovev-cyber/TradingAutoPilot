@@ -93,39 +93,53 @@ export const DEFAULT_SITE_CONTENT: Record<string, any> = {
   benefits: {
     title: { ru: "Почему стоит выбрать TradingAutoPilot?", en: "Why choose TradingAutoPilot?" },
     subtitle: {
-      ru: "На крипторынке множество торговых ботов, но TradingAutoPilot выделяется среди них благодаря своим возможностям и условиям.",
-      en: "There are many trading bots on the market, but TradingAutoPilot stands out with its capabilities and terms.",
+      ru: "На крипторынке множество торговых ботов, но TradingAutoPilot выделяется среди них благодаря своим инновациям, возможностям и условиям.",
+      en: "There are many trading bots on the market, but TradingAutoPilot stands out with its innovations, capabilities and terms.",
+    },
+    formatTelegram: {
+      ru: "Наши роботы доступны в формате Telegram-ботов",
+      en: "Our bots are available as Telegram bots",
+    },
+    formatWindows: {
+      ru: "и в формате программы для Windows",
+      en: "and as a Windows desktop application",
     },
     items: [
       {
+        icon: "badge-dollar-sign",
         tag: { ru: "Без подписки", en: "No subscription" },
         title: { ru: "Без абонентской платы", en: "No subscription fee" },
-        desc: { ru: "Вы получаете бессрочный доступ к роботу без необходимости оплачивать подписку. Обновления и техническая поддержка предоставляются каждому пользователю.", en: "You get lifetime access to the bot with no subscription required. Updates and technical support are provided to every user." },
+        desc: { ru: "Покупаете робота один раз — без абонентской платы и комиссий с прибыли. Он торгует для вас круглосуточно.", en: "Buy the bot once — no subscription fee and no profit commission. It trades for you around the clock." },
       },
       {
+        icon: "building-2",
         tag: { ru: "Популярные биржи", en: "Popular exchanges" },
         title: { ru: "Широкий спектр поддерживаемых бирж", en: "Wide range of supported exchanges" },
-        desc: { ru: "Работает с популярными биржами: BYBIT, Binance, OKX, BingX, Gate.io, HTX, Bitget, KuCoin, MEXC и другими.", en: "Works with popular exchanges: BYBIT, Binance, OKX, BingX, Gate.io, HTX, Bitget, KuCoin, MEXC and more." },
+        desc: { ru: "Работаем с популярными биржами и добавляем новые.", en: "We work with popular exchanges and keep adding new ones." },
       },
       {
+        icon: "mouse-pointer-click",
         tag: { ru: "Понятный интерфейс", en: "Clear interface" },
         title: { ru: "Удобство и простота использования", en: "Convenience and simplicity" },
         desc: { ru: "Понятный интерфейс и готовые шаблоны стратегий делают старт простым для новичков и опытных трейдеров.", en: "A clear interface and ready-made strategy templates make starting simple for beginners and experienced traders." },
       },
       {
+        icon: "shield-check",
         tag: { ru: "API-ключи", en: "API keys" },
         title: { ru: "Безопасность средств", en: "Funds safety" },
         desc: { ru: "API-ключи создаются с правом торговли, но без права вывода — доступа к вашим средствам у нас нет.", en: "API keys are created with trading rights but without withdrawal rights — we have no access to your funds." },
       },
       {
+        icon: "book-open",
         tag: { ru: "Инструкции, советы", en: "Guides, tips" },
-        title: { ru: "База знаний и FAQ", en: "Knowledge base and FAQ" },
-        desc: { ru: "База знаний, инструкции и подробные описания алгоритмов каждого робота на детальных страницах.", en: "A knowledge base, guides and detailed algorithm descriptions on each bot's detail page." },
+        title: { ru: "База знаний и коммьюнити", en: "Knowledge base and community" },
+        desc: { ru: "База знаний, инструкции и подробные описания алгоритмов каждого робота, открытое сообщество пользователей ботов, где обсуждаем торговлю и делимся мнениями.", en: "A knowledge base, guides and detailed descriptions of every bot's algorithms, plus an open community of bot users where we discuss trading and share opinions." },
       },
       {
+        icon: "headset",
         tag: { ru: "Круглосуточная поддержка", en: "24/7 support" },
         title: { ru: "Техническая поддержка", en: "Technical support" },
-        desc: { ru: "Поддержка в Telegram и WhatsApp — поможем с подключением, настройкой и выбором робота.", en: "Support on Telegram and WhatsApp — we help with connection, setup and bot selection." },
+        desc: { ru: "Поддержка 24/7 — поможем с подключением, настройкой и выбором робота.", en: "24/7 support — we help with connection, setup and choosing a bot." },
       },
     ],
   },

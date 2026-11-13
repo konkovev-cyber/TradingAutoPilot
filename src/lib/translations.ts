@@ -116,14 +116,16 @@ export const ruTranslations = {
   },
   "benefits": {
     "title": "Почему стоит выбрать TradingAutoPilot?",
-    "subtitle": "На крипторынке множество торговых ботов, но TradingAutoPilot выделяется среди них благодаря своим возможностям и условиям.",
+    "subtitle": "На крипторынке множество торговых ботов, но TradingAutoPilot выделяется среди них благодаря своим инновациям, возможностям и условиям.",
+    "formatTelegram": "Наши роботы доступны в формате Telegram-ботов",
+    "formatWindows": "и в формате программы для Windows",
     "items": [
-      { "tag": "Без подписки", "title": "Без абонентской платы", "desc": "Покупаете робота один раз — без абонентской платы и комиссий с прибыли. Он торгует для вас круглосуточно." },
-      { "tag": "Популярные биржи", "title": "Широкий спектр поддерживаемых бирж", "desc": "Работает с популярными биржами: BYBIT, Binance, OKX, BingX, Gate.io, HTX, Bitget, KuCoin, MEXC и другими." },
-      { "tag": "Понятный интерфейс", "title": "Удобство и простота использования", "desc": "Понятный интерфейс и готовые шаблоны стратегий делают старт простым для новичков и опытных трейдеров." },
-      { "tag": "API-ключи", "title": "Безопасность средств", "desc": "API-ключи создаются с правом торговли, но без права вывода — доступа к вашим средствам у нас нет." },
-      { "tag": "Инструкции, советы", "title": "База знаний и FAQ", "desc": "База знаний, инструкции и подробные описания алгоритмов каждого робота на детальных страницах." },
-      { "tag": "Круглосуточная поддержка", "title": "Техническая поддержка", "desc": "Поддержка в Telegram и WhatsApp — поможем с подключением, настройкой и выбором робота." }
+      { "icon": "badge-dollar-sign", "tag": "Без подписки", "title": "Без абонентской платы", "desc": "Покупаете робота один раз — без абонентской платы и комиссий с прибыли. Он торгует для вас круглосуточно." },
+      { "icon": "building-2", "tag": "Популярные биржи", "title": "Широкий спектр поддерживаемых бирж", "desc": "Работаем с популярными биржами и добавляем новые." },
+      { "icon": "mouse-pointer-click", "tag": "Понятный интерфейс", "title": "Удобство и простота использования", "desc": "Понятный интерфейс и готовые шаблоны стратегий делают старт простым для новичков и опытных трейдеров." },
+      { "icon": "shield-check", "tag": "API-ключи", "title": "Безопасность средств", "desc": "API-ключи создаются с правом торговли, но без права вывода — доступа к вашим средствам у нас нет." },
+      { "icon": "book-open", "tag": "Инструкции, советы", "title": "База знаний и коммьюнити", "desc": "База знаний, инструкции и подробные описания алгоритмов каждого робота, открытое сообщество пользователей ботов, где обсуждаем торговлю и делимся мнениями." },
+      { "icon": "headset", "tag": "Круглосуточная поддержка", "title": "Техническая поддержка", "desc": "Поддержка 24/7 — поможем с подключением, настройкой и выбором робота." }
     ]
   },
   "pricing": {
@@ -408,14 +410,16 @@ export const enTranslations = {
   },
   "benefits": {
     "title": "Why choose TradingAutoPilot?",
-    "subtitle": "There are many trading bots on the market, but TradingAutoPilot stands out with its capabilities and terms.",
+    "subtitle": "There are many trading bots on the market, but TradingAutoPilot stands out with its innovations, capabilities and terms.",
+    "formatTelegram": "Our bots are available as Telegram bots",
+    "formatWindows": "and as a Windows desktop application",
     "items": [
-      { "tag": "No subscription", "title": "No subscription fee", "desc": "Buy the bot once — no subscription fee and no profit commission. It trades for you around the clock." },
-      { "tag": "Popular exchanges", "title": "Wide range of supported exchanges", "desc": "Works with popular exchanges: BYBIT, Binance, OKX, BingX, Gate.io, HTX, Bitget, KuCoin, MEXC and more." },
-      { "tag": "Clear interface", "title": "Convenience and simplicity", "desc": "A clear interface and ready-made strategy templates make starting simple for beginners and experienced traders." },
-      { "tag": "API keys", "title": "Funds safety", "desc": "API keys are created with trading rights but without withdrawal rights — we have no access to your funds." },
-      { "tag": "Guides, tips", "title": "Knowledge base and FAQ", "desc": "A knowledge base, guides and detailed algorithm descriptions on each bot's detail page." },
-      { "tag": "24/7 support", "title": "Technical support", "desc": "Support on Telegram and WhatsApp — we help with connection, setup and bot selection." }
+      { "icon": "badge-dollar-sign", "tag": "No subscription", "title": "No subscription fee", "desc": "Buy the bot once — no subscription fee and no profit commission. It trades for you around the clock." },
+      { "icon": "building-2", "tag": "Popular exchanges", "title": "Wide range of supported exchanges", "desc": "We work with popular exchanges and keep adding new ones." },
+      { "icon": "mouse-pointer-click", "tag": "Clear interface", "title": "Convenience and simplicity", "desc": "A clear interface and ready-made strategy templates make starting simple for beginners and experienced traders." },
+      { "icon": "shield-check", "tag": "API keys", "title": "Funds safety", "desc": "API keys are created with trading rights but without withdrawal rights — we have no access to your funds." },
+      { "icon": "book-open", "tag": "Guides, tips", "title": "Knowledge base and community", "desc": "A knowledge base, guides and detailed descriptions of every bot's algorithms, plus an open community of bot users where we discuss trading and share opinions." },
+      { "icon": "headset", "tag": "24/7 support", "title": "Technical support", "desc": "24/7 support — we help with connection, setup and choosing a bot." }
     ]
   },
   "pricing": {

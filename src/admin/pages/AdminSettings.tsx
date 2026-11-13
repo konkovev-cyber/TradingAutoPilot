@@ -824,6 +824,18 @@ export default function AdminSettings() {
           localized
           multiline
         />
+        <FieldInput
+          label="Плашка «Telegram-боты»"
+          value={d.formatTelegram}
+          onChange={(v) => updateData("benefits", { ...d, formatTelegram: v })}
+          localized
+        />
+        <FieldInput
+          label="Плашка «Программа для Windows»"
+          value={d.formatWindows}
+          onChange={(v) => updateData("benefits", { ...d, formatWindows: v })}
+          localized
+        />
         <div className="pt-2">
           <span className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
             Карточки преимуществ ({items.length})
@@ -831,8 +843,9 @@ export default function AdminSettings() {
           <ListEditor
             items={items}
             onChange={(next) => updateData("benefits", { ...d, items: next })}
-            emptyItem={() => ({ tag: { ru: "", en: "" }, title: { ru: "", en: "" }, desc: { ru: "", en: "" } })}
+            emptyItem={() => ({ icon: "", tag: { ru: "", en: "" }, title: { ru: "", en: "" }, desc: { ru: "", en: "" } })}
             fields={[
+              { key: "icon", label: "Иконка (badge-dollar-sign, building-2, mouse-pointer-click, shield-check, book-open, headset, message-circle, monitor)" },
               { key: "tag", label: "Плашка-тег (например: Без подписки)", localized: true },
               { key: "title", label: "Заголовок", localized: true },
               { key: "desc", label: "Описание", localized: true, multiline: true },
