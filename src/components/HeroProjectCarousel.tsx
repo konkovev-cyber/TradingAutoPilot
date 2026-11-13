@@ -81,9 +81,9 @@ export default function HeroProjectCarousel() {
                   {current.eyebrow}
                 </span>
                 <h2 className="mt-3 text-xl font-bold leading-tight tracking-[-0.02em] text-slate-900 transition-colors dark:text-white sm:text-2xl">{current.title}</h2>
-                <p className="mt-3 text-sm leading-relaxed text-slate-600 transition-colors dark:text-slate-300 sm:text-[15px]">{current.desc}</p>
               </div>
             </div>
+            <p className="mt-4 text-sm leading-relaxed text-slate-600 transition-colors dark:text-slate-300 sm:text-[15px]">{current.desc}</p>
 
             <div className="mt-7 flex items-center justify-between gap-4">
               <div className="flex items-center gap-2" role="tablist" aria-label={t("hero.carouselLabel")}>

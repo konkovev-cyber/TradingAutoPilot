@@ -5,17 +5,7 @@ import {
 } from "@tabler/icons-react";
 import { useI18n } from "@/lib/i18n";
 import { useContent, useLocalizedList, localize } from "@/lib/site-content";
-import {
-  Illustration,
-  payments,
-  devices,
-  windows,
-  securityOn,
-  knowledge,
-  instantSupport,
-} from "@/components/ui/Illustration";
-
-const DEFAULT_ILLUS = [payments, devices, windows, securityOn, knowledge, instantSupport];
+import { BenefitVisual } from "@/components/ui/BenefitVisual";
 
 export default function Benefits() {
   const { lang, t } = useI18n();
@@ -63,11 +53,9 @@ export default function Benefits() {
               className="group relative overflow-hidden rounded-2xl border border-gray-100 bg-white p-5 shadow-soft transition-all hover:-translate-y-0.5 hover:border-emerald-300/40 dark:border-gray-700/60 dark:bg-gray-800"
             >
               <div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 h-24 w-40 rounded-full bg-emerald-400/10 blur-3xl" />
-              <Illustration
-                name={(item as any)?.icon}
-                fallback={DEFAULT_ILLUS[i] ?? payments}
-                title={localize(item?.title, "", lang)}
-                className="mb-4 h-28 w-full transition-transform duration-300 group-hover:scale-[1.03]"
+              <BenefitVisual
+                index={i}
+                className="mb-4 h-24 w-24 transition-transform duration-300 group-hover:scale-105"
               />
               {item?.tag ? (
                 <span className="mb-3 inline-block rounded-md bg-emerald-50 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-200">
