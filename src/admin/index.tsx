@@ -1,4 +1,4 @@
-﻿import { Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import AdminGuard from "@/admin/components/AdminGuard";
 import AdminLayout from "@/admin/components/AdminLayout";
 import AdminErrorBoundary from "@/admin/components/AdminErrorBoundary";

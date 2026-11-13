@@ -254,8 +254,9 @@ function ListEditor({ items, onChange, emptyItem, fields, hint }: ListEditorProp
 
 export default function AdminSettings() {
   const [sections, setSections] = useState<Record<string, Json>>(DEFAULT_SITE_CONTENT);
+  const [originalSections, setOriginalSections] = useState<Record<string, Json>>(DEFAULT_SITE_CONTENT);
   const [loading, setLoading] = useState(true);
-  const [openSections, setOpenSections] = useState<Set<string>>(new Set());
+  const [openSections, setOpenSections] = useState<Set<string>>(new Set(["hero"]));
   const [savedSection, setSavedSection] = useState<string | null>(null);
   const [savingSection, setSavingSection] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -269,7 +270,9 @@ export default function AdminSettings() {
         if (res.ok) {
           const apiData = await res.json();
           if (mounted && apiData && typeof apiData === "object" && Object.keys(apiData).length > 0) {
-            setSections({ ...DEFAULT_SITE_CONTENT, ...apiData });
+            const merged = { ...DEFAULT_SITE_CONTENT, ...apiData };
+            setSections(merged);
+            setOriginalSections(merged);
             setLoading(false);
             return;
           }
@@ -288,7 +291,9 @@ export default function AdminSettings() {
               const v = row.data !== undefined ? row.data : row.value;
               if (k) map[k] = v;
             });
-            setSections({ ...DEFAULT_SITE_CONTENT, ...map });
+            const merged = { ...DEFAULT_SITE_CONTENT, ...map };
+            setSections(merged);
+            setOriginalSections(merged);
           }
         } catch (e) {
           console.warn("supabase error", e);
@@ -334,6 +339,8 @@ export default function AdminSettings() {
       if (supabase) {
         await supabase.from("site_content").upsert({ section, data, key: section, value: data });
       }
+      // Mark section as saved — update original to track unsaved state
+      setOriginalSections((prev) => ({ ...prev, [section]: data }));
       setSavedSection(section);
       setTimeout(() => setSavedSection((curr) => (curr === section ? null : curr)), 2500);
     } catch (err: any) {
@@ -1100,6 +1107,17 @@ export default function AdminSettings() {
           <p className="text-gray-400 text-xs sm:text-sm mt-1">
             Редактируйте тексты, заголовки, контакты и SEO. Изменения сохраняются в базу данных и применяются на сайте мгновенно.
           </p>
+          {(() => {
+            const unsavedCount = Object.keys(SECTION_LABELS).filter(
+              (k) => JSON.stringify(sections[k]) !== JSON.stringify(originalSections[k])
+            ).length;
+            return unsavedCount > 0 ? (
+              <p className="text-xs text-amber-400 mt-1.5 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                {unsavedCount} {unsavedCount === 1 ? "секция изменена" : unsavedCount < 5 ? "секции изменены" : "секций изменено"} — не забудьте сохранить
+              </p>
+            ) : null;
+          })()}
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
@@ -1199,6 +1217,8 @@ export default function AdminSettings() {
           const data = sections[section] ?? DEFAULT_SITE_CONTENT[section] ?? {};
           const isSaved = savedSection === section;
           const isSaving = savingSection === section;
+          // Check if section has unsaved changes by comparing with original
+          const hasUnsaved = JSON.stringify(sections[section]) !== JSON.stringify(originalSections[section]);
 
           const renderContent = () => {
             if (section === "telegram_settings") return <TelegramEditor />;
@@ -1236,6 +1256,11 @@ export default function AdminSettings() {
                     <span className="text-[10px] font-mono text-gray-500 uppercase px-1.5 py-0.5 rounded bg-gray-800 shrink-0">
                       {section}
                     </span>
+                    {hasUnsaved && !isSaved && (
+                      <span className="text-[10px] font-semibold text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20 shrink-0">
+                        • изменено
+                      </span>
+                    )}
                   </div>
                   <div className="text-xs text-gray-400 mt-1 line-clamp-1">{HELP_TEXT[section]}</div>
                 </div>

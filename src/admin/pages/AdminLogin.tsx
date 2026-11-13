@@ -60,23 +60,20 @@ export default function AdminLogin() {
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Логин или Email</label>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
             <input
-              type="text"
-              name="username"
-              id="admin-username"
-              autoComplete="username"
+              type="email"
+              name="email"
+              id="admin-email"
+              autoComplete="email"
               autoCapitalize="none"
               spellCheck="false"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-blue"
-              placeholder="coinsoft или konkev@bk.ru"
+              placeholder="Введите email"
               required
             />
-            <p className="text-[11px] text-gray-500 mt-1.5">
-              Вход доступен по логину <code className="text-gray-400">coinsoft</code> или email <code className="text-gray-400">konkev@bk.ru</code>
-            </p>
           </div>
 
           <div>

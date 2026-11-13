@@ -210,8 +210,7 @@ export default function AdminDashboard() {
       value: (stats.viewsTotal ?? stats.views7d).toString(),
       icon: Eye,
       color: "pink",
-      to: "/",
-      isExternal: true,
+      // No "to" — renders as non-clickable div
     },
   ];
 
@@ -250,41 +249,57 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* 5 Clickable Stat Cards */}
+      {/* Stat Cards — clickable if "to" defined, plain div otherwise */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
-        {statCards.map(({ label, hint, value, icon: Icon, color, to, highlight, isExternal }, idx) => {
-          const Tag: any = isExternal ? "a" : Link;
-          const extraProps = isExternal ? { href: to, target: "_blank", rel: "noopener noreferrer" } : { to };
-          return (
-            <Tag
-              key={label}
-              {...extraProps}
-              className={`group relative bg-gray-900 border rounded-xl p-3.5 sm:p-5 transition-all duration-200 cursor-pointer block hover:-translate-y-1 hover:shadow-xl ${
-                idx === 4 ? "col-span-2 sm:col-span-1" : ""
-              } ${
-                highlight
-                  ? "border-blue-500/60 bg-blue-950/25 hover:border-blue-400 shadow-blue-500/10 shadow-lg"
-                  : "border-gray-800 hover:border-gray-700 hover:bg-gray-800/60"
-              }`}
-            >
+        {statCards.map(({ label, hint, value, icon: Icon, color, to, highlight }, idx) => {
+          const isClickable = Boolean(to);
+          const baseClass = `group relative bg-gray-900 border rounded-xl p-3.5 sm:p-5 transition-all duration-200 block ${
+            idx === 4 ? "col-span-2 sm:col-span-1" : ""
+          } ${
+            highlight
+              ? "border-blue-500/60 bg-blue-950/25 shadow-blue-500/10 shadow-lg"
+              : "border-gray-800"
+          } ${
+            isClickable
+              ? "cursor-pointer hover:-translate-y-1 hover:shadow-xl " + (highlight ? "hover:border-blue-400" : "hover:border-gray-700 hover:bg-gray-800/60")
+              : "cursor-default select-none"
+          }`;
+
+          const inner = (
+            <>
               <div className="flex items-start justify-between mb-2 sm:mb-3">
                 <div
                   className={`w-9 h-9 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center transition-transform duration-200 ${CARD_STYLES[color]}`}
                 >
                   <Icon size={18} className="sm:w-5 sm:h-5" />
                 </div>
-                <ArrowUpRight
-                  size={15}
-                  className="text-gray-500 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all opacity-40 group-hover:opacity-100"
-                />
+                {isClickable && (
+                  <ArrowUpRight
+                    size={15}
+                    className="text-gray-500 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all opacity-40 group-hover:opacity-100"
+                  />
+                )}
               </div>
-
-              <div className="text-2xl sm:text-3xl font-bold text-white group-hover:text-brand-blue transition-colors">{value}</div>
+              <div className={`text-2xl sm:text-3xl font-bold text-white transition-colors ${isClickable ? "group-hover:text-brand-blue" : ""}`}>{value}</div>
               <div className="text-gray-200 text-xs sm:text-sm mt-1 sm:mt-1.5 font-semibold truncate">{label}</div>
-              <div className="text-gray-400 text-[11px] sm:text-xs mt-0.5 flex items-center gap-1 group-hover:text-gray-300 truncate">
+              <div className={`text-gray-400 text-[11px] sm:text-xs mt-0.5 flex items-center gap-1 truncate ${isClickable ? "group-hover:text-gray-300" : ""}`}>
                 {hint}
               </div>
-            </Tag>
+            </>
+          );
+
+          if (!isClickable) {
+            return (
+              <div key={label} className={baseClass}>
+                {inner}
+              </div>
+            );
+          }
+
+          return (
+            <Link key={label} to={to!} className={baseClass}>
+              {inner}
+            </Link>
           );
         })}
       </div>

@@ -100,7 +100,7 @@ export const DEFAULT_SITE_CONTENT: Record<string, any> = {
       {
         tag: { ru: "Без подписки", en: "No subscription" },
         title: { ru: "Без абонентской платы", en: "No subscription fee" },
-        desc: { ru: "Покупаете робота один раз — без абонентской платы и комиссий с прибыли. Он торгует для вас круглосуточно.", en: "Buy the bot once — no subscription fee and no profit commission. It trades for you around the clock." },
+        desc: { ru: "Вы получаете бессрочный доступ к роботу без необходимости оплачивать подписку. Обновления и техническая поддержка предоставляются каждому пользователю.", en: "You get lifetime access to the bot with no subscription required. Updates and technical support are provided to every user." },
       },
       {
         tag: { ru: "Популярные биржи", en: "Popular exchanges" },
