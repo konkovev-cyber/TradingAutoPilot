@@ -62,7 +62,6 @@ export default function Products() {
                 </div>
 
                 <p className="relative mb-3 text-sm font-medium leading-snug text-gray-800 dark:text-gray-200">{b.slogan}</p>
-                <p className="relative mb-5 text-sm leading-relaxed text-gray-500 dark:text-gray-400">{b.shortDesc}</p>
 
                 {bot.slug === "synchrobot" && (
                   <div className="relative mb-5 space-y-3">
