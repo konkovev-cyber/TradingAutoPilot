@@ -1,17 +1,7 @@
 import { motion } from "framer-motion";
 import { useI18n } from "@/lib/i18n";
 import { useContent, useLocalizedList, localize } from "@/lib/site-content";
-import {
-  Illustration,
-  investing,
-  dataTrends,
-  robotics,
-  cloudSync,
-  dashboard,
-  launching,
-} from "@/components/ui/Illustration";
-
-const DEFAULT_ILLUS = [investing, dataTrends, robotics, cloudSync, dashboard, launching];
+import { BenefitVisual } from "@/components/ui/BenefitVisual";
 
 export default function Advantages() {
   const { lang, t } = useI18n();
@@ -41,11 +31,9 @@ export default function Advantages() {
               transition={{ duration: 0.4, delay: i * 0.08 }}
               className="group rounded-2xl border border-gray-100 bg-white p-5 sm:p-6 shadow-soft transition-all hover:-translate-y-0.5 dark:border-gray-700/60 dark:bg-gray-800"
             >
-              <Illustration
-                name={(item as any)?.icon}
-                fallback={DEFAULT_ILLUS[i % DEFAULT_ILLUS.length]}
-                title={localize(item?.title, "", lang)}
-                className="mb-4 h-28 w-full transition-transform duration-300 group-hover:scale-[1.03]"
+              <BenefitVisual
+                index={i}
+                className="mb-4 h-24 w-24 transition-transform duration-300 group-hover:scale-105"
               />
               <h3 className="mb-2 font-semibold text-gray-900 dark:text-white">{localize(item?.title, "", lang)}</h3>
               <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-200">{localize(item?.desc, "", lang)}</p>

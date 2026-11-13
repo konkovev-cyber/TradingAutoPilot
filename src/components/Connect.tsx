@@ -2,15 +2,7 @@ import { motion } from "framer-motion";
 import { IconShieldLock } from "@tabler/icons-react";
 import { useI18n } from "@/lib/i18n";
 import { useContent, useLocalizedList, localize } from "@/lib/site-content";
-import {
-  Illustration,
-  robotics,
-  cloudSync,
-  dashboard,
-  launching,
-} from "@/components/ui/Illustration";
-
-const DEFAULT_ILLUS = [robotics, cloudSync, dashboard, launching];
+import { BenefitVisual } from "@/components/ui/BenefitVisual";
 
 export default function Connect() {
   const { lang, t } = useI18n();
@@ -48,11 +40,9 @@ export default function Connect() {
                   <span className="text-xs font-bold text-brand-blue dark:text-cyan-400">{String(i + 1).padStart(2, "0")}</span>
                   <h3 className="font-semibold text-gray-900 dark:text-white">{localize(step?.title, "", lang)}</h3>
                 </div>
-                <Illustration
-                  name={(step as any)?.icon}
-                  fallback={DEFAULT_ILLUS[i] ?? robotics}
-                  title={localize(step?.title, "", lang)}
-                  className="h-14 w-20 shrink-0 transition-transform duration-300 group-hover:scale-105"
+                <BenefitVisual
+                  index={i}
+                  className="h-14 w-14 shrink-0 transition-transform duration-300 group-hover:scale-105"
                 />
               </div>
               <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-200">{localize(step?.desc, "", lang)}</p>
