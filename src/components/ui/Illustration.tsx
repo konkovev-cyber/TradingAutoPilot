@@ -50,21 +50,8 @@ import successfulPurchase from "@/assets/illustrations/successful_purchase.svg?r
 import clickHere from "@/assets/illustrations/click_here.svg?raw";
 import inProgress from "@/assets/illustrations/in_progress.svg?raw";
 
-const PRIMARY = "#10b981";
-const DARK = "#065f46";
-const LIGHT = "#d1fae5";
-
 function paint(svg: string): string {
-  return svg
-    .replace(/#3f3d56/gi, DARK)
-    .replace(/#2f2e41/gi, DARK)
-    .replace(/#e6e6e6/gi, LIGHT)
-    .replace(/#f2f2f2/gi, "#ecfdf5")
-    .replace(/#ffb8b8|#ffd1dc|#ff6584|#fbaaa2|#a0616a|#8d5524|#ffb9b9/gi, "#fcd9c0")
-    .replace(/#6c63ff|#5f5fd6|#3a3a7a|#4d4dff|#6c5ce7|#3a0ca3|#4361ee|#4895ef/gi, PRIMARY)
-    .replace(/#0bcea6|#00b894|#00cec9|#06d6a0/gi, PRIMARY)
-    .replace(/#f9c5d1|#f9c5d0/gi, "#a7f3d0")
-    .replace(/#ccc/gi, "#a7f3d0");
+  return svg;
 }
 
 const LIBRARY: Record<string, string> = {
