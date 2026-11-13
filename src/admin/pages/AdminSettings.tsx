@@ -17,6 +17,7 @@ import {
   HelpCircle,
   X,
 } from "lucide-react";
+import { BenefitVisual } from "@/components/ui/BenefitVisual";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type Json = any;
@@ -90,6 +91,7 @@ interface ListEditorProps {
   emptyItem: () => Json;
   fields: Field[];
   hint?: string;
+  preview?: (item: Json, index: number) => React.ReactNode;
 }
 
 function FieldInput({
@@ -199,7 +201,7 @@ function FieldInput({
   );
 }
 
-function ListEditor({ items, onChange, emptyItem, fields, hint }: ListEditorProps) {
+function ListEditor({ items, onChange, emptyItem, fields, hint, preview }: ListEditorProps) {
   const updateItem = (i: number, val: Json) => {
     const next = [...items];
     next[i] = val;
@@ -229,18 +231,25 @@ function ListEditor({ items, onChange, emptyItem, fields, hint }: ListEditorProp
               <Trash2 size={15} />
             </button>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {fields.map((f) => (
-              <FieldInput
-                key={f.key}
-                label={f.label}
-                value={(item as Record<string, Json>)?.[f.key] ?? ""}
-                onChange={(v) => updateItem(i, { ...(item as Record<string, Json>), [f.key]: v })}
-                multiline={f.multiline}
-                placeholder={f.placeholder}
-                localized={f.localized}
-              />
-            ))}
+          <div className="flex items-start gap-3">
+            {preview ? (
+              <div className="shrink-0 rounded-xl bg-white p-1 ring-1 ring-gray-700/60" title="Предпросмотр графики карточки">
+                {preview(item, i)}
+              </div>
+            ) : null}
+            <div className="grid flex-1 grid-cols-1 md:grid-cols-2 gap-3">
+              {fields.map((f) => (
+                <FieldInput
+                  key={f.key}
+                  label={f.label}
+                  value={(item as Record<string, Json>)?.[f.key] ?? ""}
+                  onChange={(v) => updateItem(i, { ...(item as Record<string, Json>), [f.key]: v })}
+                  multiline={f.multiline}
+                  placeholder={f.placeholder}
+                  localized={f.localized}
+                />
+              ))}
+            </div>
           </div>
         </div>
       ))}
@@ -794,6 +803,7 @@ export default function AdminSettings() {
             items={items}
             onChange={(next) => updateData("advantages", { ...d, items: next })}
             emptyItem={() => ({ visual: "", title: { ru: "", en: "" }, desc: { ru: "", en: "" } })}
+            preview={(item, i) => <BenefitVisual index={i} name={(item as any)?.visual} className="h-20 w-20" />}
             fields={[
               { key: "visual", label: "Графика (0=₿ монета, 1=биржи, 2=интерфейс, 3=щит, 4=база знаний, 5=поддержка; пусто = по порядку)" },
               { key: "title", label: "Заголовок карточки", localized: true },
@@ -845,6 +855,7 @@ export default function AdminSettings() {
             items={items}
             onChange={(next) => updateData("benefits", { ...d, items: next })}
             emptyItem={() => ({ icon: "", tag: { ru: "", en: "" }, title: { ru: "", en: "" }, desc: { ru: "", en: "" } })}
+            preview={(item, i) => <BenefitVisual index={i} name={(item as any)?.icon} className="h-20 w-20" />}
             fields={[
               { key: "icon", label: "Графика (0=₿ монета, 1=биржи, 2=интерфейс, 3=щит, 4=база знаний, 5=поддержка; пусто = по порядку)" },
               { key: "tag", label: "Плашка-тег (например: Без подписки)", localized: true },
@@ -931,6 +942,7 @@ export default function AdminSettings() {
             items={steps}
             onChange={(next) => updateData("connect", { ...d, steps: next })}
             emptyItem={() => ({ visual: "", title: { ru: "", en: "" }, desc: { ru: "", en: "" } })}
+            preview={(item, i) => <BenefitVisual index={i} name={(item as any)?.visual ?? (item as any)?.icon} className="h-16 w-16" />}
             fields={[
               { key: "visual", label: "Графика (0=₿ монета, 1=биржи, 2=интерфейс, 3=щит, 4=база знаний, 5=поддержка; пусто = по порядку)" },
               { key: "title", label: "Название шага", localized: true },
