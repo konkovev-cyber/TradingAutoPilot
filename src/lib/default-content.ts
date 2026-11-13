@@ -160,10 +160,10 @@ export const DEFAULT_SITE_CONTENT: Record<string, any> = {
     btn: { ru: "Получить консультацию", en: "Get a consultation" },
   },
   tryIt: {
-    title: { ru: "Просто попробуйте!", en: "Just try it!" },
-    text: {
-      ru: "С торговыми роботами TradingAutoPilot ваш робот торгует на любимых биржах автоматически. Подключите API-ключ, выберите робота — остальное сделает алгоритм.",
-      en: "With TradingAutoPilot trading bots, your bot trades on your favorite exchanges automatically. Connect an API key, pick a bot — the algorithm does the rest.",
+    title: { ru: "Добавьте робота в свой торговый арсенал!", en: "Add a bot to your trading arsenal!" },
+    subtitle: {
+      ru: "Наши роботы — гордость каждого владельца. Не требует абонентской платы · Постоянные обновления · Торговля 24/7 с тех. поддержкой",
+      en: "Our bots are the pride of every owner. No subscription · Constant updates · 24/7 trading with tech support",
     },
     bullet1: { ru: "Без абонентской платы", en: "No subscription fee" },
     bullet2: { ru: "Покупаете робота один раз", en: "Buy the bot once" },

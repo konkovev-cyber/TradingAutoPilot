@@ -1051,7 +1051,7 @@ export default function AdminSettings() {
     ],
     tryIt: [
       { key: "title", label: "Заголовок секции («Просто попробуйте!»)", localized: true },
-      { key: "text", label: "Описание под заголовком", localized: true, multiline: true },
+      { key: "subtitle", label: "Описание под заголовком", localized: true, multiline: true },
       { key: "bullet1", label: "Преимущество 1 (Без абонентской платы)", localized: true },
       { key: "bullet2", label: "Преимущество 2 (Покупаете робота один раз)", localized: true },
       { key: "btn", label: "Текст кнопки старта", localized: true },

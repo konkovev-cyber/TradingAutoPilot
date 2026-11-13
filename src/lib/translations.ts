@@ -142,8 +142,8 @@ export const ruTranslations = {
     "btn": "Получить консультацию"
   },
   "tryIt": {
-    "title": "Понравился наш робот? Выберите подходящий",
-    "subtitle": "Листайте слайды — каждый ведёт на подробное описание робота.",
+    "title": "Добавьте робота в свой торговый арсенал!",
+    "subtitle": "Наши роботы — гордость каждого владельца. Не требует абонентской платы · Постоянные обновления · Торговля 24/7 с тех. поддержкой",
     "text": "С торговыми роботами TradingAutoPilot ваш робот торгует на любимых биржах автоматически. Подключите API-ключ, выберите робота — остальное сделает алгоритм.",
     "bullet1": "Без абонентской платы",
     "bullet2": "Покупаете робота один раз",
@@ -434,8 +434,8 @@ export const enTranslations = {
     "btn": "Get a consultation"
   },
   "tryIt": {
-    "title": "Liked our bot? Pick the right one",
-    "subtitle": "Flip through the slides — each one leads to the bot's detailed description.",
+    "title": "Add a bot to your trading arsenal!",
+    "subtitle": "Our bots are the pride of every owner. No subscription · Constant updates · 24/7 trading with tech support",
     "text": "With TradingAutoPilot trading bots, your bot trades on your favorite exchanges automatically. Connect an API key, pick a bot — the algorithm does the rest.",
     "bullet1": "No subscription fee",
     "bullet2": "Buy the bot once",
