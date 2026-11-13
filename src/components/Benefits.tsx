@@ -55,6 +55,7 @@ export default function Benefits() {
               <div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 h-24 w-40 rounded-full bg-emerald-400/10 blur-3xl" />
               <BenefitVisual
                 index={i}
+                name={(item as any)?.icon}
                 className="mb-4 h-24 w-24 transition-transform duration-300 group-hover:scale-105"
               />
               {item?.tag ? (

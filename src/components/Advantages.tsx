@@ -33,6 +33,7 @@ export default function Advantages() {
             >
               <BenefitVisual
                 index={i}
+                name={(item as any)?.visual}
                 className="mb-4 h-24 w-24 transition-transform duration-300 group-hover:scale-105"
               />
               <h3 className="mb-2 font-semibold text-gray-900 dark:text-white">{localize(item?.title, "", lang)}</h3>

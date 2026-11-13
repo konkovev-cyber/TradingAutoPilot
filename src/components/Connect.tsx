@@ -42,6 +42,7 @@ export default function Connect() {
                 </div>
                 <BenefitVisual
                   index={i}
+                  name={(step as any)?.visual ?? (step as any)?.icon}
                   className="h-14 w-14 shrink-0 transition-transform duration-300 group-hover:scale-105"
                 />
               </div>

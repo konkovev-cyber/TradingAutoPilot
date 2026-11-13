@@ -793,8 +793,9 @@ export default function AdminSettings() {
           <ListEditor
             items={items}
             onChange={(next) => updateData("advantages", { ...d, items: next })}
-            emptyItem={() => ({ title: { ru: "", en: "" }, desc: { ru: "", en: "" } })}
+            emptyItem={() => ({ visual: "", title: { ru: "", en: "" }, desc: { ru: "", en: "" } })}
             fields={[
+              { key: "visual", label: "Графика (0=₿ монета, 1=биржи, 2=интерфейс, 3=щит, 4=база знаний, 5=поддержка; пусто = по порядку)" },
               { key: "title", label: "Заголовок карточки", localized: true },
               { key: "desc", label: "Описание", localized: true, multiline: true },
             ]}
@@ -845,7 +846,7 @@ export default function AdminSettings() {
             onChange={(next) => updateData("benefits", { ...d, items: next })}
             emptyItem={() => ({ icon: "", tag: { ru: "", en: "" }, title: { ru: "", en: "" }, desc: { ru: "", en: "" } })}
             fields={[
-              { key: "icon", label: "Иллюстрация (payments, devices, windows, security-on, knowledge, instant-support, bitcoin, wallet, investing, data-trends, analytics, robotics, cloud-sync, dashboard, community, group-chat, launching, target, goal, code-review, server, secure-data, mobile-app, charts, learning, login)" },
+              { key: "icon", label: "Графика (0=₿ монета, 1=биржи, 2=интерфейс, 3=щит, 4=база знаний, 5=поддержка; пусто = по порядку)" },
               { key: "tag", label: "Плашка-тег (например: Без подписки)", localized: true },
               { key: "title", label: "Заголовок", localized: true },
               { key: "desc", label: "Описание", localized: true, multiline: true },
@@ -929,8 +930,9 @@ export default function AdminSettings() {
           <ListEditor
             items={steps}
             onChange={(next) => updateData("connect", { ...d, steps: next })}
-            emptyItem={() => ({ title: { ru: "", en: "" }, desc: { ru: "", en: "" } })}
+            emptyItem={() => ({ visual: "", title: { ru: "", en: "" }, desc: { ru: "", en: "" } })}
             fields={[
+              { key: "visual", label: "Графика (0=₿ монета, 1=биржи, 2=интерфейс, 3=щит, 4=база знаний, 5=поддержка; пусто = по порядку)" },
               { key: "title", label: "Название шага", localized: true },
               { key: "desc", label: "Описание шага", localized: true, multiline: true },
             ]}

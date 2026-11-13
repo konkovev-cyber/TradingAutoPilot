@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 
 interface BenefitVisualProps {
   index: number;
+  name?: string;
   className?: string;
 }
 
@@ -46,8 +47,9 @@ function Frame({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function BenefitVisual({ index, className = "" }: BenefitVisualProps) {
-  const variant = ((index % 6) + 6) % 6;
+export function BenefitVisual({ index, name, className = "" }: BenefitVisualProps) {
+  const explicit = Number.parseInt(String(name ?? ""), 10);
+  const variant = Number.isFinite(explicit) ? ((explicit % 6) + 6) % 6 : ((index % 6) + 6) % 6;
 
   return (
     <svg viewBox="0 0 140 140" className={className} role="img" aria-hidden="true">
