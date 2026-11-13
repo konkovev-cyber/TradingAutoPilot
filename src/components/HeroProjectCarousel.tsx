@@ -1,10 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { Bot, ShieldCheck, Infinity, Rocket, ChevronLeft, ChevronRight, type LucideIcon } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { useSectionValue } from "@/lib/site-content";
-
-const icons: LucideIcon[] = [Bot, ShieldCheck, Infinity, Rocket];
+import { TradingVisual } from "@/components/ui/SlideVisual";
 
 interface ProjectSlide {
   title: string;
@@ -31,7 +30,6 @@ export default function HeroProjectCarousel() {
   }, [count, paused, reduceMotion]);
 
   const current = useMemo(() => slides[active] ?? slides[0], [active, slides]);
-  const Icon = icons[active % icons.length] ?? Bot;
   const goTo = (next: number) => setActive((next + count) % count);
 
   const touchX = useRef<number | null>(null);
@@ -76,8 +74,8 @@ export default function HeroProjectCarousel() {
           >
             <div>
               <div className="mb-7 flex items-start justify-between gap-4">
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-100 text-blue-600 shadow-md transition-colors dark:border-cyan-300/25 dark:from-cyan-300/20 dark:to-violet-500/30 dark:text-cyan-200 dark:shadow-[0_0_36px_rgba(34,211,238,0.18)]">
-                  <Icon size={26} />
+                <div className="relative flex h-[120px] w-[168px] shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-slate-200/70 bg-gradient-to-br from-slate-50 to-blue-50/60 text-slate-500 shadow-md transition-colors dark:border-white/10 dark:from-white/[0.04] dark:to-indigo-500/[0.08] dark:text-slate-300 dark:shadow-[0_0_36px_rgba(34,211,238,0.14)]">
+                  <TradingVisual index={active} className="h-full w-full p-1" />
                 </div>
                 <span className="rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-blue-700 transition-colors dark:border-white/10 dark:bg-white/[0.06] dark:text-cyan-100">
                   {current.eyebrow}
