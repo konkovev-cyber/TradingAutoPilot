@@ -47,6 +47,15 @@ function Frame({ children }: { children: React.ReactNode }) {
   );
 }
 
+export const BENEFIT_VISUAL_LABELS = [
+  "₿ Монета",
+  "Биржи",
+  "Интерфейс",
+  "Щит",
+  "База знаний",
+  "Поддержка",
+];
+
 export function BenefitVisual({ index, name, className = "" }: BenefitVisualProps) {
   const explicit = Number.parseInt(String(name ?? ""), 10);
   const variant = Number.isFinite(explicit) ? ((explicit % 6) + 6) % 6 : ((index % 6) + 6) % 6;

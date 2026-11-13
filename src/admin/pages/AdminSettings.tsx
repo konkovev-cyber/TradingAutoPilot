@@ -17,7 +17,9 @@ import {
   HelpCircle,
   X,
 } from "lucide-react";
-import { BenefitVisual } from "@/components/ui/BenefitVisual";
+import { BenefitVisual, BENEFIT_VISUAL_LABELS } from "@/components/ui/BenefitVisual";
+
+const BENEFIT_VISUAL_OPTIONS = BENEFIT_VISUAL_LABELS.map((label, i) => ({ value: String(i), label }));
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type Json = any;
@@ -83,6 +85,7 @@ interface Field {
   multiline?: boolean;
   placeholder?: string;
   localized?: boolean;
+  options?: { value: string; label: string }[];
 }
 
 interface ListEditorProps {
@@ -101,6 +104,7 @@ function FieldInput({
   multiline,
   placeholder,
   localized,
+  options,
 }: {
   label: string;
   value: any;
@@ -108,9 +112,46 @@ function FieldInput({
   multiline?: boolean;
   placeholder?: string;
   localized?: boolean;
+  options?: { value: string; label: string }[];
 }) {
   const cls =
     "w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-blue";
+
+  if (options) {
+    const current = String(value ?? "");
+    return (
+      <div className="space-y-1.5">
+        <span className="block text-xs font-medium text-gray-300">{label}</span>
+        <div className="flex flex-wrap gap-1.5">
+          <button
+            type="button"
+            onClick={() => onChange("")}
+            className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-colors cursor-pointer ${
+              current === ""
+                ? "bg-brand-blue/20 border-brand-blue text-white"
+                : "bg-gray-800 border-gray-700 text-gray-400 hover:text-gray-200 hover:border-gray-600"
+            }`}
+          >
+            По порядку
+          </button>
+          {options.map((o) => (
+            <button
+              key={o.value}
+              type="button"
+              onClick={() => onChange(o.value)}
+              className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-colors cursor-pointer ${
+                current === o.value
+                  ? "bg-brand-blue/20 border-brand-blue text-white"
+                  : "bg-gray-800 border-gray-700 text-gray-400 hover:text-gray-200 hover:border-gray-600"
+              }`}
+            >
+              {o.value} · {o.label}
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   if (localized) {
     const obj: { ru: string; en: string } =
@@ -244,9 +285,10 @@ function ListEditor({ items, onChange, emptyItem, fields, hint, preview }: ListE
                   label={f.label}
                   value={(item as Record<string, Json>)?.[f.key] ?? ""}
                   onChange={(v) => updateItem(i, { ...(item as Record<string, Json>), [f.key]: v })}
-                  multiline={f.multiline}
-                  placeholder={f.placeholder}
-                  localized={f.localized}
+                multiline={f.multiline}
+                placeholder={f.placeholder}
+                localized={f.localized}
+                options={f.options}
                 />
               ))}
             </div>
@@ -805,7 +847,7 @@ export default function AdminSettings() {
             emptyItem={() => ({ visual: "", title: { ru: "", en: "" }, desc: { ru: "", en: "" } })}
             preview={(item, i) => <BenefitVisual index={i} name={(item as any)?.visual} className="h-20 w-20" />}
             fields={[
-              { key: "visual", label: "Графика (0=₿ монета, 1=биржи, 2=интерфейс, 3=щит, 4=база знаний, 5=поддержка; пусто = по порядку)" },
+              { key: "visual", label: "Графика", options: BENEFIT_VISUAL_OPTIONS },
               { key: "title", label: "Заголовок карточки", localized: true },
               { key: "desc", label: "Описание", localized: true, multiline: true },
             ]}
@@ -857,7 +899,7 @@ export default function AdminSettings() {
             emptyItem={() => ({ icon: "", tag: { ru: "", en: "" }, title: { ru: "", en: "" }, desc: { ru: "", en: "" } })}
             preview={(item, i) => <BenefitVisual index={i} name={(item as any)?.icon} className="h-20 w-20" />}
             fields={[
-              { key: "icon", label: "Графика (0=₿ монета, 1=биржи, 2=интерфейс, 3=щит, 4=база знаний, 5=поддержка; пусто = по порядку)" },
+              { key: "icon", label: "Графика", options: BENEFIT_VISUAL_OPTIONS },
               { key: "tag", label: "Плашка-тег (например: Без подписки)", localized: true },
               { key: "title", label: "Заголовок", localized: true },
               { key: "desc", label: "Описание", localized: true, multiline: true },
@@ -944,7 +986,7 @@ export default function AdminSettings() {
             emptyItem={() => ({ visual: "", title: { ru: "", en: "" }, desc: { ru: "", en: "" } })}
             preview={(item, i) => <BenefitVisual index={i} name={(item as any)?.visual ?? (item as any)?.icon} className="h-16 w-16" />}
             fields={[
-              { key: "visual", label: "Графика (0=₿ монета, 1=биржи, 2=интерфейс, 3=щит, 4=база знаний, 5=поддержка; пусто = по порядку)" },
+              { key: "visual", label: "Графика", options: BENEFIT_VISUAL_OPTIONS },
               { key: "title", label: "Название шага", localized: true },
               { key: "desc", label: "Описание шага", localized: true, multiline: true },
             ]}
