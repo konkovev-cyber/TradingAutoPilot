@@ -845,7 +845,7 @@ export default function AdminSettings() {
             onChange={(next) => updateData("benefits", { ...d, items: next })}
             emptyItem={() => ({ icon: "", tag: { ru: "", en: "" }, title: { ru: "", en: "" }, desc: { ru: "", en: "" } })}
             fields={[
-              { key: "icon", label: "Иллюстрация (business-deal, business-shop, click-interaction, security-on, sharing-knowledge, instant-support, chat-bot, windows, investing, data-analysis, robotics, cloud-sync, adjust-settings, launching)" },
+              { key: "icon", label: "Иллюстрация (payments, devices, windows, security-on, knowledge, instant-support, bitcoin, wallet, investing, data-trends, analytics, robotics, cloud-sync, dashboard, community, group-chat, launching, target, goal, code-review, server, secure-data, mobile-app, charts, learning, login)" },
               { key: "tag", label: "Плашка-тег (например: Без подписки)", localized: true },
               { key: "title", label: "Заголовок", localized: true },
               { key: "desc", label: "Описание", localized: true, multiline: true },

@@ -4,13 +4,13 @@ import { useI18n } from "@/lib/i18n";
 import { useContent, useLocalizedList, localize } from "@/lib/site-content";
 import {
   Illustration,
-  robot,
-  api,
-  strategy,
-  launch,
+  robotics,
+  cloudSync,
+  dashboard,
+  launching,
 } from "@/components/ui/Illustration";
 
-const DEFAULT_ILLUS = [robot, api, strategy, launch];
+const DEFAULT_ILLUS = [robotics, cloudSync, dashboard, launching];
 
 export default function Connect() {
   const { lang, t } = useI18n();
@@ -50,7 +50,7 @@ export default function Connect() {
                 </div>
                 <Illustration
                   name={(step as any)?.icon}
-                  fallback={DEFAULT_ILLUS[i] ?? robot}
+                  fallback={DEFAULT_ILLUS[i] ?? robotics}
                   title={localize(step?.title, "", lang)}
                   className="h-14 w-20 shrink-0 transition-transform duration-300 group-hover:scale-105"
                 />

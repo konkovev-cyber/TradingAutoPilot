@@ -7,15 +7,15 @@ import { useI18n } from "@/lib/i18n";
 import { useContent, useLocalizedList, localize } from "@/lib/site-content";
 import {
   Illustration,
-  subscriptions,
-  businessShop,
-  clickInteraction,
+  payments,
+  devices,
+  windows,
   securityOn,
-  sharingKnowledge,
+  knowledge,
   instantSupport,
 } from "@/components/ui/Illustration";
 
-const DEFAULT_ILLUS = [subscriptions, businessShop, clickInteraction, securityOn, sharingKnowledge, instantSupport];
+const DEFAULT_ILLUS = [payments, devices, windows, securityOn, knowledge, instantSupport];
 
 export default function Benefits() {
   const { lang, t } = useI18n();
@@ -65,7 +65,7 @@ export default function Benefits() {
               <div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 h-24 w-40 rounded-full bg-emerald-400/10 blur-3xl" />
               <Illustration
                 name={(item as any)?.icon}
-                fallback={DEFAULT_ILLUS[i] ?? subscriptions}
+                fallback={DEFAULT_ILLUS[i] ?? payments}
                 title={localize(item?.title, "", lang)}
                 className="mb-4 h-28 w-full transition-transform duration-300 group-hover:scale-[1.03]"
               />

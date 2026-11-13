@@ -4,14 +4,14 @@ import { useContent, useLocalizedList, localize } from "@/lib/site-content";
 import {
   Illustration,
   investing,
-  dataAnalysis,
-  robot,
-  api,
-  strategy,
-  launch,
+  dataTrends,
+  robotics,
+  cloudSync,
+  dashboard,
+  launching,
 } from "@/components/ui/Illustration";
 
-const DEFAULT_ILLUS = [investing, dataAnalysis, robot, api, strategy, launch];
+const DEFAULT_ILLUS = [investing, dataTrends, robotics, cloudSync, dashboard, launching];
 
 export default function Advantages() {
   const { lang, t } = useI18n();
