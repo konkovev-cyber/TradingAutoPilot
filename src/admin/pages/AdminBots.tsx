@@ -178,7 +178,8 @@ export default function AdminBots() {
       setError("Заполните Name и Slug — без них робот не сохранится");
       return;
     }
-    setSaving(true); setError("");
+    setSaving(true);
+    setError("");
     const payload: Bot = {
       ...bot,
       features: extra.features.filter((f) => f.trim() !== ""),
@@ -189,15 +190,20 @@ export default function AdminBots() {
       suitable_for: bot.suitable_for?.trim() ? bot.suitable_for : "",
       exchanges: bot.exchanges?.trim() ? bot.exchanges : "",
     };
+
+    const targetId = bot.id || bot.slug;
+    const isExisting = Boolean(bot.id || bots.some((b) => b.slug === bot.slug || b.id === targetId));
+
     try {
-      if (bot.id) {
-        await fetch(`/api/bots/${bot.id}`, {
+      if (isExisting) {
+        const patchRes = await fetch(`/api/bots/${encodeURIComponent(targetId)}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
-        if (supabase) {
-          await supabase.from("bots").update(payload).eq("id", bot.id);
+        if (!patchRes.ok) {
+          const errData = await patchRes.json().catch(() => ({}));
+          throw new Error(errData.error || `Ошибка сохранения (${patchRes.status})`);
         }
       } else {
         const nextPos = bots.length > 0 ? Math.max(...bots.map((b) => b.position ?? 0)) + 1 : 1;
@@ -206,15 +212,17 @@ export default function AdminBots() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ...payload, position: nextPos }),
         });
-        const created = await res.json();
-        if (supabase) {
-          await supabase.from("bots").insert({ ...payload, id: created.id || payload.id, position: nextPos });
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.error || `Ошибка создания (${res.status})`);
         }
       }
+
       setEditing(null);
       await fetchBots();
-    } catch {
-      setError("Ошибка сохранения. Проверьте, что Slug уникален");
+    } catch (err: any) {
+      console.error("Save bot error:", err);
+      setError(err?.message || "Ошибка сохранения. Проверьте данные и уникальность Slug");
     }
     setSaving(false);
   };
@@ -222,11 +230,13 @@ export default function AdminBots() {
   const deleteBot = async (id: string) => {
     if (!confirm("Удалить этого робота?")) return;
     try {
-      await fetch(`/api/bots/${id}`, { method: "DELETE" });
-      if (supabase) {
-        await supabase.from("bots").delete().eq("id", id);
+      const res = await fetch(`/api/bots/${encodeURIComponent(id)}`, { method: "DELETE" });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        alert(err.error || "Не удалось удалить робота");
+        return;
       }
-      setBots(bots.filter((b) => b.id !== id));
+      setBots(bots.filter((b) => b.id !== id && b.slug !== id));
     } catch (e) {
       console.error("Delete bot error", e);
     }

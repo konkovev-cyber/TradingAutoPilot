@@ -175,9 +175,9 @@ async function initDb() {
             slogan: 'Меньше ручного анализа — больше данных для принятия торговых решений',
             short_desc: 'Интеллектуальный криптотрейдинговый бот, который анализирует рынок в режиме реального времени, отслеживает изменения объёмов и цены по множеству торговых пар и выявляет потенциальные возможности для LONG и SHORT.',
             full_desc: 'SynchroTrade Bot — интеллектуальный криптотрейдинговый бот, который анализирует рынок в режиме реального времени, отслеживает изменения объёмов и цены по множеству торговых пар и выявляет потенциальные возможности для LONG и SHORT.',
-            badge: 'Анализ объёмов и цен',
+            badge: 'Для торговли фьючерсов Long и Short',
             market: 'Крипта',
-            strategy: 'Анализ объёмов и цен в реальном времени',
+            strategy: 'Для торговли фьючерсов Long и Short',
             risk: 'Контролируемый: математический расчёт точек входа и встроенный риск-менеджмент',
             pairs: 'BTC/USDT, ETH/USDT, SOL/USDT, Bybit, BingX, OKX и др.',
             color: '#00FFB2',
@@ -689,7 +689,7 @@ app.post('/api/bots', async (req, res) => {
   res.json({ ...bot, id });
 });
 
-// Bots: Update (PATCH by id)
+// Bots: Update (PATCH by id or slug)
 app.patch('/api/bots/:id', async (req, res) => {
   const { id } = req.params;
   const bot = req.body || {};
@@ -714,7 +714,7 @@ app.patch('/api/bots/:id', async (req, res) => {
           in_development = COALESCE($27, in_development),
           avatar_url = COALESCE($28, avatar_url),
           avatar_dark_url = COALESCE($29, avatar_dark_url)
-        WHERE id = $1
+        WHERE id = $1 OR slug = $1
         RETURNING *;
       `, [
         id, bot.slug || null, bot.name || null, bot.slogan || null,
@@ -738,11 +738,64 @@ app.patch('/api/bots/:id', async (req, res) => {
         bot.avatar_url !== undefined ? bot.avatar_url : (bot.avatarUrl !== undefined ? bot.avatarUrl : null),
         bot.avatar_dark_url !== undefined ? bot.avatar_dark_url : (bot.avatarDarkUrl !== undefined ? bot.avatarDarkUrl : null),
       ]);
-      return res.json(q.rows[0] || {});
+
+      if (q.rows.length > 0) {
+        return res.json(q.rows[0]);
+      }
+
+      // If not updated (bot doesn't exist in DB yet) -> Upsert it
+      const ins = await pool.query(`
+        INSERT INTO bots (id, slug, name, slogan, short_desc, full_desc, badge, market, strategy, risk, pairs, color, image_url, difficulty, difficulty_tone, features, returns, how_it_works, example_trade, i18n, position, meta_title, meta_description, og_image, suitable_for, exchanges, in_development, avatar_url, avatar_dark_url)
+        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29)
+        ON CONFLICT (id) DO UPDATE SET
+          slug = EXCLUDED.slug, name = EXCLUDED.name, slogan = EXCLUDED.slogan,
+          short_desc = EXCLUDED.short_desc, full_desc = EXCLUDED.full_desc,
+          badge = EXCLUDED.badge, market = EXCLUDED.market, strategy = EXCLUDED.strategy,
+          risk = EXCLUDED.risk, pairs = EXCLUDED.pairs, color = EXCLUDED.color,
+          image_url = EXCLUDED.image_url, difficulty = EXCLUDED.difficulty,
+          difficulty_tone = EXCLUDED.difficulty_tone, features = EXCLUDED.features,
+          returns = EXCLUDED.returns, how_it_works = EXCLUDED.how_it_works,
+          example_trade = EXCLUDED.example_trade, i18n = EXCLUDED.i18n,
+          position = EXCLUDED.position,
+          meta_title = EXCLUDED.meta_title,
+          meta_description = EXCLUDED.meta_description,
+          og_image = EXCLUDED.og_image,
+          suitable_for = EXCLUDED.suitable_for,
+          exchanges = EXCLUDED.exchanges,
+          in_development = EXCLUDED.in_development,
+          avatar_url = COALESCE(EXCLUDED.avatar_url, bots.avatar_url),
+          avatar_dark_url = COALESCE(EXCLUDED.avatar_dark_url, bots.avatar_dark_url)
+        RETURNING *;
+      `, [
+        id, bot.slug || id, bot.name || id, bot.slogan || '',
+        bot.shortDesc || bot.short_desc || '', bot.fullDesc || bot.full_desc || '',
+        bot.badge || '', bot.market || '', bot.strategy || '',
+        bot.risk || '', bot.pairs || '', bot.color || '#3b82f6', bot.image_url || null,
+        bot.difficulty || '', bot.difficulty_tone || '',
+        JSON.stringify(bot.features || []), JSON.stringify(bot.returns || []),
+        JSON.stringify(bot.how_it_works || []), JSON.stringify(bot.example_trade || []),
+        JSON.stringify(bot.i18n || {}), bot.position || 0,
+        bot.meta_title || bot.metaTitle || null,
+        bot.meta_description || bot.metaDescription || null,
+        bot.og_image || bot.ogImage || null,
+        bot.suitable_for || bot.suitableFor || null,
+        bot.exchanges || null,
+        bot.in_development === true || bot.inDevelopment === true,
+        bot.avatar_url || bot.avatarUrl || null,
+        bot.avatar_dark_url || bot.avatarDarkUrl || null,
+      ]);
+      return res.json(ins.rows[0] || {});
     } catch (e) {
       console.error('[Bots PATCH Error]', e.message);
       return res.status(500).json({ error: e.message });
     }
+  }
+
+  const idx = memoryStore.bots.findIndex(b => b.id === id || b.slug === id);
+  if (idx >= 0) {
+    memoryStore.bots[idx] = { ...memoryStore.bots[idx], ...bot, id };
+  } else {
+    memoryStore.bots.push({ ...bot, id });
   }
   res.json({ ...bot, id });
 });
@@ -752,13 +805,14 @@ app.delete('/api/bots/:id', async (req, res) => {
   const { id } = req.params;
   if (pool) {
     try {
-      await pool.query('DELETE FROM bots WHERE id = $1', [id]);
+      await pool.query('DELETE FROM bots WHERE id = $1 OR slug = $1', [id]);
       return res.json({ success: true });
     } catch (e) {
       console.error('[Bots Delete Error]', e.message);
       return res.status(500).json({ error: e.message });
     }
   }
+  memoryStore.bots = memoryStore.bots.filter(b => b.id !== id && b.slug !== id);
   res.json({ success: true });
 });
 

@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { DEFAULT_SITE_CONTENT } from "@/lib/default-content";
+import { bots as staticBots } from "@/data/bots";
 import {
   Save,
   Plus,
@@ -316,9 +318,13 @@ export default function AdminSettings() {
   const [savingSection, setSavingSection] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
+  const [botsList, setBotsList] = useState<any[]>(staticBots);
 
   useEffect(() => {
     let mounted = true;
+    fetch("/api/bots").then((r) => r.json()).then((data) => {
+      if (mounted && Array.isArray(data) && data.length > 0) setBotsList(data);
+    }).catch(() => {});
     (async () => {
       try {
         const res = await fetch("/api/site-content");
@@ -1199,17 +1205,28 @@ export default function AdminSettings() {
     }
 
     if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase().trim();
+      const q = searchQuery.toLowerCase().replace(/ё/g, "е").trim();
       keys = keys.filter((key) => {
-        const label = (SECTION_LABELS[key] || "").toLowerCase();
-        const help = (HELP_TEXT[key] || "").toLowerCase();
-        const rawContent = JSON.stringify(sections[key] || "").toLowerCase();
+        const label = (SECTION_LABELS[key] || "").toLowerCase().replace(/ё/g, "е");
+        const help = (HELP_TEXT[key] || "").toLowerCase().replace(/ё/g, "е");
+        const rawContent = JSON.stringify(sections[key] ?? DEFAULT_SITE_CONTENT[key] ?? "")
+          .toLowerCase()
+          .replace(/ё/g, "е");
         return label.includes(q) || help.includes(q) || rawContent.includes(q);
       });
     }
 
     return keys;
   }, [activeCategory, searchQuery, sections]);
+
+  const matchingBots = useMemo(() => {
+    if (!searchQuery.trim()) return [];
+    const q = searchQuery.toLowerCase().replace(/ё/g, "е").trim();
+    return botsList.filter((b: any) => {
+      const str = JSON.stringify(b).toLowerCase().replace(/ё/g, "е");
+      return str.includes(q);
+    });
+  }, [searchQuery, botsList]);
 
   if (loading) {
     return (
@@ -1318,10 +1335,61 @@ export default function AdminSettings() {
         </div>
       </div>
 
+      {/* Matching Bots from Search */}
+      {matchingBots.length > 0 && (
+        <div className="bg-gradient-to-r from-blue-950/70 to-indigo-950/70 border border-blue-500/40 rounded-xl p-4 space-y-3 shadow-lg">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-base">🤖</span>
+              <span className="text-sm font-bold text-white">
+                Найдено в разделе «Роботы» ({matchingBots.length}):
+              </span>
+            </div>
+            <Link to="/admin/bots" className="text-xs text-brand-blue hover:underline font-medium">
+              Все роботы →
+            </Link>
+          </div>
+          <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
+            {matchingBots.map((b: any) => (
+              <div
+                key={b.slug || b.id}
+                className="bg-gray-900/90 border border-gray-700/80 rounded-lg p-3 flex flex-col justify-between gap-2.5 shadow-sm"
+              >
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="h-2.5 w-2.5 rounded-full shrink-0"
+                      style={{ backgroundColor: b.color || '#3b82f6' }}
+                    />
+                    <span className="font-bold text-white text-sm truncate">{b.name}</span>
+                  </div>
+                  {b.badge && (
+                    <div className="mt-1 text-xs text-cyan-300 font-medium truncate">
+                      Бейдж: {b.badge}
+                    </div>
+                  )}
+                  {b.strategy && (
+                    <div className="text-xs text-gray-400 truncate">
+                      Стратегия: {b.strategy}
+                    </div>
+                  )}
+                </div>
+                <Link
+                  to="/admin/bots"
+                  className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-brand-blue hover:bg-blue-600 text-white rounded-lg text-xs font-semibold transition-colors w-full"
+                >
+                  Редактировать робота
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Sections count indicator */}
       <div className="flex items-center justify-between text-xs text-gray-400 px-1">
         <span>
-          Найдено секций: <strong className="text-white">{filteredSections.length}</strong> из {Object.keys(SECTION_LABELS).length}
+          Найдено секций: <strong className="text-white">{filteredSections.length}</strong> из {Object.keys(SECTION_LABELS).length} {matchingBots.length > 0 && <span className="ml-1 text-cyan-400 font-semibold">(+ {matchingBots.length} в роботах)</span>}
         </span>
         {searchQuery && (
           <button
@@ -1334,7 +1402,7 @@ export default function AdminSettings() {
       </div>
 
       {/* Empty Search Result */}
-      {filteredSections.length === 0 && (
+      {filteredSections.length === 0 && matchingBots.length === 0 && (
         <div className="text-gray-400 text-center py-16 bg-gray-900 border border-gray-800 rounded-xl">
           <HelpCircle size={36} className="mx-auto mb-3 opacity-30 text-gray-400" />
           <div className="text-base font-semibold text-gray-300">Ничего не найдено</div>

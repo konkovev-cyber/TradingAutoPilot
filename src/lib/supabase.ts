@@ -1,4 +1,4 @@
-﻿import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 const DEFAULT_URL = "https://zsupqrsnnegeclrlvlqg.supabase.co";
 const DEFAULT_KEY = "sb_publishable_yaonKUgiLUjelLXS0gntTA_mvXzjaUv";
@@ -208,7 +208,7 @@ class UniversalQueryBuilder {
     return { data: payload, error: null };
   }
 
-  async update(values: any) {
+  update(values: any) {
     const self = this;
     return {
       eq: async (_col: string, val: any) => {
@@ -218,7 +218,7 @@ class UniversalQueryBuilder {
 
           const res = await fetch(endpoint, {
             method: self.table === "site_content" ? "POST" : "PATCH",
-            headers: { "Content-Type": "application/json" },
+            headers: getAuthHeaders(),
             body: JSON.stringify(values),
           });
           if (res.ok) {
@@ -241,13 +241,14 @@ class UniversalQueryBuilder {
     };
   }
 
-  async delete() {
+  delete() {
     const self = this;
     return {
       eq: async (_col: string, val: any) => {
         try {
           const res = await fetch(`/api/${self.table}/${val}`, {
             method: "DELETE",
+            headers: getAuthHeaders(),
           });
           if (res.ok) return { data: true, error: null };
         } catch (e) {
