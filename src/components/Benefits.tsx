@@ -42,7 +42,7 @@ export default function Benefits() {
           </div>
         </motion.div>
 
-        <div className="grid gap-4 sm:gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:gap-5 sm:grid-cols-2">
           {items.map((item, i) => (
             <motion.div
               key={i}
@@ -53,18 +53,22 @@ export default function Benefits() {
               className="group relative overflow-hidden rounded-2xl border border-gray-100 bg-white p-5 shadow-soft transition-all hover:-translate-y-0.5 hover:border-emerald-300/40 dark:border-gray-700/60 dark:bg-gray-800"
             >
               <div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 h-24 w-40 rounded-full bg-emerald-400/10 blur-3xl" />
-              <BenefitVisual
-                index={i}
-                name={(item as any)?.icon}
-                className="mb-4 h-24 w-24 transition-transform duration-300 group-hover:scale-105"
-              />
-              {item?.tag ? (
-                <span className="mb-3 inline-block rounded-md bg-emerald-50 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-200">
-                  {localize(item?.tag, "", lang)}
-                </span>
-              ) : null}
-              <h3 className="mb-2 font-semibold text-gray-900 dark:text-white">{localize(item?.title, "", lang)}</h3>
-              <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-200">{localize(item?.desc, "", lang)}</p>
+              <div className="flex gap-4 sm:gap-5">
+                <BenefitVisual
+                  index={i}
+                  name={(item as any)?.icon}
+                  className="float-left h-20 w-20 shrink-0 transition-transform duration-300 group-hover:scale-105 sm:h-24 sm:w-24"
+                />
+                <div className="min-w-0 flex-1">
+                  {item?.tag ? (
+                    <span className="mb-2 inline-block rounded-md bg-emerald-50 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-200">
+                      {localize(item?.tag, "", lang)}
+                    </span>
+                  ) : null}
+                  <h3 className="mb-2 font-semibold text-gray-900 dark:text-white">{localize(item?.title, "", lang)}</h3>
+                  <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-200">{localize(item?.desc, "", lang)}</p>
+                </div>
+              </div>
             </motion.div>
           ))}
         </div>

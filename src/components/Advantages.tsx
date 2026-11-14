@@ -21,7 +21,7 @@ export default function Advantages() {
           <h2 className="heading-lg mb-4 text-gray-900 dark:text-white">{c("advantages", "title", t("advantages.title"))}</h2>
         </motion.div>
 
-        <div className="grid gap-4 sm:gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:gap-5 sm:grid-cols-2">
           {items.map((item, i) => (
             <motion.div
               key={i}
@@ -31,13 +31,17 @@ export default function Advantages() {
               transition={{ duration: 0.4, delay: i * 0.08 }}
               className="group rounded-2xl border border-gray-100 bg-white p-5 sm:p-6 shadow-soft transition-all hover:-translate-y-0.5 dark:border-gray-700/60 dark:bg-gray-800"
             >
-              <BenefitVisual
-                index={i}
-                name={(item as any)?.visual}
-                className="mb-4 h-24 w-24 transition-transform duration-300 group-hover:scale-105"
-              />
-              <h3 className="mb-2 font-semibold text-gray-900 dark:text-white">{localize(item?.title, "", lang)}</h3>
-              <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-200">{localize(item?.desc, "", lang)}</p>
+              <div className="flex gap-4 sm:gap-5">
+                <BenefitVisual
+                  index={i}
+                  name={(item as any)?.visual}
+                  className="float-left h-20 w-20 shrink-0 transition-transform duration-300 group-hover:scale-105 sm:h-24 sm:w-24"
+                />
+                <div className="min-w-0 flex-1">
+                  <h3 className="mb-2 font-semibold text-gray-900 dark:text-white">{localize(item?.title, "", lang)}</h3>
+                  <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-200">{localize(item?.desc, "", lang)}</p>
+                </div>
+              </div>
             </motion.div>
           ))}
         </div>
