@@ -65,8 +65,8 @@ export default function Hero() {
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
         <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
           <motion.div {...enter(0)} className="max-w-xl">
-            <span className="mb-4 sm:mb-5 inline-flex items-center gap-2 rounded-full border border-blue-200 bg-white px-3.5 py-1.5 sm:px-4 sm:py-2 text-[10px] font-bold uppercase tracking-[0.16em] text-blue-700 shadow-sm dark:border-white/15 dark:bg-white/[0.08] dark:text-cyan-100">
-              <span className="h-2 w-2 rounded-full bg-cyan-400 shadow-[0_0_12px_rgba(34,211,238,0.85)]" />
+            <span className="mb-4 sm:mb-5 inline-flex items-center gap-2 rounded-lg border-2 border-dashed border-amber-400/80 bg-amber-50 px-3.5 py-1.5 sm:px-4 sm:py-2 text-[10px] font-extrabold uppercase tracking-[0.16em] text-amber-600 shadow-sm dark:border-amber-400/60 dark:bg-amber-400/10 dark:text-amber-300">
+              <span className="h-2 w-2 animate-pulse rounded-full bg-amber-500 shadow-[0_0_12px_rgba(245,158,11,0.85)]" />
               {c("hero", "badge", t("hero.badge"))}
             </span>
             <h1 className="text-balance text-3xl sm:text-4xl lg:text-[44px] font-extrabold leading-[1.12] sm:leading-[1.08] tracking-[-0.04em] sm:tracking-[-0.045em] text-slate-900 dark:text-white">
