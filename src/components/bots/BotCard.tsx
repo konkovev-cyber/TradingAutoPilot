@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { ArrowRight, Check, TrendingUp, Gauge, type LucideIcon } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
+import { useContent } from "@/lib/site-content";
 import type { BotData } from "@/data/bots";
 
 const iconMap: Record<string, LucideIcon> = {
@@ -100,6 +101,7 @@ export function BotReturns({ bot }: { bot: BotData }) {
 
 export default function BotCard({ bot, compact = false }: { bot: BotData; compact?: boolean }) {
   const { t } = useI18n();
+  const c = useContent();
   const b = bot;
 
   if (compact) {
@@ -150,7 +152,7 @@ export default function BotCard({ bot, compact = false }: { bot: BotData; compac
         to={`/bots/${bot.slug}`}
         className="mt-auto flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-brand-blue text-center font-semibold text-white transition-all hover:bg-blue-700"
       >
-        {t("products.detail")}
+        {c("products", "detail", t("products.detail"))}
         <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
       </Link>
     </div>

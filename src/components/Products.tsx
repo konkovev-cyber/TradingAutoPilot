@@ -121,7 +121,7 @@ export default function Products() {
             className="btn-primary inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 text-sm sm:text-base w-full sm:w-auto"
           >
             <Send size={18} />
-            {t("cta.contactBtn")}
+            {c("cta", "contactBtn", t("cta.contactBtn"))}
             <ArrowRight size={18} />
           </a>
           <a

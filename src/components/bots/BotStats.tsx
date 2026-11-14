@@ -9,7 +9,7 @@ export default function BotStats({ bot }: { bot: BotData }) {
 
   return (
     <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-      <h3 className="mb-4 text-sm font-bold text-gray-900 dark:text-white">{t("botDetail.income")}</h3>
+      <h3 className="mb-4 text-sm font-bold text-gray-900 dark:text-white">{c("botDetail", "income", t("botDetail.income"))}</h3>
       <div className="space-y-3">
         {b.returns.map((r, ri) => (
           <div key={ri} className="flex items-center justify-between rounded-lg bg-gray-50 px-4 py-3 dark:bg-gray-800">

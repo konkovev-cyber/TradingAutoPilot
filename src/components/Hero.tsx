@@ -83,7 +83,7 @@ export default function Hero() {
               </a>
               <a href={contacts.telegram} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-6 sm:px-7 py-3.5 sm:py-4 text-sm font-semibold text-slate-800 transition-colors hover:border-blue-300 hover:bg-blue-50 dark:border-white/15 dark:bg-white/[0.06] dark:text-white dark:hover:bg-white/[0.12]">
                 <Send size={16} className="text-blue-600 dark:text-cyan-300" />
-                {t("cta.contactBtn")}
+                {c("cta", "contactBtn", t("cta.contactBtn"))}
               </a>
             </div>
             <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2">
@@ -119,7 +119,7 @@ export default function Hero() {
                     <div className="mt-0.5 flex items-center gap-1.5 truncate text-xs">
                       {bot.inDevelopment ? (
                         <span className="shrink-0 rounded border border-dashed border-amber-400/80 bg-amber-50 px-1.5 py-px text-[9px] font-extrabold uppercase tracking-wider text-amber-600 dark:border-amber-400/60 dark:bg-amber-400/10 dark:text-amber-300">
-                          {t("products.inDevelopment")}
+                          {c("products", "inDevelopment", t("products.inDevelopment"))}
                         </span>
                       ) : (
                         <span className="truncate" style={{ color: accent }}>{b.badge}</span>

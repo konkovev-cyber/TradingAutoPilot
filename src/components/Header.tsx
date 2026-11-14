@@ -21,9 +21,9 @@ export default function Header() {
   const isSolid = scrolled || !onHome;
 
   const navMap: Record<string, { href: string; domId: string; label: string; always?: boolean }> = {
-    hero: { href: "/#project", domId: "project", label: t("nav.project") },
+    hero: { href: "/#project", domId: "project", label: c("nav", "project", t("nav.project")) },
     products: { href: "/#bots", domId: "bots", label: c("nav", "bots", t("nav.bots")) },
-    contact: { href: contacts.telegram, domId: "", label: t("nav.contact"), always: true },
+    contact: { href: contacts.telegram, domId: "", label: c("nav", "contact", t("nav.contact")), always: true },
   };
   const enabledKeys = new Set(sections.filter((s) => s.enabled).map((s) => s.key));
   const navLinks = Object.entries(navMap)

@@ -7,16 +7,16 @@ export default function Compare({ id, compact = false }: { id?: string; compact?
   const { t, lang } = useI18n();
   const c = useContent();
   const bots = useBots();
-  const title = id === "choose" ? c("choose", "title", t("compare.title")) : t("compare.title");
-  const subtitle = id === "choose" ? c("choose", "subtitle", t("compare.subtitle")) : t("compare.subtitle");
+  const title = id === "choose" ? c("choose", "title", t("compare.title")) : c("compare", "title", t("compare.title"));
+  const subtitle = id === "choose" ? c("choose", "subtitle", t("compare.subtitle")) : c("compare", "subtitle", t("compare.subtitle"));
 
   const rows: { id: string; label: string; get: (b: ReturnType<typeof botText>) => string }[] = [
-    { id: "market", label: t("compare.market"), get: (b) => b.market },
-    { id: "strategy", label: t("compare.strategy"), get: (b) => b.strategy },
-    { id: "style", label: t("compare.style"), get: (b) => b.difficulty || "" },
-    { id: "risk", label: t("compare.risk"), get: (b) => b.risk },
-    { id: "income", label: t("compare.income"), get: (b) => b.returns[2]?.value ?? "" },
-    { id: "pairs", label: t("compare.pairs"), get: (b) => b.pairs },
+    { id: "market", label: c("compare", "market", t("compare.market")), get: (b) => b.market },
+    { id: "strategy", label: c("compare", "strategy", t("compare.strategy")), get: (b) => b.strategy },
+    { id: "style", label: c("compare", "style", t("compare.style")), get: (b) => b.difficulty || "" },
+    { id: "risk", label: c("compare", "risk", t("compare.risk")), get: (b) => b.risk },
+    { id: "income", label: c("compare", "income", t("compare.income")), get: (b) => b.returns[2]?.value ?? "" },
+    { id: "pairs", label: c("compare", "pairs", t("compare.pairs")), get: (b) => b.pairs },
   ];
 
   return (
@@ -86,7 +86,7 @@ export default function Compare({ id, compact = false }: { id?: string; compact?
               <thead className="bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-800/60">
                 <tr>
                   <th className="w-[16%] border-b-2 border-gray-200 p-4 text-left text-sm font-bold text-gray-900 dark:border-gray-600 dark:text-white lg:p-6">
-                    {t("calculator.bot")}
+                    {c("calculator", "bot", t("calculator.bot"))}
                   </th>
                   {bots.map((bot) => (
                     <th

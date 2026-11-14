@@ -95,7 +95,7 @@ export default function BotDetailPage() {
           <nav className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-gray-400 dark:text-gray-500 mb-6" aria-label="Breadcrumb">
             <Link to="/" className="hover:text-brand-blue transition-colors">{c("botDetail", "home", t("botDetail.home"))}</Link>
             <span>/</span>
-            <Link to="/#bots" className="hover:text-brand-blue transition-colors">{t("nav.bots")}</Link>
+            <Link to="/#bots" className="hover:text-brand-blue transition-colors">{c("nav", "bots", t("nav.bots"))}</Link>
             <span>/</span>
             <span className="text-gray-700 dark:text-gray-300">{bot ? botText(bot, lang).name : slug}</span>
           </nav>
@@ -116,7 +116,7 @@ export default function BotDetailPage() {
                     {bot.inDevelopment && (
                       <span className="inline-flex items-center gap-1.5 rounded-lg border-2 border-dashed border-amber-400/80 bg-amber-50 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.14em] text-amber-600 dark:border-amber-400/60 dark:bg-amber-400/10 dark:text-amber-300">
                         <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-amber-500" aria-hidden="true" />
-                        {t("products.inDevelopment")}
+                        {c("products", "inDevelopment", t("products.inDevelopment"))}
                       </span>
                     )}
                   </div>
