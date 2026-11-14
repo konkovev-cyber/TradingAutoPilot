@@ -60,10 +60,10 @@ export default function Products() {
                     {b.badge ? (
                       <div className="mt-0.5 truncate text-xs font-semibold" style={{ color: accent }}>{b.badge}</div>
                     ) : null}
-                    {bot.slug === "smartix" && (
+                    {bot.inDevelopment && (
                       <div className="mt-2 inline-flex items-center gap-1.5 rounded-lg border-2 border-dashed border-amber-400/80 bg-amber-50 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[0.14em] text-amber-600 dark:border-amber-400/60 dark:bg-amber-400/10 dark:text-amber-300">
                         <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-amber-500" aria-hidden="true" />
-                        {t("products.inDevelopment")}
+                        {c("products", "inDevelopment", t("products.inDevelopment"))}
                       </div>
                     )}
                   </div>
@@ -105,7 +105,7 @@ export default function Products() {
                   className="relative mt-auto inline-flex h-11 items-center justify-center gap-2 rounded-xl px-6 text-sm font-bold text-white transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500/60"
                   style={{ background: accent, boxShadow: `0 14px 34px -14px ${bot.colorDim.replace("0.12", "0.7")}` }}
                 >
-                  {t("products.detail")}
+                  {c("products", "detail", t("products.detail"))}
                   <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
                 </Link>
               </motion.div>

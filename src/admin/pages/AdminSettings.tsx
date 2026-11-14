@@ -39,12 +39,13 @@ const SECTION_LABELS: Record<string, string> = {
   questions: "Остались вопросы? (Консультация)",
   tryIt: "Просто попробуйте (Секция выбора роботов)",
   connect: "Подключение и безопасность (4 шага по API)",
-  cta: "Карусель роботов и доверие",
-  stats: "Статистика (цифры)",
   exchanges: "Поддерживаемые биржи (BYBIT, Binance и др.)",
-  how_it_works: "Как это работает (шаги)",
-  testimonials: "Отзывы клиентов",
   faq: "FAQ (Часто задаваемые вопросы)",
+  footer: "Подвал сайта (описание, копирайт, дисклеймер, биржи)",
+  lead: "Форма заявки (заголовки, поля, правая панель)",
+  calculator: "Калькулятор доходности (заголовки)",
+  products: "Секция роботов (кнопка, бейдж «В разработке», дисклеймер)",
+  botDetail: "Страница робота (заголовки блоков, дисклеймер)",
 };
 
 const HELP_TEXT: Record<string, string> = {
@@ -62,19 +63,20 @@ const HELP_TEXT: Record<string, string> = {
   questions: "Блок «Остались вопросы?» — кнопка бесплатной консультации через Telegram.",
   tryIt: "Секция «Просто попробуйте!» перед карточками роботов — заголовки, буллеты, кнопка.",
   connect: "Шаги подключения по API и строка безопасности (без права вывода).",
-  cta: "Карусель роботов: заголовки, кнопка связи и строка доверия.",
-  stats: "Цифры статистики на главной странице (пользователи, объем, аптайм).",
   exchanges: "Список бирж, с которыми совместимы торговые боты.",
-  how_it_works: "Шаги «Как это работает» с номерами и описаниями.",
-  testimonials: "Отзывы клиентов с именами, ролями и цитатами.",
   faq: "Вопросы и ответы. Порядок отображения совпадает с порядком в списке.",
+  footer: "Тексты подвала: описание, копирайт, предупреждение о рисках, список бирж (через запятую).",
+  lead: "Тексты формы заявки: заголовок, подзаголовок, поля, кнопки и правая панель «Почему стоит написать нам».",
+  calculator: "Заголовок и подзаголовок блока калькулятора доходности.",
+  products: "Тексты секции карточек роботов: кнопка «Подробнее», бейдж «В разработке», предупреждение о рисках.",
+  botDetail: "Тексты детальной страницы робота: заголовки блоков, безопасность API, дисклеймер о доходности.",
 };
 
 const CATEGORIES = [
   { id: "all", label: "Все секции", icon: "🌐" },
-  { id: "main", label: "Главная и меню", keys: ["nav", "hero", "hero_slides", "stats", "exchanges"], icon: "📌" },
-  { id: "bots", label: "О роботах", keys: ["why", "advantages", "benefits", "pricing", "how_it_works", "tryIt", "cta"], icon: "🤖" },
-  { id: "trust", label: "Контакты и доверие", keys: ["contacts", "connect", "testimonials", "questions", "conclusion"], icon: "💬" },
+  { id: "main", label: "Главная и меню", keys: ["nav", "hero", "hero_slides", "exchanges"], icon: "📌" },
+  { id: "bots", label: "О роботах", keys: ["why", "advantages", "benefits", "pricing", "tryIt", "products", "botDetail"], icon: "🤖" },
+  { id: "trust", label: "Контакты и доверие", keys: ["contacts", "connect", "questions", "conclusion", "lead", "calculator", "footer"], icon: "💬" },
   { id: "faq", label: "FAQ", keys: ["faq"], icon: "❓" },
   { id: "seo", label: "SEO и Telegram", keys: ["meta", "telegram_settings"], icon: "🔍" },
 ];
@@ -403,6 +405,47 @@ export default function AdminSettings() {
     }
   };
 
+  const dirtySections = useMemo(
+    () => Object.keys(SECTION_LABELS).filter((k) => JSON.stringify(sections[k]) !== JSON.stringify(originalSections[k])),
+    [sections, originalSections]
+  );
+
+  const saveAll = async () => {
+    if (dirtySections.length === 0) return;
+    setSavingSection("__all__");
+    try {
+      for (const section of dirtySections) {
+        const data = sections[section];
+        await fetch("/api/site-content", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ key: section, value: data }),
+        });
+        if (supabase) {
+          await supabase.from("site_content").upsert({ section, data, key: section, value: data });
+        }
+        setOriginalSections((prev) => ({ ...prev, [section]: data }));
+      }
+      setSavedSection("__all__");
+      setTimeout(() => setSavedSection((curr) => (curr === "__all__" ? null : curr)), 2500);
+    } catch (err: any) {
+      alert("Не удалось сохранить: " + (err?.message || "Ошибка сети"));
+    } finally {
+      setSavingSection(null);
+    }
+  };
+
+  useEffect(() => {
+    const handler = (e: BeforeUnloadEvent) => {
+      if (dirtySections.length > 0) {
+        e.preventDefault();
+        e.returnValue = "";
+      }
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [dirtySections.length]);
+
   const resetToDefault = async (section: string) => {
     const label = SECTION_LABELS[section] || section;
     const ok = window.confirm(`Сбросить содержимое секции «${label}» к исходным значениям по умолчанию?`);
@@ -716,52 +759,6 @@ export default function AdminSettings() {
       </div>
     );
   };
-
-  // --- Stats Editor ---
-  const StatsEditor = () => {
-    const d = sections.stats ?? DEFAULT_SITE_CONTENT.stats ?? {};
-    return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <FieldInput
-          label="Число пользователей"
-          value={d.users}
-          onChange={(v) => updateData("stats", { ...d, users: v })}
-          placeholder="12400+"
-        />
-        <FieldInput
-          label="Подпись к пользователям"
-          value={d.users_label}
-          onChange={(v) => updateData("stats", { ...d, users_label: v })}
-          placeholder="Активных пользователей"
-        />
-        <FieldInput
-          label="Объём торгов"
-          value={d.volume}
-          onChange={(v) => updateData("stats", { ...d, volume: v })}
-          placeholder="$58M+"
-        />
-        <FieldInput
-          label="Подпись к объёму"
-          value={d.volume_label}
-          onChange={(v) => updateData("stats", { ...d, volume_label: v })}
-          placeholder="Объём торгов"
-        />
-        <FieldInput
-          label="Uptime серверов"
-          value={d.uptime}
-          onChange={(v) => updateData("stats", { ...d, uptime: v })}
-          placeholder="99.9%"
-        />
-        <FieldInput
-          label="Подпись к Uptime"
-          value={d.uptime_label}
-          onChange={(v) => updateData("stats", { ...d, uptime_label: v })}
-          placeholder="Uptime серверов"
-        />
-      </div>
-    );
-  };
-
   // --- Exchanges Tag / Chip Editor ---
   const ExchangesEditor = () => {
     const items: string[] = Array.isArray(sections.exchanges)
@@ -1039,44 +1036,45 @@ export default function AdminSettings() {
     );
   };
 
-  // --- How It Works Editor ---
-  const HowItWorksEditor = () => {
-    const items = Array.isArray(sections.how_it_works) ? sections.how_it_works : DEFAULT_SITE_CONTENT.how_it_works || [];
+  // --- Lead Editor (form texts + why-items list) ---
+  const LeadEditor = () => {
+    const d = sections.lead ?? DEFAULT_SITE_CONTENT.lead ?? {};
+    const whyItems: Json[] = Array.isArray(d.whyItems) ? d.whyItems : [];
     return (
-      <ListEditor
-        items={items}
-        onChange={(next) => updateData("how_it_works", next)}
-        emptyItem={() => ({ step: "01", title: "", description: "", icon: "cpu" })}
-        fields={[
-          { key: "step", label: "Номер (01, 02...)" },
-          { key: "title", label: "Заголовок шага" },
-          { key: "description", label: "Описание шага", multiline: true },
-          { key: "icon", label: "Код иконки (user, key, cpu, trending-up)" },
-        ]}
-      />
+      <div className="space-y-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <FieldInput label="Заголовок формы" value={d.title} localized onChange={(v) => updateData("lead", { ...d, title: v })} placeholder="Оставить заявку" />
+          <FieldInput label="Подзаголовок" value={d.subtitle} localized multiline onChange={(v) => updateData("lead", { ...d, subtitle: v })} placeholder="Подберём робота под вашу стратегию" />
+          <FieldInput label="Поле «Ваше имя»" value={d.name} localized onChange={(v) => updateData("lead", { ...d, name: v })} placeholder="Ваше имя" />
+          <FieldInput label="Поле «Telegram или email»" value={d.contact} localized onChange={(v) => updateData("lead", { ...d, contact: v })} placeholder="Telegram или email" />
+          <FieldInput label="Поле «Интересующий робот»" value={d.bot} localized onChange={(v) => updateData("lead", { ...d, bot: v })} placeholder="Интересующий робот" />
+          <FieldInput label="Пункт «Любой робот»" value={d.botAny} localized onChange={(v) => updateData("lead", { ...d, botAny: v })} placeholder="Любой робот" />
+          <FieldInput label="Поле «Сообщение»" value={d.message} localized onChange={(v) => updateData("lead", { ...d, message: v })} placeholder="Сообщение" />
+          <FieldInput label="Текст кнопки отправки" value={d.submit} localized onChange={(v) => updateData("lead", { ...d, submit: v })} placeholder="Отправить заявку" />
+          <FieldInput label="Сообщение об успехе" value={d.success} localized onChange={(v) => updateData("lead", { ...d, success: v })} placeholder="Заявка отправлена!" />
+          <FieldInput label="Сообщение об ошибке" value={d.error} localized onChange={(v) => updateData("lead", { ...d, error: v })} placeholder="Не удалось отправить заявку" />
+          <FieldInput label="Согласие на обработку данных" value={d.privacy} localized onChange={(v) => updateData("lead", { ...d, privacy: v })} placeholder="Нажимая кнопку, вы соглашаетесь..." />
+          <FieldInput label="Кнопка «Отправить ещё одну»" value={d.again} localized onChange={(v) => updateData("lead", { ...d, again: v })} placeholder="Отправить ещё одну заявку" />
+          <FieldInput label="Заголовок правой панели" value={d.whyTitle} localized onChange={(v) => updateData("lead", { ...d, whyTitle: v })} placeholder="Почему стоит написать нам?" />
+          <FieldInput label="Подзаголовок правой панели" value={d.whySubtitle} localized multiline onChange={(v) => updateData("lead", { ...d, whySubtitle: v })} placeholder="Отвечаем в течение часа..." />
+        </div>
+        <div>
+          <div className="text-xs font-semibold text-gray-300 mb-2">Пункты правой панели (пусто — используются тексты по умолчанию)</div>
+          <ListEditor
+            items={whyItems}
+            onChange={(next) => updateData("lead", { ...d, whyItems: next })}
+            emptyItem={() => ({ title: "", desc: "" })}
+            fields={[
+              { key: "title", label: "Заголовок пункта", localized: true },
+              { key: "desc", label: "Описание пункта", multiline: true, localized: true },
+            ]}
+          />
+        </div>
+      </div>
     );
   };
 
-  // --- Testimonials Editor ---
-  const TestimonialsEditor = () => {
-    const items = Array.isArray(sections.testimonials) ? sections.testimonials : DEFAULT_SITE_CONTENT.testimonials || [];
-    return (
-      <ListEditor
-        items={items}
-        onChange={(next) => updateData("testimonials", next)}
-        emptyItem={() => ({ name: "", role: "", initials: "", color: "primary", text: "" })}
-        fields={[
-          { key: "name", label: "Имя клиента" },
-          { key: "role", label: "Профиль (например: Частный инвестор)" },
-          { key: "initials", label: "Инициалы (2 буквы)" },
-          { key: "color", label: "Цвет бейджа (primary / secondary / accent)" },
-          { key: "text", label: "Текст отзыва", multiline: true },
-        ]}
-      />
-    );
-  };
-
-  // Field configurations for plain text/localized sections
+  // --- Field configurations for plain text/localized sections ---
   const TEXT_SECTION_FIELDS: Record<string, Field[]> = {
     nav: [
       { key: "project", label: "О проекте", localized: true },
@@ -1125,11 +1123,47 @@ export default function AdminSettings() {
       { key: "bullet2", label: "Преимущество 2 (Покупаете робота один раз)", localized: true },
       { key: "btn", label: "Текст кнопки старта", localized: true },
     ],
-    cta: [
-      { key: "title", label: "Заголовок карусели роботов", localized: true },
+    calculator: [
+      { key: "title", label: "Заголовок калькулятора", localized: true },
       { key: "subtitle", label: "Подзаголовок", localized: true, multiline: true },
-      { key: "trust", label: "Строка доверия (API-ключи без права вывода)" },
-      { key: "contactBtn", label: "Кнопка связи", localized: true },
+      { key: "deposit", label: "Метка «Стартовый депозит»", localized: true },
+      { key: "term", label: "Метка «Срок, мес.»", localized: true },
+      { key: "bot", label: "Метка «Робот»", localized: true },
+      { key: "result", label: "Метка «Прогноз»", localized: true },
+      { key: "profit", label: "Метка «Прибыль»", localized: true },
+      { key: "total", label: "Метка «Итого»", localized: true },
+      { key: "note", label: "Предупреждение под результатом", localized: true, multiline: true },
+      { key: "cta", label: "Текст кнопки", localized: true },
+    ],
+    products: [
+      { key: "detail", label: "Текст кнопки «Подробнее»", localized: true },
+      { key: "inDevelopment", label: "Бейдж «В разработке»", localized: true },
+      { key: "disclaimer", label: "Предупреждение о рисках (под карточками)", localized: true, multiline: true },
+    ],
+    botDetail: [
+      { key: "back", label: "Кнопка «Все роботы»", localized: true },
+      { key: "about", label: "Заголовок «О роботе»", localized: true },
+      { key: "howEarn", label: "Заголовок «Как робот зарабатывает»", localized: true },
+      { key: "features", label: "Заголовок «Ключевые особенности»", localized: true },
+      { key: "risks", label: "Заголовок «Риски»", localized: true },
+      { key: "pairs", label: "Заголовок «Торгуемые активы»", localized: true },
+      { key: "safetyTitle", label: "Заголовок «Безопасность API»", localized: true },
+      { key: "safety", label: "Текст «Безопасность API»", localized: true, multiline: true },
+      { key: "contactCta", label: "Кнопка «Обсудить запуск в Telegram»", localized: true },
+      { key: "fits", label: "Заголовок «Какой робот вам подходит»", localized: true },
+      { key: "others", label: "Заголовок «Другие роботы»", localized: true },
+      { key: "disclaimer", label: "Дисклеймер под доходностью", localized: true, multiline: true },
+    ],
+    footer: [
+      { key: "desc", label: "Описание под логотипом", localized: true, multiline: true },
+      { key: "robotsTitle", label: "Заголовок «Роботы»", localized: true },
+      { key: "supportTitle", label: "Заголовок «Поддержка»", localized: true },
+      { key: "knowledgeTitle", label: "Пункт «База знаний»", localized: true },
+      { key: "exchangesTitle", label: "Заголовок «Биржи»", localized: true },
+      { key: "moreExchanges", label: "Сноска под биржами", localized: true },
+      { key: "copyright", label: "Копирайт", localized: true },
+      { key: "risk", label: "Предупреждение о рисках", localized: true, multiline: true },
+      { key: "exchanges", label: "Список бирж (через запятую: BYBIT, Binance, OKX)" },
     ],
   };
 
@@ -1145,6 +1179,7 @@ export default function AdminSettings() {
             onChange={(v) => updateData(section, { ...d, [f.key]: v })}
             multiline={f.multiline}
             localized={f.localized}
+            options={f.options}
             placeholder={`Введите ${f.label.toLowerCase()}`}
           />
         ))}
@@ -1211,6 +1246,16 @@ export default function AdminSettings() {
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
+          {dirtySections.length > 0 && (
+            <button
+              type="button"
+              onClick={saveAll}
+              disabled={savingSection !== null}
+              className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer shadow-md"
+            >
+              <Save size={15} /> Сохранить всё ({dirtySections.length})
+            </button>
+          )}
           <button
             type="button"
             onClick={openSections.size > 0 ? collapseAll : expandAll}
@@ -1305,8 +1350,8 @@ export default function AdminSettings() {
           const label = SECTION_LABELS[section] || section;
           const isOpen = openSections.has(section) || Boolean(searchQuery.trim());
           const data = sections[section] ?? DEFAULT_SITE_CONTENT[section] ?? {};
-          const isSaved = savedSection === section;
-          const isSaving = savingSection === section;
+          const isSaved = savedSection === section || savedSection === "__all__";
+          const isSaving = savingSection === section || savingSection === "__all__";
           // Check if section has unsaved changes by comparing with original
           const hasUnsaved = JSON.stringify(sections[section]) !== JSON.stringify(originalSections[section]);
 
@@ -1314,15 +1359,13 @@ export default function AdminSettings() {
             if (section === "telegram_settings") return <TelegramEditor />;
             if (section === "meta") return <MetaEditor />;
             if (section === "hero_slides") return <HeroSlidesEditor />;
-            if (section === "stats") return <StatsEditor />;
             if (section === "exchanges") return <ExchangesEditor />;
             if (section === "advantages") return <AdvantagesEditor />;
             if (section === "benefits") return <BenefitsEditor />;
             if (section === "why") return <WhyEditor />;
             if (section === "connect") return <ConnectEditor />;
             if (section === "faq") return <FaqEditor />;
-            if (section === "how_it_works") return <HowItWorksEditor />;
-            if (section === "testimonials") return <TestimonialsEditor />;
+            if (section === "lead") return <LeadEditor />;
             if (TEXT_SECTION_FIELDS[section]) {
               return <TextSectionEditor section={section} fields={TEXT_SECTION_FIELDS[section]} />;
             }

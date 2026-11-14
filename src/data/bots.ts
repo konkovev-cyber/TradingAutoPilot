@@ -30,6 +30,7 @@ export interface BotData extends Omit<BotText, "features" | "howItWorks" | "exam
   avatarDarkUrl?: string;
   difficulty?: string;
   difficultyTone?: "starter" | "advanced" | "aggressive";
+  inDevelopment?: boolean;
   features: string[];
   howItWorks: BotStep[];
   exampleTrade: BotStep[];
@@ -221,6 +222,7 @@ export const bots: BotData[] = [
   },
   {
     slug: "smartix",
+    inDevelopment: true,
     market: "Крипта",
     strategy: "Импульсные движения, точечные сделки",
     name: "SMARTIX",

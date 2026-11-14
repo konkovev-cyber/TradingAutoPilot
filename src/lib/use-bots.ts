@@ -146,6 +146,7 @@ function toBotData(row: Json): BotData {
     avatarDarkUrl: row?.avatar_dark_url ? String(row.avatar_dark_url) : (stat?.avatarDarkUrl ?? undefined),
     difficulty: String(row?.difficulty ?? stat?.difficulty ?? ""),
     difficultyTone: (String(row?.difficulty_tone ?? stat?.difficultyTone ?? "starter") as BotData["difficultyTone"]),
+    inDevelopment: row?.in_development === true || row?.in_development === "true" || (row?.in_development === undefined && stat?.inDevelopment === true),
     i18n,
     metaTitle: row?.meta_title ? String(row.meta_title) : undefined,
     metaDescription: row?.meta_description ? String(row.meta_description) : undefined,

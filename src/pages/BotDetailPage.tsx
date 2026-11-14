@@ -13,6 +13,7 @@ import Calculator from "@/components/Calculator";
 import FAQ from "@/components/FAQ";
 import Compare from "@/components/Compare";
 import { useI18n } from "@/lib/i18n";
+import { useContent, useContacts } from "@/lib/site-content";
 import { useSeo } from "@/lib/seo";
 import { botText, colorDimFrom } from "@/data/bots";
 import { recordPageView } from "@/lib/page-views";
@@ -20,6 +21,8 @@ import { recordPageView } from "@/lib/page-views";
 export default function BotDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const { t, lang } = useI18n();
+  const c = useContent();
+  const contacts = useContacts();
   const bots = useBots();
   const bot = bots.find((b) => b.slug === slug || ((slug === "cryptosuperstock" || slug === "synchro-bot") && b.slug === "synchrobot")) ?? null;
   const [copied, setCopied] = useState(false);
@@ -77,20 +80,20 @@ export default function BotDetailPage() {
               to="/"
               className="inline-flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
             >
-              <ArrowLeft size={16} /> {t("botDetail.back")}
+              <ArrowLeft size={16} /> {c("botDetail", "back", t("botDetail.back"))}
             </Link>
             <button
               onClick={share}
               className="inline-flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
-              aria-label={copied ? t("botDetail.copied") : t("botDetail.share")}
+              aria-label={copied ? c("botDetail", "copied", t("botDetail.copied")) : c("botDetail", "share", t("botDetail.share"))}
             >
               {copied ? <Check size={16} /> : <Share2 size={16} />}
-              {copied ? t("botDetail.copied") : t("botDetail.share")}
+              {copied ? c("botDetail", "copied", t("botDetail.copied")) : c("botDetail", "share", t("botDetail.share"))}
             </button>
           </div>
 
           <nav className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-gray-400 dark:text-gray-500 mb-6" aria-label="Breadcrumb">
-            <Link to="/" className="hover:text-brand-blue transition-colors">{t("botDetail.home")}</Link>
+            <Link to="/" className="hover:text-brand-blue transition-colors">{c("botDetail", "home", t("botDetail.home"))}</Link>
             <span>/</span>
             <Link to="/#bots" className="hover:text-brand-blue transition-colors">{t("nav.bots")}</Link>
             <span>/</span>
@@ -110,7 +113,7 @@ export default function BotDetailPage() {
                         {botText(bot, lang).badge}
                       </span>
                     ) : null}
-                    {bot.slug === "smartix" && (
+                    {bot.inDevelopment && (
                       <span className="inline-flex items-center gap-1.5 rounded-lg border-2 border-dashed border-amber-400/80 bg-amber-50 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.14em] text-amber-600 dark:border-amber-400/60 dark:bg-amber-400/10 dark:text-amber-300">
                         <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-amber-500" aria-hidden="true" />
                         {t("products.inDevelopment")}
@@ -140,13 +143,13 @@ export default function BotDetailPage() {
                   <p className="text-gray-500 dark:text-gray-400 text-lg leading-relaxed max-w-3xl mb-8">{botText(bot, lang).shortDesc}</p>
 
                   <div className="bg-white dark:bg-gray-900 rounded-xl p-5 sm:p-8 border border-gray-100 dark:border-gray-800 shadow-sm mb-8">
-                    <h3 className="heading-md text-gray-900 dark:text-white mb-4">{t("botDetail.about")}</h3>
+                    <h3 className="heading-md text-gray-900 dark:text-white mb-4">{c("botDetail", "about", t("botDetail.about"))}</h3>
                     <p className="text-gray-500 dark:text-gray-400 leading-relaxed whitespace-pre-line">{botText(bot, lang).fullDesc}</p>
                   </div>
 
                   {botText(bot, lang).howItWorks.length > 0 && (
                     <div className="mb-8">
-                      <h3 className="heading-md text-gray-900 dark:text-white mb-6">{t("botDetail.howEarn")}</h3>
+                      <h3 className="heading-md text-gray-900 dark:text-white mb-6">{c("botDetail", "howEarn", t("botDetail.howEarn"))}</h3>
                       <BotStrategySteps bot={bot} />
                     </div>
                   )}
@@ -158,7 +161,7 @@ export default function BotDetailPage() {
                   <BotStats bot={bot} />
 
                   <div className="bg-white dark:bg-gray-900 rounded-xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm">
-                    <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-3">{t("botDetail.features")}</h3>
+                    <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-3">{c("botDetail", "features", t("botDetail.features"))}</h3>
                     <ul className="space-y-2.5">
                       {botText(bot, lang).features.map((f) => (
                         <li key={f} className="flex items-start gap-2.5 text-sm text-gray-500 dark:text-gray-400">
@@ -172,21 +175,21 @@ export default function BotDetailPage() {
                   <div className="bg-white dark:bg-gray-900 rounded-xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm flex gap-3">
                     <AlertTriangle size={18} className="shrink-0 mt-0.5 text-amber-500" />
                     <div>
-                      <div className="text-sm font-semibold text-gray-900 dark:text-white mb-1">{t("botDetail.risks")}</div>
+                      <div className="text-sm font-semibold text-gray-900 dark:text-white mb-1">{c("botDetail", "risks", t("botDetail.risks"))}</div>
                       <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">{botText(bot, lang).risk}</p>
                     </div>
                   </div>
 
                   <div className="bg-white dark:bg-gray-900 rounded-xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm">
-                    <div className="text-xs text-gray-400 dark:text-gray-500 mb-1 uppercase tracking-wider">{t("botDetail.pairs")}</div>
+                    <div className="text-xs text-gray-400 dark:text-gray-500 mb-1 uppercase tracking-wider">{c("botDetail", "pairs", t("botDetail.pairs"))}</div>
                     <div className="text-gray-900 dark:text-white font-medium">{botText(bot, lang).pairs}</div>
                   </div>
 
                   <div className="bg-white dark:bg-gray-900 rounded-xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm flex gap-3">
                     <ShieldCheck size={18} className="shrink-0 mt-0.5 text-emerald-500" />
                     <div>
-                      <div className="text-sm font-semibold text-gray-900 dark:text-white mb-1">{t("botDetail.safetyTitle")}</div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">{t("botDetail.safety")}</p>
+                      <div className="text-sm font-semibold text-gray-900 dark:text-white mb-1">{c("botDetail", "safetyTitle", t("botDetail.safetyTitle"))}</div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">{c("botDetail", "safety", t("botDetail.safety"))}</p>
                     </div>
                   </div>
                 </div>
@@ -194,21 +197,21 @@ export default function BotDetailPage() {
 
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-16">
                 <a
-                  href="https://t.me/coinsofter"
+                  href={contacts.telegram}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn-primary inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 text-sm sm:text-base w-full sm:w-auto"
                 >
                   <Send size={18} />
-                  {t("botDetail.contactCta")}
+                  {c("botDetail", "contactCta", t("botDetail.contactCta"))}
                 </a>
                 <Link to="/#bots" className="btn-secondary inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 text-sm sm:text-base w-full sm:w-auto">
-                  <ArrowLeft size={16} /> {t("botDetail.back")}
+                  <ArrowLeft size={16} /> {c("botDetail", "back", t("botDetail.back"))}
                 </Link>
               </div>
 
               <div className="mb-16">
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6">{t("botDetail.fits")}</h3>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6">{c("botDetail", "fits", t("botDetail.fits"))}</h3>
                 <div className="grid sm:grid-cols-2 gap-4">
                   {bots
                     .filter((b) => b.slug !== bot.slug)
@@ -231,7 +234,7 @@ export default function BotDetailPage() {
               </div>
 
               <div className="mt-16 pt-10 border-t border-gray-100 dark:border-gray-800">
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6">{t("botDetail.others")}</h3>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6">{c("botDetail", "others", t("botDetail.others"))}</h3>
                 <div className="grid sm:grid-cols-2 gap-4">
                   {bots
                     .filter((b) => b.slug !== bot.slug)
@@ -258,8 +261,8 @@ export default function BotDetailPage() {
             </motion.div>
           ) : (
             <div className="text-center py-32">
-              <p className="text-gray-500 dark:text-gray-400 mb-6">{t("botDetail.notFound")}</p>
-              <Link to="/" className="btn-primary">{t("botDetail.backHome")}</Link>
+              <p className="text-gray-500 dark:text-gray-400 mb-6">{c("botDetail", "notFound", t("botDetail.notFound"))}</p>
+              <Link to="/" className="btn-primary">{c("botDetail", "backHome", t("botDetail.backHome"))}</Link>
             </div>
           )}
         </div>

@@ -1,8 +1,10 @@
 import { useI18n } from "@/lib/i18n";
+import { useContent } from "@/lib/site-content";
 import { botText, type BotData } from "@/data/bots";
 
 export default function BotStats({ bot }: { bot: BotData }) {
   const { t, lang } = useI18n();
+  const c = useContent();
   const b = botText(bot, lang);
 
   return (
@@ -19,7 +21,7 @@ export default function BotStats({ bot }: { bot: BotData }) {
         ))}
       </div>
       <p className="mt-4 border-t border-gray-100 pt-3 text-[11px] leading-relaxed text-gray-400 dark:border-gray-800 dark:text-gray-500">
-        {t("botDetail.disclaimer")}
+        {c("botDetail", "disclaimer", t("trust.disclaimer"))}
       </p>
     </div>
   );

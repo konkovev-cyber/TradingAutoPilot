@@ -1,10 +1,12 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { useI18n } from "@/lib/i18n";
 import { useBots } from "@/lib/use-bots";
 import { botText } from "@/data/bots";
+import { useContent } from "@/lib/site-content";
 
 export default function Calculator({ initialSlug, ctaTarget = "#bots" }: { initialSlug?: string; ctaTarget?: string }) {
   const { t, lang } = useI18n();
+  const c = useContent();
   const allBots = useBots();
   const [deposit, setDeposit] = useState(1000);
   const [term, setTerm] = useState(6);
@@ -25,15 +27,15 @@ export default function Calculator({ initialSlug, ctaTarget = "#bots" }: { initi
     <section id="calculator" className="py-12 sm:py-16 md:py-20 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-8 sm:mb-12">
-          <h2 className="heading-lg text-gray-900 dark:text-white mb-4">{t("calculator.title")}</h2>
-          <p className="text-base md:text-lg text-gray-500 dark:text-gray-500 font-normal">{t("calculator.subtitle")}</p>
+          <h2 className="heading-lg text-gray-900 dark:text-white mb-4">{c("calculator", "title", t("calculator.title"))}</h2>
+          <p className="text-base md:text-lg text-gray-500 dark:text-gray-500 font-normal">{c("calculator", "subtitle", t("calculator.subtitle"))}</p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center bg-white dark:bg-gray-950 p-5 sm:p-8 rounded-2xl sm:rounded-3xl border border-gray-100 dark:border-gray-800 shadow-xl card-premium">
           <div className="space-y-8">
             <div>
               <div className="flex justify-between mb-4">
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">{t("calculator.deposit")}</label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">{c("calculator", "deposit", t("calculator.deposit"))}</label>
                 <span className="text-lg font-bold text-brand-blue">${deposit}</span>
               </div>
               <input
@@ -44,7 +46,7 @@ export default function Calculator({ initialSlug, ctaTarget = "#bots" }: { initi
             </div>
             <div>
               <div className="flex justify-between mb-4">
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">{t("calculator.term")}</label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">{c("calculator", "term", t("calculator.term"))}</label>
                 <span className="text-lg font-bold text-brand-blue">{term}</span>
               </div>
               <input
@@ -54,7 +56,7 @@ export default function Calculator({ initialSlug, ctaTarget = "#bots" }: { initi
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-700 dark:text-gray-300 block mb-4">{t("calculator.bot")}</label>
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300 block mb-4">{c("calculator", "bot", t("calculator.bot"))}</label>
               <div className="grid grid-cols-3 gap-2">
                 {allBots.map((bot) => (
                   <button
@@ -74,23 +76,23 @@ export default function Calculator({ initialSlug, ctaTarget = "#bots" }: { initi
           </div>
 
           <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl sm:rounded-2xl p-5 sm:p-8 text-center border border-blue-100 dark:border-blue-800">
-            <div className="text-sm text-blue-600 dark:text-blue-400 font-medium mb-2">{t("calculator.result")}</div>
+            <div className="text-sm text-blue-600 dark:text-blue-400 font-medium mb-2">{c("calculator", "result", t("calculator.result"))}</div>
             <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
               ${Math.round(finalAmount).toLocaleString()}
             </div>
             <div className="space-y-2 mb-8">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500 dark:text-gray-400">{t("calculator.profit")}:</span>
+                <span className="text-gray-500 dark:text-gray-400">{c("calculator", "profit", t("calculator.profit"))}:</span>
                 <span className="text-green-600 dark:text-green-400 font-bold">+${Math.round(profit).toLocaleString()}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500 dark:text-gray-400">{t("calculator.total")}:</span>
+                <span className="text-gray-500 dark:text-gray-400">{c("calculator", "total", t("calculator.total"))}:</span>
                 <span className="text-gray-900 dark:text-white font-bold">${Math.round(finalAmount).toLocaleString()}</span>
               </div>
             </div>
-            <p className="text-[10px] text-gray-400 dark:text-gray-500 italic mb-6">{t("calculator.note")}</p>
+            <p className="text-[10px] text-gray-400 dark:text-gray-500 italic mb-6">{c("calculator", "note", t("calculator.note"))}</p>
             <button onClick={() => window.location.href = ctaTarget} className="btn-primary w-full py-3 text-sm">
-              {t("calculator.cta")}
+              {c("calculator", "cta", t("calculator.cta"))}
             </button>
           </div>
         </div>

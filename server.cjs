@@ -103,6 +103,9 @@ async function initDb() {
         ALTER TABLE bots ADD COLUMN IF NOT EXISTS example_trade JSONB;
         ALTER TABLE bots ADD COLUMN IF NOT EXISTS suitable_for TEXT;
         ALTER TABLE bots ADD COLUMN IF NOT EXISTS exchanges TEXT;
+        ALTER TABLE bots ADD COLUMN IF NOT EXISTS in_development BOOLEAN DEFAULT FALSE;
+        ALTER TABLE bots ADD COLUMN IF NOT EXISTS avatar_url TEXT;
+        ALTER TABLE bots ADD COLUMN IF NOT EXISTS avatar_dark_url TEXT;
         ALTER TABLE bots ADD COLUMN IF NOT EXISTS i18n JSONB;
         ALTER TABLE bots ADD COLUMN IF NOT EXISTS meta_title TEXT;
         ALTER TABLE bots ADD COLUMN IF NOT EXISTS meta_description TEXT;
@@ -639,8 +642,8 @@ app.post('/api/bots', async (req, res) => {
   if (pool) {
     try {
       const q = await pool.query(`
-        INSERT INTO bots (id, slug, name, slogan, short_desc, full_desc, badge, market, strategy, risk, pairs, color, image_url, difficulty, difficulty_tone, features, returns, how_it_works, example_trade, i18n, position, meta_title, meta_description, og_image, suitable_for, exchanges)
-        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26)
+        INSERT INTO bots (id, slug, name, slogan, short_desc, full_desc, badge, market, strategy, risk, pairs, color, image_url, difficulty, difficulty_tone, features, returns, how_it_works, example_trade, i18n, position, meta_title, meta_description, og_image, suitable_for, exchanges, in_development, avatar_url, avatar_dark_url)
+        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29)
         ON CONFLICT (id) DO UPDATE SET
           slug = EXCLUDED.slug, name = EXCLUDED.name, slogan = EXCLUDED.slogan,
           short_desc = EXCLUDED.short_desc, full_desc = EXCLUDED.full_desc,
@@ -655,7 +658,10 @@ app.post('/api/bots', async (req, res) => {
           meta_description = EXCLUDED.meta_description,
           og_image = EXCLUDED.og_image,
           suitable_for = EXCLUDED.suitable_for,
-          exchanges = EXCLUDED.exchanges
+          exchanges = EXCLUDED.exchanges,
+          in_development = EXCLUDED.in_development,
+          avatar_url = COALESCE(EXCLUDED.avatar_url, bots.avatar_url),
+          avatar_dark_url = COALESCE(EXCLUDED.avatar_dark_url, bots.avatar_dark_url)
         RETURNING *;
       `, [
         id, bot.slug || id, bot.name, bot.slogan || '', bot.shortDesc || bot.short_desc || '',
@@ -670,6 +676,9 @@ app.post('/api/bots', async (req, res) => {
         bot.og_image || bot.ogImage || null,
         bot.suitable_for || bot.suitableFor || null,
         bot.exchanges || null,
+        bot.in_development === true || bot.inDevelopment === true,
+        bot.avatar_url || bot.avatarUrl || null,
+        bot.avatar_dark_url || bot.avatarDarkUrl || null,
       ]);
       return res.json(q.rows[0]);
     } catch (e) {
@@ -701,7 +710,10 @@ app.patch('/api/bots/:id', async (req, res) => {
           meta_description = COALESCE($23, meta_description),
           og_image = COALESCE($24, og_image),
           suitable_for = COALESCE($25, suitable_for),
-          exchanges = COALESCE($26, exchanges)
+          exchanges = COALESCE($26, exchanges),
+          in_development = COALESCE($27, in_development),
+          avatar_url = COALESCE($28, avatar_url),
+          avatar_dark_url = COALESCE($29, avatar_dark_url)
         WHERE id = $1
         RETURNING *;
       `, [
@@ -722,6 +734,9 @@ app.patch('/api/bots/:id', async (req, res) => {
         bot.og_image || bot.ogImage || null,
         bot.suitable_for !== undefined ? (bot.suitable_for || bot.suitableFor) : null,
         bot.exchanges !== undefined ? bot.exchanges : null,
+        bot.in_development !== undefined ? (bot.in_development === true || bot.inDevelopment === true) : null,
+        bot.avatar_url !== undefined ? bot.avatar_url : (bot.avatarUrl !== undefined ? bot.avatarUrl : null),
+        bot.avatar_dark_url !== undefined ? bot.avatar_dark_url : (bot.avatarDarkUrl !== undefined ? bot.avatarDarkUrl : null),
       ]);
       return res.json(q.rows[0] || {});
     } catch (e) {

@@ -22,6 +22,9 @@ interface Bot {
   exchanges?: string;
   color: string;
   image_url: string | null;
+  avatar_url?: string | null;
+  avatar_dark_url?: string | null;
+  in_development?: boolean;
   difficulty?: string;
   difficulty_tone?: string;
   features?: Json;
@@ -47,6 +50,7 @@ const DIFFICULTIES = [
 const initialBot: Bot = {
   slug: "", name: "", slogan: "", shortDesc: "", fullDesc: "", badge: "",
   market: "", strategy: "", risk: "", pairs: "", suitable_for: "", exchanges: "", color: "#3b82f6", image_url: null,
+  avatar_url: null, avatar_dark_url: null, in_development: false,
   difficulty: "", difficulty_tone: "",
   meta_title: "", meta_description: "", og_image: ""
 };
@@ -140,7 +144,7 @@ export default function AdminBots() {
     });
   };
 
-  const uploadImage = async (file: File) => {
+  const uploadImage = async (file: File, field: "image_url" | "avatar_url" | "avatar_dark_url" = "image_url") => {
     setUploading(true);
     try {
       if (supabase) {
@@ -148,7 +152,7 @@ export default function AdminBots() {
         const { data, error: uploadError } = await supabase.storage.from("bot-images").upload(path, file);
         if (!uploadError && data) {
           const pub = supabase.storage.from("bot-images").getPublicUrl(data.path);
-          if (editing) setEditing({ ...editing, image_url: pub.data.publicUrl });
+          if (editing) setEditing({ ...editing, [field]: pub.data.publicUrl });
         }
       }
     } catch {
@@ -410,7 +414,7 @@ export default function AdminBots() {
                     accept="image/*"
                     onChange={(e) => {
                       const f = e.target.files?.[0];
-                      if (f) uploadImage(f);
+                      if (f) uploadImage(f, "image_url");
                     }}
                     className="block w-full text-sm text-gray-400 file:mr-3 file:px-3 file:py-2 file:rounded-lg file:border-0 file:bg-gray-700 file:text-white file:cursor-pointer"
                   />
@@ -430,6 +434,74 @@ export default function AdminBots() {
                   )}
                 </div>
               </div>
+
+              <div className="grid md:grid-cols-2 gap-4 items-center">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Аватар для карточек (квадратный, светлая тема)</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f) uploadImage(f, "avatar_url");
+                    }}
+                    className="block w-full text-sm text-gray-400 file:mr-3 file:px-3 file:py-2 file:rounded-lg file:border-0 file:bg-gray-700 file:text-white file:cursor-pointer"
+                  />
+                </div>
+                <div className="flex items-center gap-3">
+                  {editing.avatar_url ? (
+                    <img src={editing.avatar_url} alt={editing.name} className="h-16 w-16 rounded-xl object-cover border border-gray-700" />
+                  ) : (
+                    <div className="h-16 w-16 rounded-xl border border-dashed border-gray-700 flex items-center justify-center text-gray-600">
+                      <ImageOff size={18} />
+                    </div>
+                  )}
+                  {editing.avatar_url && (
+                    <button onClick={() => setEditing({ ...editing, avatar_url: null })}
+                      className="text-xs text-red-400 hover:text-red-300">Убрать</button>
+                  )}
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4 items-center">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Аватар для тёмной темы (необязательно)</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f) uploadImage(f, "avatar_dark_url");
+                    }}
+                    className="block w-full text-sm text-gray-400 file:mr-3 file:px-3 file:py-2 file:rounded-lg file:border-0 file:bg-gray-700 file:text-white file:cursor-pointer"
+                  />
+                </div>
+                <div className="flex items-center gap-3">
+                  {editing.avatar_dark_url ? (
+                    <img src={editing.avatar_dark_url} alt={editing.name} className="h-16 w-16 rounded-xl object-cover border border-gray-700" />
+                  ) : (
+                    <div className="h-16 w-16 rounded-xl border border-dashed border-gray-700 flex items-center justify-center text-gray-600">
+                      <ImageOff size={18} />
+                    </div>
+                  )}
+                  {editing.avatar_dark_url && (
+                    <button onClick={() => setEditing({ ...editing, avatar_dark_url: null })}
+                      className="text-xs text-red-400 hover:text-red-300">Убрать</button>
+                  )}
+                </div>
+              </div>
+
+              <label className="flex items-center gap-3 cursor-pointer select-none w-fit">
+                <input
+                  type="checkbox"
+                  checked={editing.in_development === true}
+                  onChange={(e) => setEditing({ ...editing, in_development: e.target.checked })}
+                  className="h-4 w-4 rounded border-gray-600 bg-gray-800 accent-amber-500 cursor-pointer"
+                />
+                <span className="text-sm text-gray-300">
+                  В разработке <span className="text-gray-500">— показать янтарный бейдж «В разработке» на карточках и детальной странице</span>
+                </span>
+              </label>
             </div>
           )}
 
@@ -667,7 +739,9 @@ export default function AdminBots() {
                 <ArrowDown size={16} />
               </button>
             </div>
-            {bot.image_url ? (
+            {bot.avatar_url ? (
+              <img src={bot.avatar_url} alt={bot.name} className="w-12 h-12 rounded-xl object-cover border border-gray-800" />
+            ) : bot.image_url ? (
               <img src={bot.image_url} alt={bot.name} className="w-16 h-12 rounded-lg object-cover border border-gray-800" />
             ) : (
               <div className="w-16 h-12 rounded-lg flex items-center justify-center border border-gray-800" style={{ backgroundColor: bot.color + "22" }}>
@@ -675,7 +749,14 @@ export default function AdminBots() {
               </div>
             )}
             <div className="flex-1 min-w-0">
-              <div className="text-white font-bold truncate">{bot.name}</div>
+              <div className="flex items-center gap-2">
+                <span className="text-white font-bold truncate">{bot.name}</span>
+                {bot.in_development && (
+                  <span className="shrink-0 text-[10px] font-bold uppercase tracking-wider text-amber-400 bg-amber-500/10 border border-amber-500/30 rounded px-1.5 py-0.5">
+                    В разработке
+                  </span>
+                )}
+              </div>
               <div className="text-gray-400 text-sm truncate">{bot.slogan}</div>
               <div className="flex flex-wrap gap-2 mt-1">
                 <span className="text-xs px-2 py-0.5 bg-gray-800 rounded text-gray-400">{bot.market}</span>

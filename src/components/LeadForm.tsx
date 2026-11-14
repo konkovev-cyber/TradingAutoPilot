@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Send, CheckCircle2, User, AtSign, Bot as BotIcon, MessageSquareText, Sparkles, ShieldCheck, Settings2, Rocket } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { useBots } from "@/lib/use-bots";
-import { useContacts } from "@/lib/site-content";
+import { useContacts, useContent, useLocalizedList, localize } from "@/lib/site-content";
 import { botText } from "@/data/bots";
 import { getSupabase, supabaseUrl } from "@/lib/supabase";
 
@@ -10,6 +10,8 @@ export default function LeadForm() {
   const { t, lang } = useI18n();
   const bots = useBots();
   const contacts = useContacts();
+  const c = useContent();
+  const whyItems = useLocalizedList<{ title?: any; desc?: any }>("lead", "whyItems");
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [form, setForm] = useState({ name: "", contact: "", bot: "any", message: "" });
 
@@ -63,9 +65,9 @@ export default function LeadForm() {
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <CheckCircle2 size={32} className="text-green-600" />
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">{t("lead.success")}</h3>
-            <p className="text-gray-500 mb-8">{t("lead.privacy")}</p>
-            <button onClick={() => setStatus("idle")} className="text-brand-blue font-semibold hover:underline">{t("lead.again")}</button>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">{c("lead", "success", t("lead.success"))}</h3>
+            <p className="text-gray-500 mb-8">{c("lead", "privacy", t("lead.privacy"))}</p>
+            <button onClick={() => setStatus("idle")} className="text-brand-blue font-semibold hover:underline">{c("lead", "again", t("lead.again"))}</button>
           </div>
         </div>
       </section>
@@ -87,14 +89,14 @@ export default function LeadForm() {
               <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: "linear-gradient(135deg, #3b82f6 0%, #6366f1 100%)" }}>
                 <Sparkles size={20} className="text-white" />
               </div>
-              <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{t("lead.title")}</h3>
+              <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{c("lead", "title", t("lead.title"))}</h3>
             </div>
-            <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mb-6 sm:mb-8">{t("lead.subtitle")}</p>
+            <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mb-6 sm:mb-8">{c("lead", "subtitle", t("lead.subtitle"))}</p>
 
             <div className="space-y-5">
               <div>
                 <label className={labelCls}>
-                  {t("lead.name")} <span aria-hidden="true" className="text-red-500">*</span>
+                  {c("lead", "name", t("lead.name"))} <span aria-hidden="true" className="text-red-500">*</span>
                 </label>
                 <div className="relative">
                   <User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
@@ -108,7 +110,7 @@ export default function LeadForm() {
               </div>
               <div>
                 <label className={labelCls}>
-                  {t("lead.contact")} <span aria-hidden="true" className="text-red-500">*</span>
+                  {c("lead", "contact", t("lead.contact"))} <span aria-hidden="true" className="text-red-500">*</span>
                 </label>
                 <div className="relative">
                   <AtSign size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
@@ -121,14 +123,14 @@ export default function LeadForm() {
                 </div>
               </div>
               <div>
-                <label className={labelCls}>{t("lead.bot")}</label>
+                <label className={labelCls}>{c("lead", "bot", t("lead.bot"))}</label>
                 <div className="relative">
                   <BotIcon size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none z-10" />
                   <select
                     className="input-premium !pl-11 appearance-none cursor-pointer"
                     value={form.bot} onChange={(e) => setForm({ ...form, bot: e.target.value })}
                   >
-                    <option value="any">{t("lead.botAny")}</option>
+                    <option value="any">{c("lead", "botAny", t("lead.botAny"))}</option>
                     {bots.map((b) => (
                       <option key={b.slug} value={b.slug}>{botText(b, lang).name}</option>
                     ))}
@@ -137,7 +139,7 @@ export default function LeadForm() {
               </div>
               <div>
                 <label className={labelCls}>
-                  {t("lead.message")}{" "}
+                  {c("lead", "message", t("lead.message"))}{" "}
                   <span className="font-normal normal-case tracking-normal text-gray-400">
                     {lang === "en" ? "(optional)" : "(необязательно)"}
                   </span>
@@ -156,11 +158,11 @@ export default function LeadForm() {
                 disabled={status === "sending"}
                 className="btn-gradient w-full py-4 rounded-xl flex items-center justify-center gap-2 disabled:opacity-60 disabled:transform-none"
               >
-                {status === "sending" ? "Отправка..." : t("lead.submit")}
+                {status === "sending" ? "Отправка..." : c("lead", "submit", t("lead.submit"))}
                 <Send size={18} />
               </button>
-              {status === "error" && <p className="text-red-500 text-xs text-center">{t("lead.error")}</p>}
-              <p className="text-[11px] text-center text-gray-400">{t("lead.privacy")}</p>
+              {status === "error" && <p className="text-red-500 text-xs text-center">{c("lead", "error", t("lead.error"))}</p>}
+              <p className="text-[11px] text-center text-gray-400">{c("lead", "privacy", t("lead.privacy"))}</p>
             </div>
           </div>
 
@@ -172,10 +174,10 @@ export default function LeadForm() {
               <div className="w-12 h-12 rounded-2xl bg-white/15 backdrop-blur flex items-center justify-center mb-6">
                 <Rocket size={22} className="text-white" />
               </div>
-              <h4 className="text-2xl font-bold mb-3">{t("lead.whyTitle")}</h4>
-              <p className="text-blue-100 text-sm mb-8">{t("lead.whySubtitle")}</p>
+              <h4 className="text-2xl font-bold mb-3">{c("lead", "whyTitle", t("lead.whyTitle"))}</h4>
+              <p className="text-blue-100 text-sm mb-8">{c("lead", "whySubtitle", t("lead.whySubtitle"))}</p>
               <ul className="space-y-6 flex-grow">
-                {(t("lead.whyItems") as { title: string; desc: string }[]).map((item, i) => {
+                {(whyItems.length > 0 ? whyItems : (t("lead.whyItems") as { title: string; desc: string }[])).map((item: any, i) => {
                   const Icon = [Sparkles, Settings2, ShieldCheck][i % 3];
                   return (
                     <li key={i} className="flex gap-4">
@@ -183,8 +185,8 @@ export default function LeadForm() {
                         <Icon size={18} className="text-white" />
                       </div>
                       <div>
-                        <div className="font-semibold">{item.title}</div>
-                        <div className="text-sm text-blue-100 leading-snug">{item.desc}</div>
+                        <div className="font-semibold">{localize(item.title, item.title ?? "", lang)}</div>
+                        <div className="text-sm text-blue-100 leading-snug">{localize(item.desc, item.desc ?? "", lang)}</div>
                       </div>
                     </li>
                   );

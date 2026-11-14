@@ -117,7 +117,7 @@ export default function Hero() {
                       <span className="truncate text-sm font-bold text-slate-900 dark:text-white">{b.name}</span>
                     </div>
                     <div className="mt-0.5 flex items-center gap-1.5 truncate text-xs">
-                      {bot.slug === "smartix" ? (
+                      {bot.inDevelopment ? (
                         <span className="shrink-0 rounded border border-dashed border-amber-400/80 bg-amber-50 px-1.5 py-px text-[9px] font-extrabold uppercase tracking-wider text-amber-600 dark:border-amber-400/60 dark:bg-amber-400/10 dark:text-amber-300">
                           {t("products.inDevelopment")}
                         </span>

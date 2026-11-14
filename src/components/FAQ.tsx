@@ -2,12 +2,13 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
-import { useSectionValue } from "@/lib/site-content";
+import { useSectionValue, useContent } from "@/lib/site-content";
 
 export default function FAQ() {
   const { t } = useI18n();
   const [open, setOpen] = useState<number | null>(0);
   const siteFaq = useSectionValue("faq");
+  const c = useContent();
 
   const rawList = Array.isArray(siteFaq) && siteFaq.length > 0 ? siteFaq : ((t("faq.items") as any[]) || []);
   const items: Array<{ q: string; a: string }> = rawList
@@ -29,8 +30,8 @@ export default function FAQ() {
           transition={{ duration: 0.5 }}
           className="text-center mb-8 sm:mb-12"
         >
-          <h2 className="heading-lg text-gray-900 dark:text-white mb-3 sm:mb-4">{t("faq.title")}</h2>
-          <p className="text-sm sm:text-base md:text-lg text-gray-500 dark:text-gray-400">{t("faq.subtitle")}</p>
+          <h2 className="heading-lg text-gray-900 dark:text-white mb-3 sm:mb-4">{c("faq", "title", t("faq.title"))}</h2>
+          <p className="text-sm sm:text-base md:text-lg text-gray-500 dark:text-gray-400">{c("faq", "subtitle", t("faq.subtitle"))}</p>
         </motion.div>
 
         <div className="space-y-3">
