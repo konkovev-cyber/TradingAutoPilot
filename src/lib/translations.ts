@@ -97,6 +97,7 @@ export const ruTranslations = {
     "subtitle": "Выберите робота под свой рынок, частоту сделок и риск-профиль.",
     "detail": "Подробнее",
     "hit": "ХИТ",
+    "inDevelopment": "В разработке",
     "disclaimer": "* Историческая доходность не гарантирует будущих результатов. Торговля на бирже связана с риском, возможна просадка депозита. Показатели приведены за прошлые периоды и не являются обещанием дохода.",
     "switcherHint": "На детальной странице — полный алгоритм, пример сделки и калькулятор"
   },
@@ -391,6 +392,7 @@ export const enTranslations = {
     "subtitle": "Choose a bot for your market, trade frequency and risk profile.",
     "detail": "More details",
     "hit": "HIT",
+    "inDevelopment": "In development",
     "disclaimer": "* Historical returns do not guarantee future results. Exchange trading involves risk, deposit drawdown is possible. Figures are shown for past periods and are not a promise of profit.",
     "switcherHint": "The detail page has the full algorithm, a trade example and the calculator"
   },

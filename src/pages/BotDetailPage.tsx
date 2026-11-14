@@ -101,13 +101,21 @@ export default function BotDetailPage() {
             <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
               <div className="grid lg:grid-cols-5 gap-8 mb-12">
                 <div className="lg:col-span-3 min-w-0">
-                  <div className="mb-5">
-                    <span
-                      className="inline-block px-3 py-1 rounded-full text-xs font-semibold tracking-wide bg-blue-50 dark:bg-blue-950 border border-blue-100 dark:border-blue-900"
-                      style={{ background: colorDimFrom(bot.color), color: bot.color === "#00FFB2" ? "#00c98d" : bot.color }}
-                    >
-                      {botText(bot, lang).badge}
-                    </span>
+                  <div className="mb-5 flex flex-wrap items-center gap-2">
+                    {botText(bot, lang).badge ? (
+                      <span
+                        className="inline-block px-3 py-1 rounded-full text-xs font-semibold tracking-wide bg-blue-50 dark:bg-blue-950 border border-blue-100 dark:border-blue-900"
+                        style={{ background: colorDimFrom(bot.color), color: bot.color === "#00FFB2" ? "#00c98d" : bot.color }}
+                      >
+                        {botText(bot, lang).badge}
+                      </span>
+                    ) : null}
+                    {bot.slug === "smartix" && (
+                      <span className="inline-flex items-center gap-1.5 rounded-lg border-2 border-dashed border-amber-400/80 bg-amber-50 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.14em] text-amber-600 dark:border-amber-400/60 dark:bg-amber-400/10 dark:text-amber-300">
+                        <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-amber-500" aria-hidden="true" />
+                        {t("products.inDevelopment")}
+                      </span>
+                    )}
                   </div>
 
                   <div className="flex items-center gap-4 mb-4">
