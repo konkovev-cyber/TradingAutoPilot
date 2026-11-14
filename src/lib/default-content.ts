@@ -350,5 +350,50 @@ export const DEFAULT_SITE_CONTENT: Record<string, any> = {
       a: "Все средства остаются на вашей бирже. Робот только торгует — прибыль поступает прямо на ваш баланс. Выводите её в любой момент через интерфейс биржи, мы не удерживаем ваши деньги.",
     },
   ],
+  footer: {
+    desc: {
+      ru: "TradingAutoPilot — торговые роботы для криптовалют и акций. Покупка один раз, без абонентской платы.",
+      en: "TradingAutoPilot — trading bots for crypto and stocks. Buy once, no subscription.",
+    },
+    copyright: { ru: "Все права защищены.", en: "All rights reserved." },
+    risk: {
+      ru: "Торговля на бирже связана с риском. Прошлая доходность не гарантирует будущих результатов.",
+      en: "Exchange trading involves risk. Past returns do not guarantee future results.",
+    },
+  },
+  lead: {
+    title: { ru: "Оставить заявку", en: "Request a consultation" },
+    subtitle: { ru: "Подберём робота под вашу стратегию и ответим на вопросы", en: "We will match a bot to your strategy and answer your questions" },
+    whyTitle: { ru: "Почему стоит написать нам?", en: "Why write to us?" },
+    whySubtitle: { ru: "Отвечаем в течение часа, подберём робота под ваш депозит и риск-профиль.", en: "We reply within an hour and match a bot to your deposit and risk profile." },
+  },
+  calculator: {
+    title: { ru: "Калькулятор доходности", en: "Profit calculator" },
+    subtitle: { ru: "Оцените потенциал прибыли на горизонте до года", en: "Estimate profit potential over up to a year" },
+  },
+  products: {
+    detail: { ru: "Подробнее", en: "More details" },
+    inDevelopment: { ru: "В разработке", en: "In development" },
+  },
+  botDetail: {
+    back: { ru: "Все роботы", en: "All bots" },
+    about: { ru: "О роботе", en: "About the bot" },
+    howEarn: { ru: "Как робот зарабатывает", en: "How the bot earns" },
+    features: { ru: "Ключевые особенности", en: "Key features" },
+    risks: { ru: "Риски", en: "Risks" },
+    pairs: { ru: "Торгуемые активы", en: "Traded assets" },
+    safetyTitle: { ru: "Безопасность API", en: "API safety" },
+    safety: {
+      ru: "Робот торгует по вашему API-ключу с правом торговли, но без права вывода средств. Средства и прибыль остаются на вашей бирже.",
+      en: "The bot trades via your API key with trading rights but no withdrawal rights. Funds and profit stay on your exchange.",
+    },
+    contactCta: { ru: "Обсудить запуск в Telegram", en: "Discuss launch on Telegram" },
+    fits: { ru: "Какой робот вам подходит", en: "Which bot fits you" },
+    others: { ru: "Другие роботы", en: "Other bots" },
+    disclaimer: {
+      ru: "Не является инвестиционной рекомендацией. Торговля на биржах связана с риском потери средств, прошлая доходность не гарантирует будущих результатов.",
+      en: "Not investment advice. Exchange trading involves the risk of losing funds; past returns do not guarantee future results.",
+    },
+  },
 };
 
