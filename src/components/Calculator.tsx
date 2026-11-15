@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useI18n } from "@/lib/i18n";
 import { useBots } from "@/lib/use-bots";
 import { botText } from "@/data/bots";
@@ -12,14 +12,22 @@ export default function Calculator({ initialSlug, ctaTarget = "#bots" }: { initi
   const [term, setTerm] = useState(6);
   const [botSlug, setBotSlug] = useState(initialSlug ?? allBots[0]?.slug ?? "");
 
+  useEffect(() => {
+    if ((!botSlug || !allBots.some((b) => b.slug === botSlug)) && allBots.length > 0) {
+      setBotSlug(initialSlug && allBots.some((b) => b.slug === initialSlug) ? initialSlug : allBots[0].slug);
+    }
+  }, [allBots, initialSlug, botSlug]);
+
   const botReturns = allBots.map((b) => {
-    const last = b.returns[b.returns.length - 1];
-    return parseFloat(last?.value.replace(/[+%]/g, "")) ?? 0;
+    const last = b.returns && b.returns.length > 0 ? b.returns[b.returns.length - 1] : undefined;
+    const rawVal = parseFloat(String(last?.value ?? "").replace(/[+%]/g, "")) || 0;
+    return rawVal / 100;
   });
-  const annualRate = botReturns[allBots.findIndex((b) => b.slug === botSlug)] ?? 0;
-  const monthlyRate = Math.pow(1 + annualRate, 1/12) - 1;
+  const botIdx = allBots.findIndex((b) => b.slug === botSlug);
+  const annualRate = botIdx >= 0 && botReturns[botIdx] > 0 ? botReturns[botIdx] : 0.78;
+  const monthlyRate = Math.pow(1 + annualRate, 1 / 12) - 1;
   const finalAmount = deposit * Math.pow(1 + monthlyRate, term);
-  const profit = finalAmount - deposit;
+  const profit = Math.max(0, finalAmount - deposit);
 
   if (allBots.length === 0) return null;
 

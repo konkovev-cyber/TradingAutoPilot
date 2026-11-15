@@ -392,11 +392,15 @@ export default function AdminSettings() {
   const save = async (section: string, data: Json) => {
     setSavingSection(section);
     try {
-      await fetch("/api/site-content", {
+      const res = await fetch("/api/site-content", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ key: section, value: data }),
       });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || `Ошибка сервера (${res.status})`);
+      }
       if (supabase) {
         await supabase.from("site_content").upsert({ section, data, key: section, value: data });
       }
@@ -422,11 +426,15 @@ export default function AdminSettings() {
     try {
       for (const section of dirtySections) {
         const data = sections[section];
-        await fetch("/api/site-content", {
+        const res = await fetch("/api/site-content", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ key: section, value: data }),
         });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.error || `Ошибка сохранения секции ${section} (${res.status})`);
+        }
         if (supabase) {
           await supabase.from("site_content").upsert({ section, data, key: section, value: data });
         }

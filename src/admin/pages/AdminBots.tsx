@@ -153,12 +153,44 @@ export default function AdminBots() {
         if (!uploadError && data) {
           const pub = supabase.storage.from("bot-images").getPublicUrl(data.path);
           if (editing) setEditing({ ...editing, [field]: pub.data.publicUrl });
+        } else {
+          // Fallback to base64 if storage bucket has issue
+          const reader = new FileReader();
+          reader.onload = () => {
+            if (typeof reader.result === "string" && editing) {
+              setEditing({ ...editing, [field]: reader.result });
+            }
+          };
+          reader.readAsDataURL(file);
         }
+      } else {
+        // Fallback to base64 when Supabase not configured
+        const reader = new FileReader();
+        reader.onload = () => {
+          if (typeof reader.result === "string" && editing) {
+            setEditing({ ...editing, [field]: reader.result });
+          }
+        };
+        reader.readAsDataURL(file);
       }
     } catch {
       setError("Не удалось загрузить картинку");
     }
     setUploading(false);
+  };
+
+  const createNewBot = () => {
+    setEditing({ ...initialBot });
+    setActiveTab("main");
+    setError("");
+    setI18n({});
+    setExtra({
+      features: [],
+      returns: [],
+      how: [],
+      example: [],
+      en: { features: [], how: [], example: [] },
+    });
   };
 
   const buildI18n = (enBase: Record<string, any>): Json => {
@@ -180,6 +212,17 @@ export default function AdminBots() {
     }
     setSaving(true);
     setError("");
+
+    const targetId = bot.id || bot.slug;
+    const isEditingExisting = Boolean(bot.id);
+
+    // If creating new bot, check for duplicate slug
+    if (!isEditingExisting && bots.some((b) => b.slug.toLowerCase() === bot.slug.toLowerCase())) {
+      setError(`Робот с таким Slug "${bot.slug}" уже существует. Выберите другой уникальный Slug.`);
+      setSaving(false);
+      return;
+    }
+
     const payload: Bot = {
       ...bot,
       features: extra.features.filter((f) => f.trim() !== ""),
@@ -191,11 +234,8 @@ export default function AdminBots() {
       exchanges: bot.exchanges?.trim() ? bot.exchanges : "",
     };
 
-    const targetId = bot.id || bot.slug;
-    const isExisting = Boolean(bot.id || bots.some((b) => b.slug === bot.slug || b.id === targetId));
-
     try {
-      if (isExisting) {
+      if (isEditingExisting) {
         const patchRes = await fetch(`/api/bots/${encodeURIComponent(targetId)}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -227,16 +267,19 @@ export default function AdminBots() {
     setSaving(false);
   };
 
-  const deleteBot = async (id: string) => {
+  const deleteBot = async (idOrSlug: string) => {
     if (!confirm("Удалить этого робота?")) return;
     try {
-      const res = await fetch(`/api/bots/${encodeURIComponent(id)}`, { method: "DELETE" });
+      const res = await fetch(`/api/bots/${encodeURIComponent(idOrSlug)}`, { method: "DELETE" });
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
         alert(err.error || "Не удалось удалить робота");
         return;
       }
-      setBots(bots.filter((b) => b.id !== id && b.slug !== id));
+      setBots(bots.filter((b) => b.id !== idOrSlug && b.slug !== idOrSlug));
+      if (editing && (editing.id === idOrSlug || editing.slug === idOrSlug)) {
+        setEditing(null);
+      }
     } catch (e) {
       console.error("Delete bot error", e);
     }
@@ -251,25 +294,34 @@ export default function AdminBots() {
     const posA = a.position ?? index + 1;
     const posB = b.position ?? target + 1;
 
+    // Оптимистичное обновление UI
+    const reordered = [...bots];
+    reordered[index] = { ...b, position: posA };
+    reordered[target] = { ...a, position: posB };
+    setBots(reordered);
+
     try {
-      await fetch(`/api/bots/${a.id}`, {
+      const idA = a.id || a.slug;
+      const idB = b.id || b.slug;
+      await fetch(`/api/bots/${encodeURIComponent(idA)}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ position: posB }),
       });
-      await fetch(`/api/bots/${b.id}`, {
+      await fetch(`/api/bots/${encodeURIComponent(idB)}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ position: posA }),
       });
 
-      if (supabase) {
-        await supabase.from("bots").update({ position: posB }).eq("id", a.id!);
-        await supabase.from("bots").update({ position: posA }).eq("id", b.id!);
+      if (supabase && a.id && b.id) {
+        await supabase.from("bots").update({ position: posB }).eq("id", a.id);
+        await supabase.from("bots").update({ position: posA }).eq("id", b.id);
       }
       await fetchBots();
     } catch (e) {
       console.error("Move bot error", e);
+      await fetchBots();
     }
   };
 
@@ -336,7 +388,7 @@ export default function AdminBots() {
             Порядок роботов на сайте задаётся стрелками. Картинка, доходность и шаги показываются в карточках и на детальной странице.
           </p>
         </div>
-        <button onClick={() => { setEditing({ ...initialBot }); setActiveTab("main"); }}
+        <button onClick={createNewBot}
           className="flex items-center gap-2 px-4 py-2 bg-brand-blue hover:bg-blue-600 text-white rounded-lg transition-colors shrink-0">
           <Plus size={18} /> Добавить робота
         </button>
@@ -738,7 +790,7 @@ export default function AdminBots() {
           </div>
         )}
         {bots.map((bot, i) => (
-          <div key={bot.id} className="bg-gray-900 border border-gray-800 rounded-xl p-4 flex items-center gap-4">
+          <div key={bot.id || bot.slug || i} className="bg-gray-900 border border-gray-800 rounded-xl p-4 flex items-center gap-4">
             <div className="flex flex-col gap-1">
               <button onClick={() => moveBot(i, -1)} disabled={i === 0}
                 className="p-1 text-gray-500 hover:text-white disabled:opacity-20" aria-label="Выше">
@@ -778,7 +830,7 @@ export default function AdminBots() {
             </Link>
             <div className="flex gap-2 shrink-0">
               <button onClick={() => openEditor(bot)} className="p-2 text-gray-400 hover:text-white" aria-label="Редактировать"><Edit2 size={18} /></button>
-              <button onClick={() => deleteBot(bot.id!)} className="p-2 text-red-400 hover:text-red-300" aria-label="Удалить"><Trash2 size={18} /></button>
+              <button onClick={() => deleteBot(bot.id || bot.slug)} className="p-2 text-red-400 hover:text-red-300" aria-label="Удалить"><Trash2 size={18} /></button>
             </div>
           </div>
         ))}
