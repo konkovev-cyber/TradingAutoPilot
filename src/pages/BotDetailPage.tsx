@@ -296,23 +296,39 @@ export default function BotDetailPage() {
                   </div>
                 </div>
 
-                {/* ── ПРАВАЯ КОЛОНКА (Баннер бота + Карточка параметров — Симметрия по высоте!) ── */}
+                {/* ── ПРАВАЯ КОЛОНКА (Баннер бота + Ключевые особенности — Идеальное заполнение!) ── */}
                 <div className="lg:col-span-6 flex flex-col justify-between">
-                  <div className="h-full rounded-2xl border border-emerald-500/25 bg-[#0e192d]/80 backdrop-blur-md p-3 sm:p-4 flex flex-col justify-between shadow-[0_4px_30px_-4px_rgba(0,0,0,0.6)]">
+                  <div className="h-full rounded-2xl border border-emerald-500/25 bg-[#0e192d]/80 backdrop-blur-md p-4 sm:p-5 flex flex-col justify-between shadow-[0_4px_30px_-4px_rgba(0,0,0,0.6)] space-y-4">
                     {/* Баннер робота */}
                     {bot.imageUrl ? (
-                      <div className="relative overflow-hidden rounded-xl border border-white/10 bg-slate-950">
+                      <div className="relative overflow-hidden rounded-xl border border-white/10 bg-slate-950 shadow-md">
                         <img
                           src={bot.imageUrl}
                           alt={botText(bot, lang).name}
-                          className="w-full h-auto object-cover max-h-[340px] sm:max-h-[380px]"
+                          className="w-full h-auto object-cover max-h-[260px] sm:max-h-[280px]"
                           loading="eager"
                         />
                       </div>
                     ) : null}
 
-                    {/* Нижняя плашка параметров бота — идеально уравновешивает колонку */}
-                    <div className="mt-3 grid grid-cols-3 gap-2 pt-3 border-t border-white/[0.06] text-center">
+                    {/* Блок ключевых особенностей — заполняет пустоту под картинкой */}
+                    <div className="space-y-2.5 py-1">
+                      <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-300">
+                        <Sparkles size={14} className="text-emerald-400" />
+                        <span>{c("botDetail", "features", t("botDetail.features"))}</span>
+                      </div>
+                      <ul className="space-y-2">
+                        {botText(bot, lang).features.slice(0, 4).map((f) => (
+                          <li key={f} className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-300">
+                            <Check size={15} className="shrink-0 mt-0.5 text-emerald-400" />
+                            <span className="leading-snug">{f}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* Нижняя плашка параметров бота */}
+                    <div className="grid grid-cols-3 gap-2 pt-3 border-t border-white/[0.06] text-center">
                       <div className="rounded-lg bg-white/[0.03] border border-white/[0.06] p-2">
                         <div className="text-[10px] uppercase font-bold text-slate-400">Направление</div>
                         <div className="text-xs sm:text-sm font-extrabold text-emerald-400 mt-0.5">LONG & SHORT</div>
@@ -352,66 +368,45 @@ export default function BotDetailPage() {
                 </p>
               </div>
 
-              {/* 2. КЛЮЧЕВЫЕ ХАРАКТЕРИСТИКИ: Особенности (слева) + Параметры/Риски/Безопасность (справа) */}
-              <div className="grid sm:grid-cols-2 gap-6">
-                
-                {/* Особенности робота */}
-                <div className="rounded-3xl border border-slate-800 bg-[#0c1424] p-6 sm:p-7 shadow-sm flex flex-col justify-between">
+              {/* 2. ПАРАМЕТРЫ ТОРГОВЛИ: Торгуемые активы + Риски + Безопасность */}
+              <div className="grid sm:grid-cols-3 gap-5">
+                {/* Торгуемые активы */}
+                <div className="rounded-2xl border border-slate-800 bg-[#0c1424] p-5 shadow-sm flex flex-col justify-between">
                   <div>
-                    <h3 className="text-sm font-bold text-white mb-4 uppercase tracking-wider flex items-center gap-2">
-                      <Sparkles size={16} className="text-emerald-400" />
-                      {c("botDetail", "features", t("botDetail.features"))}
-                    </h3>
-                    <ul className="space-y-3">
-                      {botText(bot, lang).features.map((f) => (
-                        <li key={f} className="flex items-start gap-3 text-sm text-slate-300">
-                          <Check size={16} className="shrink-0 mt-0.5 text-emerald-400" />
-                          <span className="leading-snug">{f}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-
-                {/* Торгуемые активы (БЕЗ бирж) + Риски + Безопасность */}
-                <div className="flex flex-col gap-4">
-                  {/* Торгуемые активы */}
-                  <div className="rounded-2xl border border-slate-800 bg-[#0c1424] p-5 shadow-sm">
-                    <div className="text-xs text-slate-400 mb-1.5 uppercase tracking-wider font-bold">
+                    <div className="text-xs text-slate-400 mb-2 uppercase tracking-wider font-bold">
                       {c("botDetail", "pairs", t("botDetail.pairs"))}
                     </div>
                     <p className="text-sm text-slate-100 font-semibold leading-relaxed">
                       {cleanPairs}
                     </p>
                   </div>
+                </div>
 
-                  {/* Риски */}
-                  <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-5 shadow-sm flex gap-3.5">
-                    <AlertTriangle size={18} className="shrink-0 mt-0.5 text-amber-400" />
-                    <div>
-                      <div className="text-sm font-bold text-amber-200 mb-1">
-                        {c("botDetail", "risks", t("botDetail.risks"))}
-                      </div>
-                      <p className="text-xs text-amber-300/90 leading-relaxed">
-                        {botText(bot, lang).risk}
-                      </p>
+                {/* Риски */}
+                <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-5 shadow-sm flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center gap-2 text-sm font-bold text-amber-200 mb-2">
+                      <AlertTriangle size={18} className="text-amber-400 shrink-0" />
+                      <span>{c("botDetail", "risks", t("botDetail.risks"))}</span>
                     </div>
-                  </div>
-
-                  {/* Безопасность */}
-                  <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-5 shadow-sm flex gap-3.5">
-                    <ShieldCheck size={18} className="shrink-0 mt-0.5 text-emerald-400" />
-                    <div>
-                      <div className="text-sm font-bold text-emerald-200 mb-1">
-                        {c("botDetail", "safetyTitle", t("botDetail.safetyTitle"))}
-                      </div>
-                      <p className="text-xs text-emerald-300/90 leading-relaxed">
-                        {c("botDetail", "safety", t("botDetail.safety"))}
-                      </p>
-                    </div>
+                    <p className="text-xs text-amber-300/90 leading-relaxed">
+                      {botText(bot, lang).risk}
+                    </p>
                   </div>
                 </div>
 
+                {/* Безопасность */}
+                <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-5 shadow-sm flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center gap-2 text-sm font-bold text-emerald-200 mb-2">
+                      <ShieldCheck size={18} className="text-emerald-400 shrink-0" />
+                      <span>{c("botDetail", "safetyTitle", t("botDetail.safetyTitle"))}</span>
+                    </div>
+                    <p className="text-xs text-emerald-300/90 leading-relaxed">
+                      {c("botDetail", "safety", t("botDetail.safety"))}
+                    </p>
+                  </div>
+                </div>
               </div>
 
               {/* 3. ШАГИ СТРАТЕГИИ */}
