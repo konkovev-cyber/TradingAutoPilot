@@ -110,6 +110,9 @@ async function initDb() {
         ALTER TABLE bots ADD COLUMN IF NOT EXISTS meta_title TEXT;
         ALTER TABLE bots ADD COLUMN IF NOT EXISTS meta_description TEXT;
         ALTER TABLE bots ADD COLUMN IF NOT EXISTS og_image TEXT;
+        ALTER TABLE bots ADD COLUMN IF NOT EXISTS video_url TEXT;
+        ALTER TABLE bots ADD COLUMN IF NOT EXISTS video_title TEXT;
+        ALTER TABLE bots ADD COLUMN IF NOT EXISTS backtests JSONB;
         ALTER TABLE bots ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
 
         CREATE TABLE IF NOT EXISTS site_content (
@@ -178,6 +181,8 @@ async function initDb() {
             badge: 'Для торговли фьючерсов Long и Short',
             market: 'Крипта',
             strategy: 'Для торговли фьючерсов Long и Short',
+            video_url: 'https://www.youtube.com/watch?v=VHHfbmwJaIg',
+            video_title: 'SynchroTrade Bot — обзор стратегии Long & Short и торговля на реальном рынке',
             risk: 'Контролируемый: математический расчёт точек входа и встроенный риск-менеджмент',
             pairs: 'BTC/USDT, ETH/USDT, SOL/USDT, Bybit, BingX, OKX и др.',
             color: '#00FFB2',
@@ -621,6 +626,9 @@ app.get('/api/bots', async (req, res) => {
           example_trade: r.example_trade || [],
           features: r.features || [],
           returns: r.returns || [],
+          backtests: r.backtests || [],
+          videoUrl: r.video_url || '',
+          videoTitle: r.video_title || '',
           i18n: r.i18n || {},
         }));
         return res.json(rows);
@@ -642,8 +650,8 @@ app.post('/api/bots', async (req, res) => {
   if (pool) {
     try {
       const q = await pool.query(`
-        INSERT INTO bots (id, slug, name, slogan, short_desc, full_desc, badge, market, strategy, risk, pairs, color, image_url, difficulty, difficulty_tone, features, returns, how_it_works, example_trade, i18n, position, meta_title, meta_description, og_image, suitable_for, exchanges, in_development, avatar_url, avatar_dark_url)
-        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29)
+        INSERT INTO bots (id, slug, name, slogan, short_desc, full_desc, badge, market, strategy, risk, pairs, color, image_url, difficulty, difficulty_tone, features, returns, how_it_works, example_trade, i18n, position, meta_title, meta_description, og_image, suitable_for, exchanges, in_development, avatar_url, avatar_dark_url, video_url, video_title, backtests)
+        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30,$31,$32)
         ON CONFLICT (id) DO UPDATE SET
           slug = EXCLUDED.slug, name = EXCLUDED.name, slogan = EXCLUDED.slogan,
           short_desc = EXCLUDED.short_desc, full_desc = EXCLUDED.full_desc,
@@ -661,7 +669,10 @@ app.post('/api/bots', async (req, res) => {
           exchanges = EXCLUDED.exchanges,
           in_development = EXCLUDED.in_development,
           avatar_url = COALESCE(EXCLUDED.avatar_url, bots.avatar_url),
-          avatar_dark_url = COALESCE(EXCLUDED.avatar_dark_url, bots.avatar_dark_url)
+          avatar_dark_url = COALESCE(EXCLUDED.avatar_dark_url, bots.avatar_dark_url),
+          video_url = EXCLUDED.video_url,
+          video_title = EXCLUDED.video_title,
+          backtests = EXCLUDED.backtests
         RETURNING *;
       `, [
         id, bot.slug || id, bot.name, bot.slogan || '', bot.shortDesc || bot.short_desc || '',
@@ -679,6 +690,9 @@ app.post('/api/bots', async (req, res) => {
         bot.in_development === true || bot.inDevelopment === true,
         bot.avatar_url || bot.avatarUrl || null,
         bot.avatar_dark_url || bot.avatarDarkUrl || null,
+        bot.video_url || bot.videoUrl || null,
+        bot.video_title || bot.videoTitle || null,
+        JSON.stringify(bot.backtests || []),
       ]);
       return res.json(q.rows[0]);
     } catch (e) {
@@ -713,7 +727,10 @@ app.patch('/api/bots/:id', async (req, res) => {
           exchanges = COALESCE($26, exchanges),
           in_development = COALESCE($27, in_development),
           avatar_url = COALESCE($28, avatar_url),
-          avatar_dark_url = COALESCE($29, avatar_dark_url)
+          avatar_dark_url = COALESCE($29, avatar_dark_url),
+          video_url = COALESCE($30, video_url),
+          video_title = COALESCE($31, video_title),
+          backtests = COALESCE($32::jsonb, backtests)
         WHERE id = $1 OR slug = $1
         RETURNING *;
       `, [
@@ -737,6 +754,9 @@ app.patch('/api/bots/:id', async (req, res) => {
         bot.in_development !== undefined ? (bot.in_development === true || bot.inDevelopment === true) : null,
         bot.avatar_url !== undefined ? bot.avatar_url : (bot.avatarUrl !== undefined ? bot.avatarUrl : null),
         bot.avatar_dark_url !== undefined ? bot.avatar_dark_url : (bot.avatarDarkUrl !== undefined ? bot.avatarDarkUrl : null),
+        bot.video_url !== undefined ? (bot.video_url || bot.videoUrl) : null,
+        bot.video_title !== undefined ? (bot.video_title || bot.videoTitle) : null,
+        bot.backtests ? JSON.stringify(bot.backtests) : null,
       ]);
 
       if (q.rows.length > 0) {
@@ -745,8 +765,8 @@ app.patch('/api/bots/:id', async (req, res) => {
 
       // If not updated (bot doesn't exist in DB yet) -> Upsert it
       const ins = await pool.query(`
-        INSERT INTO bots (id, slug, name, slogan, short_desc, full_desc, badge, market, strategy, risk, pairs, color, image_url, difficulty, difficulty_tone, features, returns, how_it_works, example_trade, i18n, position, meta_title, meta_description, og_image, suitable_for, exchanges, in_development, avatar_url, avatar_dark_url)
-        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29)
+        INSERT INTO bots (id, slug, name, slogan, short_desc, full_desc, badge, market, strategy, risk, pairs, color, image_url, difficulty, difficulty_tone, features, returns, how_it_works, example_trade, i18n, position, meta_title, meta_description, og_image, suitable_for, exchanges, in_development, avatar_url, avatar_dark_url, video_url, video_title, backtests)
+        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30,$31,$32)
         ON CONFLICT (id) DO UPDATE SET
           slug = EXCLUDED.slug, name = EXCLUDED.name, slogan = EXCLUDED.slogan,
           short_desc = EXCLUDED.short_desc, full_desc = EXCLUDED.full_desc,
@@ -764,7 +784,10 @@ app.patch('/api/bots/:id', async (req, res) => {
           exchanges = EXCLUDED.exchanges,
           in_development = EXCLUDED.in_development,
           avatar_url = COALESCE(EXCLUDED.avatar_url, bots.avatar_url),
-          avatar_dark_url = COALESCE(EXCLUDED.avatar_dark_url, bots.avatar_dark_url)
+          avatar_dark_url = COALESCE(EXCLUDED.avatar_dark_url, bots.avatar_dark_url),
+          video_url = EXCLUDED.video_url,
+          video_title = EXCLUDED.video_title,
+          backtests = EXCLUDED.backtests
         RETURNING *;
       `, [
         id, bot.slug || id, bot.name || id, bot.slogan || '',
@@ -783,6 +806,9 @@ app.patch('/api/bots/:id', async (req, res) => {
         bot.in_development === true || bot.inDevelopment === true,
         bot.avatar_url || bot.avatarUrl || null,
         bot.avatar_dark_url || bot.avatarDarkUrl || null,
+        bot.video_url || bot.videoUrl || null,
+        bot.video_title || bot.videoTitle || null,
+        JSON.stringify(bot.backtests || []),
       ]);
       return res.json(ins.rows[0] || {});
     } catch (e) {

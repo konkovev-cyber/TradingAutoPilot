@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Link } from "react-router-dom";
-import { Plus, Edit2, Trash2, Save, X, ArrowUp, ArrowDown, ImageOff } from "lucide-react";
+import { Plus, Edit2, Trash2, Save, X, ArrowUp, ArrowDown, ImageOff, Video } from "lucide-react";
+import { extractYouTubeId } from "@/components/bots/BotVideo";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type Json = any;
@@ -36,6 +37,8 @@ interface Bot {
   meta_title?: string;
   meta_description?: string;
   og_image?: string;
+  video_url?: string | null;
+  video_title?: string | null;
 }
 
 type ReturnRow = { period: string; value: string };
@@ -52,7 +55,8 @@ const initialBot: Bot = {
   market: "", strategy: "", risk: "", pairs: "", suitable_for: "", exchanges: "", color: "#3b82f6", image_url: null,
   avatar_url: null, avatar_dark_url: null, in_development: false,
   difficulty: "", difficulty_tone: "",
-  meta_title: "", meta_description: "", og_image: ""
+  meta_title: "", meta_description: "", og_image: "",
+  video_url: "", video_title: ""
 };
 
 const EN_FIELDS: { key: string; label: string; multiline?: boolean }[] = [
@@ -331,6 +335,7 @@ export default function AdminBots() {
 
   const BOT_TABS = [
     { id: "main", label: "Основное" },
+    { id: "video", label: "Видео (YouTube)" },
     { id: "desc", label: "Описание" },
     { id: "features", label: "Особенности" },
     { id: "returns", label: "Доходность" },
@@ -564,6 +569,59 @@ export default function AdminBots() {
                   В разработке <span className="text-gray-500">— показать янтарный бейдж «В разработке» на карточках и детальной странице</span>
                 </span>
               </label>
+            </div>
+          )}
+
+          {/* ТАБ: Видео */}
+          {activeTab === "video" && (
+            <div className="space-y-5">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1.5">
+                  Ссылка на видео YouTube
+                </label>
+                <input
+                  placeholder="https://www.youtube.com/watch?v=VHHfbmwJaIg или https://youtu.be/..."
+                  value={editing.video_url || ""}
+                  onChange={(e) => setEditing({ ...editing, video_url: e.target.value })}
+                  className={`${inputCls} w-full`}
+                />
+                <p className="text-xs text-gray-400 mt-1">
+                  Поддерживаются обычные ссылки на YouTube (watch?v=...), короткие ссылки youtu.be/... и ссылки со встраиванием.
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1.5">
+                  Заголовок видеообзора
+                </label>
+                <input
+                  placeholder="SynchroTrade Bot — обзор стратегии Long & Short и торговля на реальном рынке"
+                  value={editing.video_title || ""}
+                  onChange={(e) => setEditing({ ...editing, video_title: e.target.value })}
+                  className={`${inputCls} w-full`}
+                />
+              </div>
+
+              {editing.video_url && extractYouTubeId(editing.video_url) ? (
+                <div className="mt-4 rounded-xl border border-gray-800 bg-gray-950/70 p-4">
+                  <div className="text-xs font-semibold text-gray-400 mb-2 flex items-center gap-1.5">
+                    <Video size={14} className="text-red-500" />
+                    Предпросмотр плеера:
+                  </div>
+                  <div className="aspect-video w-full max-w-xl overflow-hidden rounded-xl border border-gray-800 bg-black shadow-lg">
+                    <iframe
+                      src={`https://www.youtube-nocookie.com/embed/${extractYouTubeId(editing.video_url)}?rel=0`}
+                      title="Предпросмотр видео"
+                      className="w-full h-full border-0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    />
+                  </div>
+                </div>
+              ) : editing.video_url ? (
+                <div className="text-xs text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-lg p-3">
+                  Не удалось распознать ID видео. Убедитесь, что ссылка ведёт на ролик YouTube (например: https://www.youtube.com/watch?v=VHHfbmwJaIg).
+                </div>
+              ) : null}
             </div>
           )}
 

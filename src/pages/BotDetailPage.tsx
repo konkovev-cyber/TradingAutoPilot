@@ -9,6 +9,8 @@ import BotCard, { BotAvatar } from "@/components/bots/BotCard";
 import BotStrategySteps from "@/components/bots/BotStrategySteps";
 import BotStats from "@/components/bots/BotStats";
 import BotTradeExample from "@/components/bots/BotTradeExample";
+import BotVideo from "@/components/bots/BotVideo";
+import BotBacktest from "@/components/bots/BotBacktest";
 import Calculator from "@/components/Calculator";
 import FAQ from "@/components/FAQ";
 import Compare from "@/components/Compare";
@@ -125,9 +127,38 @@ export default function BotDetailPage() {
                     <BotAvatar bot={bot} size={56} />
                     <h1 className="heading-xl text-gray-900 dark:text-white min-w-0 break-words">{botText(bot, lang).name}</h1>
                   </div>
-                  <p className="text-xl sm:text-2xl font-semibold mb-6 max-w-2xl" style={{ color: bot.color === "#00FFB2" ? "#00c98d" : bot.color }}>
+                  <p className="text-xl sm:text-2xl font-semibold mb-5 max-w-2xl" style={{ color: bot.color === "#00FFB2" ? "#00c98d" : bot.color }}>
                     {botText(bot, lang).slogan}
                   </p>
+
+                  {/* Quick action jump chips */}
+                  <div className="flex flex-wrap items-center gap-2.5 mb-6">
+                    {bot.videoUrl && (
+                      <a
+                        href="#bot-video"
+                        className="inline-flex items-center gap-1.5 rounded-xl border border-red-500/20 bg-red-500/10 px-3.5 py-1.5 text-xs font-bold text-red-500 dark:border-red-500/30 dark:bg-red-500/15 dark:text-red-400 hover:scale-105 transition-all shadow-sm"
+                      >
+                        <span className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
+                        Смотреть видеообзор
+                      </a>
+                    )}
+                    <a
+                      href="#bot-backtests"
+                      className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-3.5 py-1.5 text-xs font-bold text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/15 dark:text-emerald-300 hover:scale-105 transition-all shadow-sm"
+                    >
+                      <span>📊</span>
+                      Бэктесты и динамика
+                    </a>
+                    <a
+                      href={contacts.telegram}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 rounded-xl border border-blue-500/20 bg-blue-500/10 px-3.5 py-1.5 text-xs font-bold text-blue-700 dark:border-blue-500/30 dark:bg-blue-500/15 dark:text-blue-300 hover:scale-105 transition-all shadow-sm"
+                    >
+                      <Send size={12} />
+                      Задать вопрос
+                    </a>
+                  </div>
 
                   {bot.imageUrl && (
                     <div className="mb-8 overflow-hidden rounded-2xl border border-gray-100 dark:border-gray-800 shadow-soft">
@@ -194,6 +225,12 @@ export default function BotDetailPage() {
                   </div>
                 </div>
               </div>
+
+              {/* Video Review Block */}
+              <BotVideo bot={bot} />
+
+              {/* Interactive Backtests & Dynamic Equity Curve */}
+              <BotBacktest bot={bot} />
 
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-16">
                 <a

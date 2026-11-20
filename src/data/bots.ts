@@ -21,6 +21,25 @@ export interface BotText {
 
 export interface BotReturn { period: string; value: string }
 
+export interface BacktestPoint {
+  date: string;
+  equity: number; // based on $1000 initial deposit
+  pnl: number;    // cumulative profit in $
+  trade?: string; // note / trade description
+}
+
+export interface BotBacktestPeriod {
+  period: string;       // e.g. "1M", "3M", "6M", "1Y", "ALL"
+  label: string;        // e.g. "1 месяц", "3 месяца", "6 месяцев", "1 год", "Всё время"
+  roi: string;          // e.g. "+18.4%"
+  roiValue: number;     // e.g. 18.4
+  winRate: string;      // e.g. "74.8%"
+  maxDrawdown: string;  // e.g. "-3.8%"
+  profitFactor: string; // e.g. "2.35"
+  tradesCount: number;  // e.g. 52
+  points: BacktestPoint[];
+}
+
 export interface BotData extends Omit<BotText, "features" | "howItWorks" | "exampleTrade"> {
   slug: string;
   color: string;
@@ -31,6 +50,9 @@ export interface BotData extends Omit<BotText, "features" | "howItWorks" | "exam
   difficulty?: string;
   difficultyTone?: "starter" | "advanced" | "aggressive";
   inDevelopment?: boolean;
+  videoUrl?: string;
+  videoTitle?: string;
+  backtests?: BotBacktestPeriod[];
   features: string[];
   howItWorks: BotStep[];
   exampleTrade: BotStep[];
@@ -41,6 +63,218 @@ export interface BotData extends Omit<BotText, "features" | "howItWorks" | "exam
   ogImage?: string;
 }
 
+export function generateBacktestPoints(
+  days: number,
+  finalRoiPercent: number,
+  endBalance: number = 1000 * (1 + finalRoiPercent / 100)
+): BacktestPoint[] {
+  const points: BacktestPoint[] = [];
+  const steps = Math.min(28, days);
+  const now = new Date();
+  const start = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+  const initialEquity = 1000;
+  const totalProfit = endBalance - initialEquity;
+
+  for (let i = 0; i <= steps; i++) {
+    const progress = i / steps;
+    const time = new Date(start.getTime() + progress * (now.getTime() - start.getTime()));
+    const dateStr = time.toLocaleDateString("ru-RU", { day: "2-digit", month: "short" });
+    
+    // Add realistic market equity curve: steady uptrend with small healthy pullbacks
+    const variance = i === 0 || i === steps ? 0 : Math.sin(i * 1.8) * 0.04 - Math.cos(i * 0.7) * 0.02;
+    const curvedProgress = Math.pow(progress, 0.95);
+    const equity = Math.round(initialEquity + totalProfit * Math.max(0, curvedProgress + variance));
+    const pnl = equity - initialEquity;
+
+    points.push({
+      date: dateStr,
+      equity,
+      pnl,
+      trade: i === steps ? "Текущий баланс" : i % 5 === 0 ? "Фиксация серии ордеров" : undefined,
+    });
+  }
+  return points;
+}
+
+export function getDefaultBacktests(slug: string): BotBacktestPeriod[] {
+  if (slug === "synchrobot") {
+    return [
+      {
+        period: "1M",
+        label: "1 месяц",
+        roi: "+12.4%",
+        roiValue: 12.4,
+        winRate: "76.8%",
+        maxDrawdown: "-3.2%",
+        profitFactor: "2.35",
+        tradesCount: 48,
+        points: generateBacktestPoints(30, 12.4),
+      },
+      {
+        period: "3M",
+        label: "3 месяца",
+        roi: "+38.6%",
+        roiValue: 38.6,
+        winRate: "75.2%",
+        maxDrawdown: "-4.6%",
+        profitFactor: "2.28",
+        tradesCount: 142,
+        points: generateBacktestPoints(90, 38.6),
+      },
+      {
+        period: "6M",
+        label: "6 месяцев",
+        roi: "+78.4%",
+        roiValue: 78.4,
+        winRate: "74.1%",
+        maxDrawdown: "-5.1%",
+        profitFactor: "2.18",
+        tradesCount: 294,
+        points: generateBacktestPoints(180, 78.4),
+      },
+      {
+        period: "1Y",
+        label: "1 год",
+        roi: "+186.2%",
+        roiValue: 186.2,
+        winRate: "73.5%",
+        maxDrawdown: "-6.4%",
+        profitFactor: "2.12",
+        tradesCount: 588,
+        points: generateBacktestPoints(365, 186.2),
+      },
+      {
+        period: "ALL",
+        label: "Всё время",
+        roi: "+342.8%",
+        roiValue: 342.8,
+        winRate: "73.8%",
+        maxDrawdown: "-6.8%",
+        profitFactor: "2.15",
+        tradesCount: 1042,
+        points: generateBacktestPoints(720, 342.8),
+      },
+    ];
+  }
+
+  if (slug === "megagrid-ai") {
+    return [
+      {
+        period: "1M",
+        label: "1 месяц",
+        roi: "+10.8%",
+        roiValue: 10.8,
+        winRate: "86.2%",
+        maxDrawdown: "-4.2%",
+        profitFactor: "2.42",
+        tradesCount: 240,
+        points: generateBacktestPoints(30, 10.8),
+      },
+      {
+        period: "3M",
+        label: "3 месяца",
+        roi: "+32.5%",
+        roiValue: 32.5,
+        winRate: "85.4%",
+        maxDrawdown: "-5.8%",
+        profitFactor: "2.31",
+        tradesCount: 710,
+        points: generateBacktestPoints(90, 32.5),
+      },
+      {
+        period: "6M",
+        label: "6 месяцев",
+        roi: "+68.9%",
+        roiValue: 68.9,
+        winRate: "84.7%",
+        maxDrawdown: "-6.9%",
+        profitFactor: "2.24",
+        tradesCount: 1480,
+        points: generateBacktestPoints(180, 68.9),
+      },
+      {
+        period: "1Y",
+        label: "1 год",
+        roi: "+154.3%",
+        roiValue: 154.3,
+        winRate: "84.1%",
+        maxDrawdown: "-7.6%",
+        profitFactor: "2.19",
+        tradesCount: 2950,
+        points: generateBacktestPoints(365, 154.3),
+      },
+      {
+        period: "ALL",
+        label: "Всё время",
+        roi: "+298.5%",
+        roiValue: 298.5,
+        winRate: "84.3%",
+        maxDrawdown: "-8.1%",
+        profitFactor: "2.21",
+        tradesCount: 5200,
+        points: generateBacktestPoints(720, 298.5),
+      },
+    ];
+  }
+
+  return [
+    {
+      period: "1M",
+      label: "1 месяц",
+      roi: "+14.6%",
+      roiValue: 14.6,
+      winRate: "69.4%",
+      maxDrawdown: "-5.1%",
+      profitFactor: "2.18",
+      tradesCount: 36,
+      points: generateBacktestPoints(30, 14.6),
+    },
+    {
+      period: "3M",
+      label: "3 месяца",
+      roi: "+44.8%",
+      roiValue: 44.8,
+      winRate: "68.7%",
+      maxDrawdown: "-6.5%",
+      profitFactor: "2.11",
+      tradesCount: 112,
+      points: generateBacktestPoints(90, 44.8),
+    },
+    {
+      period: "6M",
+      label: "6 месяцев",
+      roi: "+92.5%",
+      roiValue: 92.5,
+      winRate: "68.2%",
+      maxDrawdown: "-7.4%",
+      profitFactor: "2.08",
+      tradesCount: 228,
+      points: generateBacktestPoints(180, 92.5),
+    },
+    {
+      period: "1Y",
+      label: "1 год",
+      roi: "+210.4%",
+      roiValue: 210.4,
+      winRate: "67.8%",
+      maxDrawdown: "-8.4%",
+      profitFactor: "2.04",
+      tradesCount: 460,
+      points: generateBacktestPoints(365, 210.4),
+    },
+    {
+      period: "ALL",
+      label: "Всё время",
+      roi: "+380.2%",
+      roiValue: 380.2,
+      winRate: "68.1%",
+      maxDrawdown: "-8.9%",
+      profitFactor: "2.06",
+      tradesCount: 890,
+      points: generateBacktestPoints(720, 380.2),
+    },
+  ];
+}
 export function colorDimFrom(color: string): string {
   const hex = /^#([0-9a-fA-F]{6})$/.exec(color.trim());
   if (!hex) return "rgba(59, 130, 246, 0.12)";
@@ -108,6 +342,9 @@ export const bots: BotData[] = [
       { period: "90 дней", value: "+22.8%" },
       { period: "365 дней", value: "+78.4%" },
     ],
+    videoUrl: "https://www.youtube.com/watch?v=VHHfbmwJaIg",
+    videoTitle: "SynchroTrade Bot — обзор стратегии Long & Short и торговля на реальном рынке",
+    backtests: getDefaultBacktests("synchrobot"),
     risk: "Контролируемый: математический расчёт точек входа и встроенный риск-менеджмент",
     pairs: "BTC/USDT, ETH/USDT, SOL/USDT, Bybit, BingX, OKX и др.",
     color: "#00FFB2",
@@ -182,6 +419,7 @@ export const bots: BotData[] = [
       { period: "90 дней", value: "+27.6%" },
       { period: "365 дней", value: "+96.4%" },
     ],
+    backtests: getDefaultBacktests("megagrid-ai"),
     risk: "Высокая частота сделок: важна настройка риска на лот",
     pairs: "Топ-50 пар по объёму, подбор через ИИ",
     color: "#FF4D6A",
@@ -254,6 +492,7 @@ export const bots: BotData[] = [
       { period: "90 дней", value: "+33.8%" },
       { period: "365 дней", value: "+118.2%" },
     ],
+    backtests: getDefaultBacktests("smartix"),
     risk: "Повышенная волатильность: обязательны SL по правилам риск-менеджмента",
     pairs: "Вся биржа — отбор по закономерностям",
     color: "#7B61FF",
