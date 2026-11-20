@@ -197,7 +197,7 @@ async function initDb() {
             video_url: 'https://www.youtube.com/watch?v=VHHfbmwJaIg',
             video_title: 'SynchroTrade Bot — обзор стратегии Long & Short и торговля на реальном рынке',
             risk: 'Контролируемый: математический расчёт точек входа и встроенный риск-менеджмент',
-            pairs: 'BTC/USDT, ETH/USDT, SOL/USDT, Bybit, BingX, OKX и др.',
+            pairs: 'BTC/USDT, ETH/USDT, SOL/USDT, XAUT/USDT, LTC/USDT и многие другие пары. Робот способен торговать любые активы, доступные на бирже',
             color: '#00FFB2',
             image_url: '/synchro-bot.jpg',
             difficulty: 'Для новичков и профи',
@@ -208,7 +208,7 @@ async function initDb() {
             returns: JSON.stringify([{ period: '30 дней', value: '+7.9%' }, { period: '90 дней', value: '+22.8%' }, { period: '365 дней', value: '+78.4%' }]),
             how_it_works: JSON.stringify([{ title: 'Мониторинг рынка в реальном времени', desc: 'Бот непрерывно сканирует поток котировок и изменения объёмов по множеству торговых пар' }, { title: 'Поиск возможностей LONG & SHORT', desc: 'Алгоритмы выявляют ценовые дисбалансы и подтверждённые импульсы для входа в сделку' }, { title: 'Контроль рисков', desc: 'Автоматический расчёт точек входа, выставление стоп-лоссов и защита капитала' }]),
             example_trade: JSON.stringify([{ title: 'Всплеск объёма', desc: 'Бот фиксирует синхронный рост объёма и ценовое движение на паре' }, { title: 'Вход в сделку', desc: 'Алгоритм вычисляет оптимальную точку входа и открывает позицию в LONG или SHORT' }, { title: 'Сопровождение', desc: 'Динамический контроль рисков и сопровождение позиции по заданным параметрам' }, { title: 'Фиксация прибыли', desc: 'Сделка закрывается по тейк-профиту с защитой накопленной прибыли' }]),
-            i18n: JSON.stringify({ en: { name: 'SynchroBot', slogan: 'Less manual analysis — more actionable data for smart trading decisions', badge: 'Volume & Price AI', market: 'Crypto', strategy: 'Real-time volume & price analysis', risk: 'Controlled: mathematical entry calculation and built-in risk management', pairs: 'BTC/USDT, ETH/USDT, SOL/USDT, Bybit, BingX, OKX & more', suitable_for: 'who want to automate trade opportunity discovery and analyze a large number of markets', exchanges: 'BYBIT, BINGX, OKX' } }),
+            i18n: JSON.stringify({ en: { name: 'SynchroBot', slogan: 'Less manual analysis — more actionable data for smart trading decisions', badge: 'Volume & Price AI', market: 'Crypto', strategy: 'Real-time volume & price analysis', risk: 'Controlled: mathematical entry calculation and built-in risk management', pairs: 'BTC/USDT, ETH/USDT, SOL/USDT & more', suitable_for: 'who want to automate trade opportunity discovery and analyze a large number of markets', exchanges: 'BYBIT, BINGX, OKX' } }),
             position: 1,
           },
           {
@@ -310,6 +310,13 @@ async function initDb() {
             `, [s.key, s.title, s.enabled, s.position]);
           }
           console.log('[DB] Default site_sections seeded.');
+        }
+
+        // Clean up pairs field for SynchroBot if it still contains exchange names or outdated list
+        try {
+          await client.query(`UPDATE bots SET pairs = 'BTC/USDT, ETH/USDT, SOL/USDT, XAUT/USDT, LTC/USDT и многие другие пары. Робот способен торговать любые активы, доступные на бирже' WHERE slug = 'synchrobot'`);
+        } catch (e) {
+          // ignore
         }
       } catch (err) {
         console.error('[DB] seed error:', err.message);

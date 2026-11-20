@@ -129,7 +129,7 @@ export default function BotBacktest({ bot }: { bot: BotData }) {
 
   return (
     <section id="bot-backtests" className="mb-16 scroll-mt-24">
-      <div className="relative overflow-hidden rounded-3xl border border-gray-100 bg-white p-5 sm:p-8 shadow-xl dark:border-gray-800 dark:bg-gray-900/95 dark:backdrop-blur-xl">
+      <div className="relative overflow-hidden rounded-3xl border border-slate-200/80 bg-white p-5 sm:p-8 shadow-soft transition-all dark:border-slate-800/80 dark:bg-[#131b2e]">
         {/* Glow corner */}
         <div
           aria-hidden="true"

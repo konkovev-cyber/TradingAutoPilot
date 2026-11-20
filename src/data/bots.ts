@@ -348,7 +348,7 @@ export const bots: BotData[] = [
     videoTitle: "SynchroTrade Bot — обзор стратегии Long & Short и торговля на реальном рынке",
     backtests: getDefaultBacktests("synchrobot"),
     risk: "Контролируемый: математический расчёт точек входа и встроенный риск-менеджмент",
-    pairs: "BTC/USDT, ETH/USDT, SOL/USDT, Bybit, BingX, OKX и др.",
+    pairs: "BTC/USDT, ETH/USDT, SOL/USDT, XAUT/USDT, LTC/USDT и многие другие пары. Робот способен торговать любые активы, доступные на бирже",
     color: "#00FFB2",
     colorDim: "rgba(0, 255, 178, 0.12)",
     difficulty: "Для новичков и профи",
@@ -365,7 +365,7 @@ export const bots: BotData[] = [
         market: "Crypto",
         strategy: "Real-time volume & price analysis",
         risk: "Controlled: mathematical entry calculation and built-in risk management",
-        pairs: "BTC/USDT, ETH/USDT, SOL/USDT, Bybit, BingX, OKX & more",
+        pairs: "BTC/USDT, ETH/USDT, SOL/USDT, XAUT/USDT, LTC/USDT and many other pairs. The bot is capable of trading any assets available on the exchange",
         suitableFor: "who want to automate trade opportunity discovery and analyze a large number of markets",
         exchanges: "BYBIT, BINGX, OKX",
         features: [
