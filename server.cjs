@@ -314,7 +314,18 @@ async function initDb() {
 
         // Clean up pairs field for SynchroBot if it still contains exchange names or outdated list
         try {
-          await client.query(`UPDATE bots SET pairs = 'BTC/USDT, ETH/USDT, SOL/USDT, XAUT/USDT, LTC/USDT и многие другие пары. Робот способен торговать любые активы, доступные на бирже' WHERE slug = 'synchrobot'`);
+          await client.query(`
+            UPDATE bots SET pairs = 'BTC/USDT, ETH/USDT, SOL/USDT, XAUT/USDT, LTC/USDT и многие другие пары. Робот способен торговать любые активы, доступные на бирже'
+            WHERE pairs ILIKE '%Bybit%' OR pairs ILIKE '%BingX%' OR pairs ILIKE '%OKX%' OR slug = 'synchrobot' OR slug = 'synchro-bot' OR id = 'synchrobot';
+          `);
+          await client.query(`
+            UPDATE bots SET i18n = jsonb_set(
+              COALESCE(i18n, '{}'::jsonb),
+              '{ru,pairs}',
+              '"BTC/USDT, ETH/USDT, SOL/USDT, XAUT/USDT, LTC/USDT и многие другие пары. Робот способен торговать любые активы, доступные на бирже"'
+            )
+            WHERE slug = 'synchrobot' OR slug = 'synchro-bot' OR id = 'synchrobot';
+          `);
         } catch (e) {
           // ignore
         }

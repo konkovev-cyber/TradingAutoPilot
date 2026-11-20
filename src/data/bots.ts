@@ -289,6 +289,13 @@ export function colorDimFrom(color: string): string {
 
 export function botText(bot: BotData, lang: Lang): BotData {
   const ov = (bot.i18n?.[lang] ?? {}) as Partial<BotText>;
+  let pairsVal = ov.pairs || bot.pairs;
+  if (pairsVal && (pairsVal.includes("Bybit") || pairsVal.includes("BingX") || pairsVal.includes("OKX"))) {
+    pairsVal = lang === "ru"
+      ? "BTC/USDT, ETH/USDT, SOL/USDT, XAUT/USDT, LTC/USDT и многие другие пары. Робот способен торговать любые активы, доступные на бирже"
+      : "BTC/USDT, ETH/USDT, SOL/USDT, XAUT/USDT, LTC/USDT and many other pairs. The bot is capable of trading any assets available on the exchange";
+  }
+
   return {
     ...bot,
     name: ov.name || bot.name,
@@ -299,7 +306,7 @@ export function botText(bot: BotData, lang: Lang): BotData {
     market: ov.market || bot.market,
     strategy: ov.strategy || bot.strategy,
     risk: ov.risk || bot.risk,
-    pairs: ov.pairs || bot.pairs,
+    pairs: pairsVal,
     suitableFor: ov.suitableFor || bot.suitableFor,
     exchanges: ov.exchanges || bot.exchanges,
     features: ov.features && ov.features.length > 0 ? ov.features : bot.features,
