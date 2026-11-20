@@ -12,7 +12,6 @@ import BotVideo from "@/components/bots/BotVideo";
 import BotBacktest from "@/components/bots/BotBacktest";
 import Calculator from "@/components/Calculator";
 import FAQ from "@/components/FAQ";
-import Compare from "@/components/Compare";
 import { useI18n } from "@/lib/i18n";
 import { useContent, useContacts } from "@/lib/site-content";
 import { useSeo } from "@/lib/seo";
@@ -463,12 +462,7 @@ export default function BotDetailPage() {
                 <Calculator initialSlug={bot.slug} ctaTarget="#main" />
               </div>
 
-              {/* 10. СРАВНЕНИЕ */}
-              <div>
-                <Compare />
-              </div>
-
-              {/* 11. FAQ */}
+              {/* 10. FAQ */}
               <div className="rounded-3xl border border-slate-800 bg-[#0c1424] shadow-sm overflow-hidden">
                 <FAQ />
               </div>
