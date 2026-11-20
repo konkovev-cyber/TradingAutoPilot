@@ -148,49 +148,77 @@ export default function BotVideo({ bot }: { bot: BotData }) {
           style={{ boxShadow: `0 12px 40px -10px ${glowColor}` }}
         >
           {embedMode && provider.embedUrl ? (
-            provider.type === "mp4" ? (
-              <video
-                src={provider.embedUrl}
-                controls
-                autoPlay
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <iframe
-                src={provider.embedUrl}
-                title={b.videoTitle || `${b.name} video review`}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-                className="h-full w-full border-0"
-              />
-            )
-          ) : (
-            <div className="relative h-full w-full group overflow-hidden bg-gray-950">
-              {/* Cover Background Image */}
-              <img
-                src={currentPoster}
-                alt={b.videoTitle || b.name}
-                className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-80"
-                onError={() => setImgError((prev) => prev + 1)}
-              />
-
-              {/* Dark Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/60 to-gray-950/40" />
-
-              {/* Center Play Button & Title */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-6 text-center">
+            <div className="relative h-full w-full">
+              {provider.type === "mp4" ? (
+                <video
+                  src={provider.embedUrl}
+                  controls
+                  autoPlay
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <iframe
+                  src={provider.embedUrl}
+                  title={b.videoTitle || `${b.name} video review`}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  className="h-full w-full border-0"
+                />
+              )}
+              <div className="absolute top-3 right-3 z-10 flex items-center gap-2">
                 <a
                   href={directWatchUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="relative flex items-center justify-center h-20 w-20 sm:h-24 sm:w-24 rounded-full bg-red-600 text-white shadow-2xl shadow-red-600/50 group-hover:scale-110 group-hover:bg-red-500 transition-all cursor-pointer"
+                  className="rounded-lg bg-black/85 backdrop-blur-md border border-white/20 px-3 py-1.5 text-xs font-semibold text-white hover:bg-black transition-all flex items-center gap-1.5 shadow-lg"
+                >
+                  <ExternalLink size={12} /> Открыть на YouTube
+                </a>
+                <button
+                  type="button"
+                  onClick={() => setEmbedMode(false)}
+                  className="rounded-lg bg-black/85 backdrop-blur-md border border-white/20 px-3 py-1.5 text-xs font-semibold text-gray-200 hover:text-white hover:bg-black transition-all cursor-pointer"
+                  title="Вернуть обложку"
+                >
+                  ✕ Обложка
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="relative h-full w-full group overflow-hidden bg-gray-950">
+              {/* Cover Background Image */}
+              <a
+                href={directWatchUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block h-full w-full"
+                title="Смотреть видео"
+              >
+                <img
+                  src={currentPoster}
+                  alt={b.videoTitle || b.name}
+                  className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-80"
+                  onError={() => setImgError((prev) => prev + 1)}
+                />
+              </a>
+
+              {/* Dark Gradient Overlay */}
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/60 to-gray-950/40" />
+
+              {/* Center Play Button & Title */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-6 text-center pointer-events-none">
+                <a
+                  href={directWatchUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="pointer-events-auto relative flex items-center justify-center h-20 w-20 sm:h-24 sm:w-24 rounded-full bg-red-600 text-white shadow-2xl shadow-red-600/50 hover:scale-110 hover:bg-red-500 transition-all cursor-pointer"
                   title="Открыть видео"
                 >
                   <span className="absolute inset-0 rounded-full bg-red-500 animate-ping opacity-30" />
                   <Play size={38} className="fill-current translate-x-1" />
                 </a>
 
-                <div className="max-w-lg">
+                <div className="max-w-lg pointer-events-auto">
                   <div className="text-white font-extrabold text-base sm:text-xl drop-shadow-md mb-2">
                     {b.videoTitle || `Обзор алгоритма ${b.name}`}
                   </div>
@@ -199,19 +227,20 @@ export default function BotVideo({ bot }: { bot: BotData }) {
                       href={directWatchUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 rounded-lg bg-white/10 backdrop-blur-md border border-white/20 px-3 py-1.5 text-xs font-semibold text-white hover:bg-white/20 transition-all"
+                      className="inline-flex items-center gap-1.5 rounded-lg bg-red-600 px-4 py-2 text-xs sm:text-sm font-bold text-white hover:bg-red-500 transition-all shadow-md"
                     >
-                      <Play size={12} className="fill-current text-red-400" />
-                      Смотреть на YouTube <ExternalLink size={12} />
+                      <Play size={13} className="fill-current" />
+                      Смотреть на YouTube <ExternalLink size={13} />
                     </a>
                     {provider.type === "youtube" && (
                       <button
                         type="button"
                         onClick={() => setEmbedMode(true)}
-                        className="inline-flex items-center gap-1.5 rounded-lg bg-gray-800/90 border border-gray-700 px-3 py-1.5 text-xs font-semibold text-gray-300 hover:text-white hover:bg-gray-700 transition-all cursor-pointer"
+                        className="inline-flex items-center gap-1.5 rounded-lg bg-gray-800/90 border border-gray-700 px-3 py-2 text-xs font-semibold text-gray-300 hover:text-white hover:bg-gray-700 transition-all cursor-pointer"
+                        title="Попробовать встроенный плеер (требуется разрешённое встраивание автором)"
                       >
                         <Tv size={12} className="text-emerald-400" />
-                        Запустить в плеере сайта (нужен VPN)
+                        Попробовать плеер сайта
                       </button>
                     )}
                   </div>
@@ -225,7 +254,11 @@ export default function BotVideo({ bot }: { bot: BotData }) {
         <div className="mt-3.5 flex flex-wrap items-center justify-between gap-2 px-1 text-xs text-gray-500 dark:text-gray-400">
           <div className="flex items-center gap-1.5">
             <AlertCircle size={13} className="text-amber-500 shrink-0" />
-            <span>В РФ доступ к YouTube может быть замедлен — используйте кнопку</span>
+            {embedMode ? (
+              <span>Если в плеере написано «Владелец запретил просмотр на других сайтах» — в YouTube Studio автора выключено встраивание.</span>
+            ) : (
+              <span>В РФ доступ к YouTube может быть замедлен — используйте кнопку</span>
+            )}
             <a
               href={directWatchUrl}
               target="_blank"
@@ -241,7 +274,7 @@ export default function BotVideo({ bot }: { bot: BotData }) {
               onClick={() => setEmbedMode(false)}
               className="text-xs text-gray-400 hover:text-gray-200 underline cursor-pointer"
             >
-              Вернуть постер видео
+              Вернуть обложку видео
             </button>
           )}
         </div>
