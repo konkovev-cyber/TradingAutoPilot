@@ -115,12 +115,6 @@ async function initDb() {
         ALTER TABLE bots ADD COLUMN IF NOT EXISTS backtests JSONB;
         ALTER TABLE bots ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
 
-        UPDATE bots SET 
-          video_url = 'https://www.youtube.com/watch?v=VHHfbmwJaIg',
-          video_title = 'SynchroTrade Bot — обзор стратегии Long & Short и торговля на реальном рынке'
-        WHERE (slug = 'synchrobot' OR slug = 'synchro-bot' OR id = 'synchrobot')
-          AND (video_url IS NULL OR video_url = '');
-
         CREATE TABLE IF NOT EXISTS site_content (
           key TEXT PRIMARY KEY,
           value JSONB NOT NULL,
@@ -172,6 +166,18 @@ async function initDb() {
       `, ['coinsoft', coinHash]);
 
       console.log(`[DB] Schema initialized. Admin users configured.`);
+
+      try {
+        await client.query(`
+          UPDATE bots SET 
+            video_url = 'https://www.youtube.com/watch?v=VHHfbmwJaIg',
+            video_title = 'SynchroTrade Bot — обзор стратегии Long & Short и торговля на реальном рынке'
+          WHERE (slug = 'synchrobot' OR slug = 'synchro-bot' OR id = 'synchrobot')
+            AND (video_url IS NULL OR video_url = '');
+        `);
+      } catch (e) {
+        console.error('[DB] video_url migration error:', e.message);
+      }
 
       // Seed default bots if table is empty
       const botsCount = await client.query('SELECT COUNT(*) FROM bots');
