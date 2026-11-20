@@ -37,6 +37,7 @@ export interface BotBacktestPeriod {
   maxDrawdown: string;  // e.g. "-3.8%"
   profitFactor: string; // e.g. "2.35"
   tradesCount: number;  // e.g. 52
+  description?: string; // e.g. "Низковолатильный период, умеренная активность рынка"
   points: BacktestPoint[];
 }
 
@@ -52,6 +53,7 @@ export interface BotData extends Omit<BotText, "features" | "howItWorks" | "exam
   inDevelopment?: boolean;
   videoUrl?: string;
   videoTitle?: string;
+  videoDesc?: string;
   backtests?: BotBacktestPeriod[];
   features: string[];
   howItWorks: BotStep[];

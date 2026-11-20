@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Link } from "react-router-dom";
-import { Plus, Edit2, Trash2, Save, X, ArrowUp, ArrowDown, ImageOff, Video } from "lucide-react";
+import { Plus, Edit2, Trash2, Save, X, ArrowUp, ArrowDown, ImageOff, Video, TrendingUp, HelpCircle, ExternalLink, RefreshCw } from "lucide-react";
 import { extractYouTubeId } from "@/components/bots/BotVideo";
+import { getDefaultBacktests, generateBacktestPoints, type BotBacktestPeriod } from "@/data/bots";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type Json = any;
@@ -39,6 +40,8 @@ interface Bot {
   og_image?: string;
   video_url?: string | null;
   video_title?: string | null;
+  video_desc?: string | null;
+  backtests?: BotBacktestPeriod[];
 }
 
 type ReturnRow = { period: string; value: string };
@@ -56,7 +59,8 @@ const initialBot: Bot = {
   avatar_url: null, avatar_dark_url: null, in_development: false,
   difficulty: "", difficulty_tone: "",
   meta_title: "", meta_description: "", og_image: "",
-  video_url: "", video_title: ""
+  video_url: "", video_title: "", video_desc: "",
+  backtests: [],
 };
 
 const EN_FIELDS: { key: string; label: string; multiline?: boolean }[] = [
@@ -120,7 +124,14 @@ export default function AdminBots() {
   useEffect(() => { fetchBots(); }, []);
 
   const openEditor = (bot: Bot) => {
-    setEditing(bot);
+    const botBacktests: BotBacktestPeriod[] =
+      Array.isArray(bot.backtests) && bot.backtests.length > 0
+        ? bot.backtests
+        : getDefaultBacktests(bot.slug);
+    setEditing({
+      ...bot,
+      backtests: botBacktests,
+    });
     setError("");
     setActiveTab("main");
     setI18n(bot.i18n && typeof bot.i18n === "object" ? { ...bot.i18n } : {});
@@ -184,7 +195,8 @@ export default function AdminBots() {
   };
 
   const createNewBot = () => {
-    setEditing({ ...initialBot });
+    const defaultBacktests = getDefaultBacktests("");
+    setEditing({ ...initialBot, backtests: defaultBacktests });
     setActiveTab("main");
     setError("");
     setI18n({});
@@ -227,8 +239,20 @@ export default function AdminBots() {
       return;
     }
 
+    const sanitizedBacktests = (bot.backtests || []).map((b) => {
+      const roiNum = parseFloat(String(b.roi || "0").replace(/[^0-9.-]/g, "")) || 0;
+      const days = b.period === "1M" ? 30 : b.period === "3M" ? 90 : b.period === "6M" ? 180 : b.period === "1Y" ? 365 : 720;
+      return {
+        ...b,
+        roiValue: roiNum,
+        points: b.points && b.points.length > 0 ? b.points : generateBacktestPoints(days, roiNum),
+      };
+    });
+
     const payload: Bot = {
       ...bot,
+      backtests: sanitizedBacktests,
+      video_desc: bot.video_desc?.trim() ? bot.video_desc : "",
       features: extra.features.filter((f) => f.trim() !== ""),
       returns: extra.returns.filter((r) => r.period.trim() !== "" || r.value.trim() !== ""),
       how_it_works: extra.how.filter((s) => s.title.trim() !== "" || s.desc.trim() !== ""),
@@ -336,6 +360,7 @@ export default function AdminBots() {
   const BOT_TABS = [
     { id: "main", label: "Основное" },
     { id: "video", label: "Видео (YouTube)" },
+    { id: "backtests", label: "Бэктесты и графики" },
     { id: "desc", label: "Описание" },
     { id: "features", label: "Особенности" },
     { id: "returns", label: "Доходность" },
@@ -579,12 +604,24 @@ export default function AdminBots() {
                 <label className="block text-sm font-medium text-gray-300 mb-1.5">
                   Ссылка на видео YouTube
                 </label>
-                <input
-                  placeholder="https://www.youtube.com/watch?v=VHHfbmwJaIg или https://youtu.be/..."
-                  value={editing.video_url || ""}
-                  onChange={(e) => setEditing({ ...editing, video_url: e.target.value })}
-                  className={`${inputCls} w-full`}
-                />
+                <div className="flex gap-2">
+                  <input
+                    placeholder="https://www.youtube.com/watch?v=VHHfbmwJaIg или https://youtu.be/..."
+                    value={editing.video_url || ""}
+                    onChange={(e) => setEditing({ ...editing, video_url: e.target.value })}
+                    className={`${inputCls} flex-1`}
+                  />
+                  {editing.video_url && (
+                    <a
+                      href={editing.video_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3 py-2 bg-red-600/20 border border-red-500/30 text-red-400 hover:bg-red-600/30 rounded-lg text-xs font-semibold flex items-center gap-1.5 shrink-0"
+                    >
+                      <ExternalLink size={14} /> Открыть
+                    </a>
+                  )}
+                </div>
                 <p className="text-xs text-gray-400 mt-1">
                   Поддерживаются обычные ссылки на YouTube (watch?v=...), короткие ссылки youtu.be/... и ссылки со встраиванием.
                 </p>
@@ -600,17 +637,65 @@ export default function AdminBots() {
                   onChange={(e) => setEditing({ ...editing, video_title: e.target.value })}
                   className={`${inputCls} w-full`}
                 />
+                <p className="text-xs text-gray-400 mt-1">
+                  Заголовок ролика над плеером на детальной странице бота.
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1.5">
+                  Описание видео (индивидуальное для этого бота)
+                </label>
+                <textarea
+                  rows={3}
+                  placeholder="Посмотрите подробный видеоразбор алгоритма: логика входов в сделки, сканирование объёмов, автоматический контроль рисков и настройка на бирже."
+                  value={editing.video_desc || ""}
+                  onChange={(e) => setEditing({ ...editing, video_desc: e.target.value })}
+                  className={`${inputCls} w-full text-sm leading-relaxed`}
+                />
+                <p className="text-xs text-gray-400 mt-1">
+                  Если оставить пустым, будет использоваться общее описание из настроек сайта («О роботах» ➔ «botDetail»).
+                </p>
+              </div>
+
+              {/* Инструкция по разрешению встраивания на YouTube */}
+              <div className="rounded-xl border border-blue-500/30 bg-blue-500/10 p-4 text-xs text-blue-200 space-y-2">
+                <div className="flex items-center gap-2 font-bold text-blue-300 text-sm">
+                  <HelpCircle size={16} />
+                  Что делать, если в плеере пишет «Владелец запретил просмотр на других сайтах»?
+                </div>
+                <p className="leading-relaxed">
+                  Это стандартная защита YouTube, когда у автора в настройках выключено внешнее встраивание. Чтобы видео воспроизводилось прямо внутри сайта:
+                </p>
+                <ol className="list-decimal list-inside space-y-1 pl-1 text-blue-100">
+                  <li>Откройте видео в <strong>YouTube Studio</strong> (Творческая студия YouTube).</li>
+                  <li>Перейдите во вкладку <strong>«Сведения»</strong> (Details) и нажмите <strong>«Развернуть»</strong> (Show more).</li>
+                  <li>В блоке <strong>«Лицензия и распространение»</strong> включите галочку <strong>«Разрешить встраивание видео»</strong> (Allow embedding) и сохраните.</li>
+                </ol>
+                <p className="text-blue-300 font-medium pt-1">
+                  💡 На самом сайте для посетителей также выведена кнопка «Смотреть на YouTube» и режим обложки, поэтому ролик всегда доступен в один клик.
+                </p>
               </div>
 
               {editing.video_url && extractYouTubeId(editing.video_url) ? (
                 <div className="mt-4 rounded-xl border border-gray-800 bg-gray-950/70 p-4">
-                  <div className="text-xs font-semibold text-gray-400 mb-2 flex items-center gap-1.5">
-                    <Video size={14} className="text-red-500" />
-                    Предпросмотр плеера:
+                  <div className="text-xs font-semibold text-gray-400 mb-2 flex items-center justify-between">
+                    <span className="flex items-center gap-1.5">
+                      <Video size={14} className="text-red-500" />
+                      Предпросмотр плеера:
+                    </span>
+                    <a
+                      href={`https://www.youtube.com/watch?v=${extractYouTubeId(editing.video_url)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-red-400 hover:underline flex items-center gap-1 text-[11px]"
+                    >
+                      Проверить на YouTube <ExternalLink size={12} />
+                    </a>
                   </div>
                   <div className="aspect-video w-full max-w-xl overflow-hidden rounded-xl border border-gray-800 bg-black shadow-lg">
                     <iframe
-                      src={`https://www.youtube-nocookie.com/embed/${extractYouTubeId(editing.video_url)}?rel=0`}
+                      src={`https://www.youtube.com/embed/${extractYouTubeId(editing.video_url)}?rel=0`}
                       title="Предпросмотр видео"
                       className="w-full h-full border-0"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -622,6 +707,170 @@ export default function AdminBots() {
                   Не удалось распознать ID видео. Убедитесь, что ссылка ведёт на ролик YouTube (например: https://www.youtube.com/watch?v=VHHfbmwJaIg).
                 </div>
               ) : null}
+            </div>
+          )}
+
+          {/* ТАБ: Бэктесты и графики */}
+          {activeTab === "backtests" && (
+            <div className="space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl border border-gray-800 bg-gray-950/60">
+                <div>
+                  <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                    <TrendingUp size={16} className="text-emerald-400" />
+                    Настройка бэктестов для интерактивного графика и калькулятора
+                  </h3>
+                  <p className="text-xs text-gray-400 mt-1 max-w-2xl leading-relaxed">
+                    Здесь вы можете задать параметры доходности для каждого из 5 периодов (1M, 3M, 6M, 1Y, ALL).
+                    График эквити и расчет прибыли на странице бота будут динамически пересчитываться под указанный ROI.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const fresh = getDefaultBacktests(editing.slug);
+                    setEditing({ ...editing, backtests: fresh });
+                  }}
+                  className="px-3 py-2 bg-emerald-600/20 border border-emerald-500/30 text-emerald-300 hover:bg-emerald-600/30 rounded-lg text-xs font-semibold flex items-center gap-1.5 shrink-0 transition-colors"
+                >
+                  <RefreshCw size={13} /> Заполнить по умолчанию
+                </button>
+              </div>
+
+              {/* 5 Period Cards */}
+              <div className="space-y-4">
+                {(editing.backtests && editing.backtests.length > 0
+                  ? editing.backtests
+                  : getDefaultBacktests(editing.slug)
+                ).map((periodItem, pIdx) => {
+                  const updatePeriodField = (field: keyof BotBacktestPeriod, val: any) => {
+                    const currentList = editing.backtests && editing.backtests.length > 0
+                      ? [...editing.backtests]
+                      : getDefaultBacktests(editing.slug);
+                    currentList[pIdx] = { ...currentList[pIdx], [field]: val };
+                    setEditing({ ...editing, backtests: currentList });
+                  };
+
+                  return (
+                    <div
+                      key={periodItem.period}
+                      className="rounded-xl border border-gray-800 bg-gray-900/90 p-4 sm:p-5 space-y-4"
+                    >
+                      <div className="flex items-center justify-between border-b border-gray-800 pb-3">
+                        <div className="flex items-center gap-2.5">
+                          <span className="px-2.5 py-1 rounded-md bg-blue-600/20 border border-blue-500/30 text-blue-400 font-mono font-bold text-xs">
+                            {periodItem.period}
+                          </span>
+                          <input
+                            value={periodItem.label}
+                            onChange={(e) => updatePeriodField("label", e.target.value)}
+                            placeholder="Название (например: 1 месяц)"
+                            className="bg-transparent font-bold text-white text-sm border-b border-gray-700 focus:border-blue-500 focus:outline-none px-1"
+                          />
+                        </div>
+                        <span className="text-xs text-gray-500">
+                          Таймфрейм {periodItem.period}
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                        {/* ROI */}
+                        <div>
+                          <label className="block text-[11px] font-medium text-emerald-400 mb-1">
+                            Доходность (ROI)
+                          </label>
+                          <input
+                            value={periodItem.roi}
+                            onChange={(e) => updatePeriodField("roi", e.target.value)}
+                            placeholder="+18.4%"
+                            className={`${inputCls} w-full text-xs font-semibold`}
+                          />
+                          <span className="text-[10px] text-gray-500 mt-0.5 block">
+                            Например: +18.4%
+                          </span>
+                        </div>
+
+                        {/* Win Rate */}
+                        <div>
+                          <label className="block text-[11px] font-medium text-cyan-400 mb-1">
+                            Win Rate
+                          </label>
+                          <input
+                            value={periodItem.winRate}
+                            onChange={(e) => updatePeriodField("winRate", e.target.value)}
+                            placeholder="74.8%"
+                            className={`${inputCls} w-full text-xs`}
+                          />
+                          <span className="text-[10px] text-gray-500 mt-0.5 block">
+                            % прибыльных сделок
+                          </span>
+                        </div>
+
+                        {/* Max Drawdown */}
+                        <div>
+                          <label className="block text-[11px] font-medium text-indigo-400 mb-1">
+                            Макс. просадка
+                          </label>
+                          <input
+                            value={periodItem.maxDrawdown}
+                            onChange={(e) => updatePeriodField("maxDrawdown", e.target.value)}
+                            placeholder="-3.8%"
+                            className={`${inputCls} w-full text-xs`}
+                          />
+                          <span className="text-[10px] text-gray-500 mt-0.5 block">
+                            Макс. падение баланса
+                          </span>
+                        </div>
+
+                        {/* Profit Factor */}
+                        <div>
+                          <label className="block text-[11px] font-medium text-violet-400 mb-1">
+                            Профит-фактор
+                          </label>
+                          <input
+                            value={periodItem.profitFactor}
+                            onChange={(e) => updatePeriodField("profitFactor", e.target.value)}
+                            placeholder="2.35"
+                            className={`${inputCls} w-full text-xs`}
+                          />
+                          <span className="text-[10px] text-gray-500 mt-0.5 block">
+                            Профит / убыток
+                          </span>
+                        </div>
+
+                        {/* Trades Count */}
+                        <div>
+                          <label className="block text-[11px] font-medium text-amber-400 mb-1">
+                            Всего сделок
+                          </label>
+                          <input
+                            type="number"
+                            value={periodItem.tradesCount ?? ""}
+                            onChange={(e) => updatePeriodField("tradesCount", Number(e.target.value) || 0)}
+                            placeholder="52"
+                            className={`${inputCls} w-full text-xs`}
+                          />
+                          <span className="text-[10px] text-gray-500 mt-0.5 block">
+                            Число сделок за период
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Description */}
+                      <div>
+                        <label className="block text-[11px] font-medium text-gray-400 mb-1">
+                          Пояснение / комментарий к периоду
+                        </label>
+                        <input
+                          value={periodItem.description || ""}
+                          onChange={(e) => updatePeriodField("description", e.target.value)}
+                          placeholder="Умеренная активность рынка, бот успешно отрабатывал локальные уровни волатильности"
+                          className={`${inputCls} w-full text-xs`}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
 

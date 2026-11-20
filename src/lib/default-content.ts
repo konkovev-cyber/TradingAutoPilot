@@ -394,6 +394,50 @@ export const DEFAULT_SITE_CONTENT: Record<string, any> = {
       ru: "Не является инвестиционной рекомендацией. Торговля на биржах связана с риском потери средств, прошлая доходность не гарантирует будущих результатов.",
       en: "Not investment advice. Exchange trading involves the risk of losing funds; past returns do not guarantee future results.",
     },
+    notFound: { ru: "Робот не найден", en: "Bot not found" },
+    backHome: { ru: "На главную", en: "Back to home" },
+    // Быстрые кнопки-чипы в шапке
+    chipWatchVideo: { ru: "Смотреть видеообзор", en: "Watch video review" },
+    chipBacktests: { ru: "Бэктесты и динамика", en: "Backtests & dynamics" },
+    chipAskQuestion: { ru: "Задать вопрос", en: "Ask a question" },
+    // Блок видеообзора
+    videoBadge: { ru: "Видеообзор и демонстрация", en: "Video review & live demo" },
+    videoDesc: {
+      ru: "Посмотрите подробный видеоразбор алгоритма: логика входов в сделки, сканирование объёмов, автоматический контроль рисков и настройка на бирже.",
+      en: "Watch an in-depth video breakdown of the algorithm: entry logic, volume tracking, risk controls, and exchange setup.",
+    },
+    videoChip1: { ru: "Реальный рынок", en: "Live market" },
+    videoChip2: { ru: "Отклик < 35ms", en: "Latency < 35ms" },
+    videoChip3: { ru: "Контроль просадки", en: "Drawdown control" },
+    videoChip4: { ru: "Запуск за 2 минуты", en: "2-min setup" },
+    // Блок бэктестов и графика доходности
+    backtestBadge: { ru: "Подтверждённая эффективность", en: "Verified performance" },
+    backtestTitle: { ru: "Бэктесты и динамика доходности", en: "Backtests & profit dynamics" },
+    backtestSubtitle: {
+      ru: "Прозрачные результаты тестирования торгового алгоритма на реальных исторических данных. Выберите период и укажите планируемый депозит для расчёта потенциальной прибыли.",
+      en: "Transparent testing results on real historical market data. Select a period and adjust the planned deposit to estimate potential profit.",
+    },
+    depositLabel: { ru: "Размер депозита для расчёта:", en: "Deposit size for calculation:" },
+    depositHint: { ru: "(стартовый капитал)", en: "(starting capital)" },
+    quickSelect: { ru: "Быстрый выбор:", en: "Quick presets:" },
+    roiLabel: { ru: "Доходность (ROI)", en: "Profitability (ROI)" },
+    winRateLabel: { ru: "Win Rate", en: "Win Rate" },
+    winRateHint: { ru: "прибыльных сделок", en: "profitable trades" },
+    drawdownLabel: { ru: "Макс. просадка", en: "Max Drawdown" },
+    drawdownHint: { ru: "контроль риска", en: "risk protection" },
+    profitFactorLabel: { ru: "Профит-фактор", en: "Profit Factor" },
+    profitFactorHint: { ru: "валовая прибыль / убыток", en: "gross profit / loss" },
+    tradesLabel: { ru: "Всего сделок", en: "Total trades" },
+    tradesHint: { ru: "за выбранный период", en: "for the selected period" },
+    chartTitle: { ru: "Динамика кривой баланса (Equity Curve)", en: "Balance dynamics (Equity Curve)" },
+    chartSubtitle: {
+      ru: "Интерактивный график баланса с учётом реинвестирования прибыли. Наведите курсор на график для просмотра деталей по дням.",
+      en: "Interactive equity chart factoring in profit compounding. Hover over the curve to inspect daily balances.",
+    },
+    chartDisclaimer: {
+      ru: "Бэктесты рассчитаны на реальных исторических данных биржевых котировок с учётом стандартных комиссий мейкер/тейкер. Результаты приведены в демонстрационных целях и не гарантируют будущую доходность.",
+      en: "Backtests are calculated on historical market data with maker/taker fees included. Shown for demonstration purposes and do not guarantee future returns.",
+    },
   },
 };
 

@@ -86,6 +86,7 @@ const CATEGORIES = [
 interface Field {
   key: string;
   label: string;
+  hint?: string;
   multiline?: boolean;
   placeholder?: string;
   localized?: boolean;
@@ -109,6 +110,7 @@ function FieldInput({
   placeholder,
   localized,
   options,
+  hint,
 }: {
   label: string;
   value: any;
@@ -117,6 +119,7 @@ function FieldInput({
   placeholder?: string;
   localized?: boolean;
   options?: { value: string; label: string }[];
+  hint?: string;
 }) {
   const cls =
     "w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-blue";
@@ -125,7 +128,10 @@ function FieldInput({
     const current = String(value ?? "");
     return (
       <div className="space-y-1.5">
-        <span className="block text-xs font-medium text-gray-300">{label}</span>
+        <div className="flex flex-col gap-0.5">
+          <span className="block text-xs font-medium text-gray-300">{label}</span>
+          {hint && <span className="text-[11px] text-gray-400 font-normal leading-tight">{hint}</span>}
+        </div>
         <div className="flex flex-wrap gap-1.5">
           <button
             type="button"
@@ -165,7 +171,10 @@ function FieldInput({
 
     return (
       <div className="space-y-1.5">
-        <span className="block text-xs font-medium text-gray-300">{label}</span>
+        <div className="flex flex-col gap-0.5">
+          <span className="block text-xs font-medium text-gray-300">{label}</span>
+          {hint && <span className="text-[11px] text-gray-400 font-normal leading-tight">{hint}</span>}
+        </div>
         {multiline ? (
           <div className="space-y-2">
             <div className="relative">
@@ -225,7 +234,10 @@ function FieldInput({
 
   return (
     <div className="space-y-1">
-      <span className="block text-xs font-medium text-gray-300">{label}</span>
+      <div className="flex flex-col gap-0.5">
+        <span className="block text-xs font-medium text-gray-300">{label}</span>
+        {hint && <span className="text-[11px] text-gray-400 font-normal leading-tight">{hint}</span>}
+      </div>
       {multiline ? (
         <textarea
           rows={3}
@@ -1155,18 +1167,44 @@ export default function AdminSettings() {
       { key: "disclaimer", label: "Предупреждение о рисках (под карточками)", localized: true, multiline: true },
     ],
     botDetail: [
-      { key: "back", label: "Кнопка «Все роботы»", localized: true },
-      { key: "about", label: "Заголовок «О роботе»", localized: true },
-      { key: "howEarn", label: "Заголовок «Как робот зарабатывает»", localized: true },
-      { key: "features", label: "Заголовок «Ключевые особенности»", localized: true },
-      { key: "risks", label: "Заголовок «Риски»", localized: true },
-      { key: "pairs", label: "Заголовок «Торгуемые активы»", localized: true },
-      { key: "safetyTitle", label: "Заголовок «Безопасность API»", localized: true },
-      { key: "safety", label: "Текст «Безопасность API»", localized: true, multiline: true },
-      { key: "contactCta", label: "Кнопка «Обсудить запуск в Telegram»", localized: true },
-      { key: "fits", label: "Заголовок «Какой робот вам подходит»", localized: true },
-      { key: "others", label: "Заголовок «Другие роботы»", localized: true },
-      { key: "disclaimer", label: "Дисклеймер под доходностью", localized: true, multiline: true },
+      { key: "back", label: "Кнопка «Все роботы»", hint: "Кнопка возврата к каталогу роботов", localized: true },
+      { key: "chipWatchVideo", label: "Чип «Смотреть видеообзор»", hint: "Кнопка быстрой прокрутки к видео в шапке бота", localized: true },
+      { key: "chipBacktests", label: "Чип «Бэктесты и динамика»", hint: "Кнопка быстрой прокрутки к бэктестам в шапке бота", localized: true },
+      { key: "chipAskQuestion", label: "Чип «Задать вопрос»", hint: "Кнопка быстрого перехода в Telegram в шапке бота", localized: true },
+      { key: "about", label: "Заголовок «О роботе»", hint: "Главный заголовок текстового блока описания стратегии", localized: true },
+      { key: "howEarn", label: "Заголовок «Как робот зарабатывает»", hint: "Заголовок блока пошагового алгоритма работы", localized: true },
+      { key: "features", label: "Заголовок «Ключевые особенности»", hint: "Заголовок списка преимуществ бота", localized: true },
+      { key: "risks", label: "Заголовок «Риски»", hint: "Заголовок блока с описанием рисков и контроля просадки", localized: true },
+      { key: "pairs", label: "Заголовок «Торгуемые активы»", hint: "Заголовок блока с поддерживаемыми торговыми парами", localized: true },
+      { key: "safetyTitle", label: "Заголовок «Безопасность API»", hint: "Заголовок плашки о безопасности подключения без права вывода", localized: true },
+      { key: "safety", label: "Текст «Безопасность API»", hint: "Пояснение о безопасности средств на личной бирже", localized: true, multiline: true },
+      { key: "videoBadge", label: "Видео: Бейдж блока", hint: "Верхняя плашка над видео (например: «Видеообзор и демонстрация»)", localized: true },
+      { key: "videoDesc", label: "Видео: Общее описание", hint: "Пояснительный текст под заголовком видеообзора (если у бота нет своего)", localized: true, multiline: true },
+      { key: "videoOpenYouTube", label: "Видео: Кнопка на YouTube", hint: "Текст кнопки прямого открытия ролика на YouTube", localized: true },
+      { key: "videoChip1", label: "Видео: Чек-поинт 1", hint: "Плашка под видео (по умолчанию: «Реальный рынок»)", localized: true },
+      { key: "videoChip2", label: "Видео: Чек-поинт 2", hint: "Плашка под видео (по умолчанию: «Отклик < 35ms»)", localized: true },
+      { key: "videoChip3", label: "Видео: Чек-поинт 3", hint: "Плашка под видео (по умолчанию: «Контроль просадки»)", localized: true },
+      { key: "videoChip4", label: "Видео: Чек-поинт 4", hint: "Плашка под видео (по умолчанию: «Запуск за 2 минуты»)", localized: true },
+      { key: "backtestBadge", label: "Бэктесты: Бейдж блока", hint: "Верхняя плашка блока бэктестов (например: «Подтверждённая эффективность»)", localized: true },
+      { key: "backtestTitle", label: "Бэктесты: Заголовок", hint: "Главный заголовок блока бэктестов и кривой эквити", localized: true },
+      { key: "backtestSubtitle", label: "Бэктесты: Подзаголовок", hint: "Пояснительный текст о тестировании на реальных исторических данных", localized: true, multiline: true },
+      { key: "depositLabel", label: "Калькулятор: Подпись ползунка", hint: "Текст над ползунком депозита (например: «Размер депозита для расчёта:»)", localized: true },
+      { key: "depositHint", label: "Калькулятор: Подсказка ползунка", hint: "Сноска рядом с суммой депозита (например: «(стартовый капитал)»)", localized: true },
+      { key: "quickSelect", label: "Калькулятор: Быстрый выбор", hint: "Подпись к кнопкам быстрого выбора ($500, $1K, $5K...)", localized: true },
+      { key: "roiLabel", label: "Метрика: Доходность (ROI)", hint: "Название первой ключевой карточки метрик", localized: true },
+      { key: "winRateLabel", label: "Метрика: Win Rate", hint: "Название карточки процента прибыльных сделок", localized: true },
+      { key: "winRateHint", label: "Метрика: Win Rate подпись", hint: "Текст под числом (по умолчанию: «прибыльных сделок»)", localized: true },
+      { key: "drawdownLabel", label: "Метрика: Макс. просадка", hint: "Название карточки максимальной просадки", localized: true },
+      { key: "drawdownHint", label: "Метрика: Макс. просадка подпись", hint: "Текст под процентом просадки (по умолчанию: «контроль риска»)", localized: true },
+      { key: "profitFactorLabel", label: "Метрика: Профит-фактор", hint: "Название карточки профит-фактора", localized: true },
+      { key: "profitFactorHint", label: "Метрика: Профит-фактор подпись", hint: "Текст под числом (по умолчанию: «валовая прибыль / убыток»)", localized: true },
+      { key: "tradesLabel", label: "Метрика: Всего сделок", hint: "Название карточки числа сделок", localized: true },
+      { key: "tradesHint", label: "Метрика: Всего сделок подпись", hint: "Текст под числом (по умолчанию: «за выбранный период»)", localized: true },
+      { key: "chartDisclaimer", label: "Бэктесты: Предупреждение о рисках", hint: "Официальный юридический дисклеймер под графиком бэктестов", localized: true, multiline: true },
+      { key: "contactCta", label: "Кнопка «Обсудить запуск в Telegram»", hint: "Текст главной кнопки обратной связи внизу страницы", localized: true },
+      { key: "fits", label: "Заголовок «Какой робот вам подходит»", hint: "Заголовок блока персонального подбора", localized: true },
+      { key: "others", label: "Заголовок «Другие роботы»", hint: "Заголовок карточек других роботов из каталога", localized: true },
+      { key: "disclaimer", label: "Дисклеймер под доходностью", hint: "Общее предупреждение об инвестиционных рисках", localized: true, multiline: true },
     ],
     footer: [
       { key: "desc", label: "Описание под логотипом", localized: true, multiline: true },
@@ -1189,6 +1227,7 @@ export default function AdminSettings() {
           <FieldInput
             key={f.key}
             label={f.label}
+            hint={f.hint}
             value={d[f.key] ?? ""}
             onChange={(v) => updateData(section, { ...d, [f.key]: v })}
             multiline={f.multiline}

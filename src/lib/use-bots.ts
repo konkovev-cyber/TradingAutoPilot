@@ -149,6 +149,7 @@ function toBotData(row: Json): BotData {
     inDevelopment: row?.in_development === true || row?.in_development === "true" || (row?.in_development === undefined && stat?.inDevelopment === true),
     videoUrl: str(row?.video_url ?? row?.videoUrl) || stat?.videoUrl,
     videoTitle: str(row?.video_title ?? row?.videoTitle) || stat?.videoTitle,
+    videoDesc: str(row?.video_desc ?? row?.videoDesc) || stat?.videoDesc,
     backtests: Array.isArray(row?.backtests) && row.backtests.length > 0 ? row.backtests : (stat?.backtests ?? []),
     i18n,
     metaTitle: row?.meta_title ? String(row.meta_title) : undefined,

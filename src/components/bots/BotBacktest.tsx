@@ -20,9 +20,11 @@ import {
   type BacktestPoint,
 } from "@/data/bots";
 import { useI18n } from "@/lib/i18n";
+import { useContent } from "@/lib/site-content";
 
 export default function BotBacktest({ bot }: { bot: BotData }) {
   const { lang } = useI18n();
+  const c = useContent();
   const b = botText(bot, lang);
 
   // Retrieve backtest periods or fallback to defaults
@@ -141,17 +143,17 @@ export default function BotBacktest({ bot }: { bot: BotData }) {
             <div className="mb-2 flex items-center gap-2">
               <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
                 <ShieldCheck size={14} />
-                Проверенные результаты
+                {c("botDetail", "backtestBadge", "Подтверждённая эффективность")}
               </span>
               <span className="text-xs text-gray-400 dark:text-gray-500 font-mono">
                 Historical Backtest
               </span>
             </div>
             <h2 className="heading-lg text-gray-900 dark:text-white">
-              Бэктесты и динамика доходности
+              {c("botDetail", "backtestTitle", "Бэктесты и динамика доходности")}
             </h2>
             <p className="mt-1 text-sm sm:text-base text-gray-500 dark:text-gray-400 max-w-2xl leading-relaxed">
-              Тестирование алгоритма на реальных исторических данных биржи с учётом торговых комиссий и проскальзываний.
+              {c("botDetail", "backtestSubtitle", "Прозрачные результаты тестирования торгового алгоритма на реальных исторических данных. Выберите период и укажите планируемый депозит для расчёта потенциальной прибыли.")}
             </p>
           </div>
 
@@ -188,7 +190,7 @@ export default function BotBacktest({ bot }: { bot: BotData }) {
             <div className="flex items-center gap-2">
               <DollarSign size={18} className="text-emerald-500" />
               <label htmlFor="deposit-slider" className="text-sm font-semibold text-gray-900 dark:text-white">
-                Размер депозита для расчёта:
+                {c("botDetail", "depositLabel", "Размер депозита для расчёта:")}
               </label>
             </div>
             <div className="flex items-center gap-2">
@@ -196,7 +198,7 @@ export default function BotBacktest({ bot }: { bot: BotData }) {
                 ${deposit.toLocaleString()}
               </span>
               <span className="text-xs text-gray-400 dark:text-gray-500">
-                (стартовый капитал)
+                {c("botDetail", "depositHint", "(стартовый капитал)")}
               </span>
             </div>
           </div>
@@ -219,7 +221,7 @@ export default function BotBacktest({ bot }: { bot: BotData }) {
           {/* Quick preset chips */}
           <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs">
             <span className="text-gray-400 dark:text-gray-500 hidden sm:inline">
-              Быстрый выбор:
+              {c("botDetail", "quickSelect", "Быстрый выбор:")}
             </span>
             <div className="flex flex-wrap gap-1.5">
               {[500, 1000, 2500, 5000, 10000].map((preset) => (
@@ -247,7 +249,7 @@ export default function BotBacktest({ bot }: { bot: BotData }) {
           {/* Card 1: Total Profit / ROI */}
           <div className="col-span-2 sm:col-span-1 rounded-2xl border border-emerald-500/20 bg-emerald-50/50 p-4 dark:border-emerald-500/20 dark:bg-emerald-950/20">
             <div className="flex items-center justify-between text-xs font-semibold text-emerald-700 dark:text-emerald-400 mb-1">
-              <span>Доходность (ROI)</span>
+              <span>{c("botDetail", "roiLabel", "Доходность (ROI)")}</span>
               <TrendingUp size={16} />
             </div>
             <div className="text-2xl sm:text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 tabular-nums">
@@ -261,56 +263,56 @@ export default function BotBacktest({ bot }: { bot: BotData }) {
           {/* Card 2: Win Rate */}
           <div className="rounded-2xl border border-gray-100 bg-gray-50/70 p-4 dark:border-white/5 dark:bg-white/[0.02]">
             <div className="flex items-center justify-between text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
-              <span>Win Rate</span>
+              <span>{c("botDetail", "winRateLabel", "Win Rate")}</span>
               <Percent size={14} className="text-cyan-500" />
             </div>
             <div className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white tabular-nums">
               {activePeriod.winRate}
             </div>
             <div className="mt-1 text-[11px] text-gray-400 dark:text-gray-500">
-              прибыльных сделок
+              {c("botDetail", "winRateHint", "прибыльных сделок")}
             </div>
           </div>
 
           {/* Card 3: Max Drawdown */}
           <div className="rounded-2xl border border-gray-100 bg-gray-50/70 p-4 dark:border-white/5 dark:bg-white/[0.02]">
             <div className="flex items-center justify-between text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
-              <span>Макс. просадка</span>
+              <span>{c("botDetail", "drawdownLabel", "Макс. просадка")}</span>
               <ShieldCheck size={14} className="text-indigo-500" />
             </div>
             <div className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white tabular-nums">
               {activePeriod.maxDrawdown}
             </div>
             <div className="mt-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold">
-              Контролируемый риск
+              {c("botDetail", "drawdownHint", "контроль риска")}
             </div>
           </div>
 
           {/* Card 4: Profit Factor */}
           <div className="rounded-2xl border border-gray-100 bg-gray-50/70 p-4 dark:border-white/5 dark:bg-white/[0.02]">
             <div className="flex items-center justify-between text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
-              <span>Profit Factor</span>
+              <span>{c("botDetail", "profitFactorLabel", "Профит-фактор")}</span>
               <Activity size={14} className="text-violet-500" />
             </div>
             <div className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white tabular-nums">
               {activePeriod.profitFactor}
             </div>
             <div className="mt-1 text-[11px] text-gray-400 dark:text-gray-500">
-              профит / убыток
+              {c("botDetail", "profitFactorHint", "валовая прибыль / убыток")}
             </div>
           </div>
 
           {/* Card 5: Trades count */}
           <div className="rounded-2xl border border-gray-100 bg-gray-50/70 p-4 dark:border-white/5 dark:bg-white/[0.02]">
             <div className="flex items-center justify-between text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
-              <span>Всего сделок</span>
+              <span>{c("botDetail", "tradesLabel", "Всего сделок")}</span>
               <Layers size={14} className="text-amber-500" />
             </div>
             <div className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white tabular-nums">
               {activePeriod.tradesCount}
             </div>
             <div className="mt-1 text-[11px] text-gray-400 dark:text-gray-500">
-              закрытых позиций
+              {c("botDetail", "tradesHint", "за выбранный период")}
             </div>
           </div>
         </div>
@@ -526,7 +528,7 @@ export default function BotBacktest({ bot }: { bot: BotData }) {
           <div className="flex items-start gap-2.5 text-xs text-gray-500 dark:text-gray-400 max-w-2xl">
             <Info size={16} className="text-gray-400 shrink-0 mt-0.5" />
             <span>
-              Показатели рассчитаны на истории реальных рыночных данных. Прошлые результаты не гарантируют будущую доходность, но подтверждают устойчивость математической модели бота при различных фазах рынка.
+              {c("botDetail", "chartDisclaimer", "Бэктесты рассчитаны на реальных исторических данных биржевых котировок с учётом стандартных комиссий мейкер/тейкер. Результаты приведены в демонстрационных целях и не гарантируют будущую доходность.")}
             </span>
           </div>
 

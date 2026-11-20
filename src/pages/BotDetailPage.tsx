@@ -139,7 +139,7 @@ export default function BotDetailPage() {
                         className="inline-flex items-center gap-1.5 rounded-xl border border-red-500/20 bg-red-500/10 px-3.5 py-1.5 text-xs font-bold text-red-500 dark:border-red-500/30 dark:bg-red-500/15 dark:text-red-400 hover:scale-105 transition-all shadow-sm"
                       >
                         <span className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
-                        Смотреть видеообзор
+                        {c("botDetail", "chipWatchVideo", "Смотреть видеообзор")}
                       </a>
                     )}
                     <a
@@ -147,7 +147,7 @@ export default function BotDetailPage() {
                       className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-3.5 py-1.5 text-xs font-bold text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/15 dark:text-emerald-300 hover:scale-105 transition-all shadow-sm"
                     >
                       <span>📊</span>
-                      Бэктесты и динамика
+                      {c("botDetail", "chipBacktests", "Бэктесты и динамика")}
                     </a>
                     <a
                       href={contacts.telegram}
@@ -156,7 +156,7 @@ export default function BotDetailPage() {
                       className="inline-flex items-center gap-1.5 rounded-xl border border-blue-500/20 bg-blue-500/10 px-3.5 py-1.5 text-xs font-bold text-blue-700 dark:border-blue-500/30 dark:bg-blue-500/15 dark:text-blue-300 hover:scale-105 transition-all shadow-sm"
                     >
                       <Send size={12} />
-                      Задать вопрос
+                      {c("botDetail", "chipAskQuestion", "Задать вопрос")}
                     </a>
                   </div>
 
