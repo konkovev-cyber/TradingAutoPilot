@@ -7,7 +7,6 @@ import Hero from "@/components/Hero";
 import Why from "@/components/Why";
 import Products from "@/components/Products";
 import Connect from "@/components/Connect";
-import Calculator from "@/components/Calculator";
 import FAQ from "@/components/FAQ";
 import LeadForm from "@/components/LeadForm";
 import CTA from "@/components/CTA";
@@ -32,7 +31,6 @@ const componentMap: Record<string, ComponentType> = {
   conclusion: Conclusion,
   questions: CTA,
   faq: FAQ,
-  calculator: Calculator,
   lead: LeadForm,
 };
 

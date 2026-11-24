@@ -10,7 +10,6 @@ import BotStrategySteps from "@/components/bots/BotStrategySteps";
 import BotTradeExample from "@/components/bots/BotTradeExample";
 import BotVideo from "@/components/bots/BotVideo";
 import BotBacktest from "@/components/bots/BotBacktest";
-import Calculator from "@/components/Calculator";
 import FAQ from "@/components/FAQ";
 import { useI18n } from "@/lib/i18n";
 import { useContent, useContacts } from "@/lib/site-content";
@@ -455,11 +454,6 @@ export default function BotDetailPage() {
                       <BotCard key={b.slug} bot={b} compact />
                     ))}
                 </div>
-              </div>
-
-              {/* 9. КАЛЬКУЛЯТОР */}
-              <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0c1424] shadow-sm overflow-hidden transition-colors duration-300">
-                <Calculator initialSlug={bot.slug} ctaTarget="#main" />
               </div>
 
               {/* 10. FAQ */}
