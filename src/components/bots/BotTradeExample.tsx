@@ -1,7 +1,55 @@
-import { ArrowRight } from "lucide-react";
+import React from "react";
+import { BarChart3, Crosshair, Sliders, Trophy, ChevronRight, ArrowRight } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { useContent } from "@/lib/site-content";
 import { botText, type BotData } from "@/data/bots";
+
+const TRADE_STEP_STYLES = [
+  {
+    badgeBg: "bg-cyan-400 text-slate-950",
+    border: "border-cyan-500/50 hover:border-cyan-400",
+    glow: "shadow-[0_0_24px_rgba(6,182,212,0.18)]",
+    cardBg: "bg-gradient-to-b from-[#0a1e32] via-[#091626] to-[#07101d]",
+    icon: (
+      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-cyan-500/20 text-cyan-400">
+        <BarChart3 size={26} className="text-cyan-400" />
+      </div>
+    ),
+  },
+  {
+    badgeBg: "bg-amber-400 text-slate-950",
+    border: "border-amber-500/50 hover:border-amber-400",
+    glow: "shadow-[0_0_24px_rgba(245,158,11,0.18)]",
+    cardBg: "bg-gradient-to-b from-[#251d08] via-[#1a1408] to-[#120d06]",
+    icon: (
+      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-amber-500/20 text-amber-400">
+        <Crosshair size={26} className="text-amber-400" />
+      </div>
+    ),
+  },
+  {
+    badgeBg: "bg-blue-500 text-white",
+    border: "border-blue-500/50 hover:border-blue-400",
+    glow: "shadow-[0_0_24px_rgba(59,130,246,0.18)]",
+    cardBg: "bg-gradient-to-b from-[#0e1d3d] via-[#0a142c] to-[#060d1f]",
+    icon: (
+      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-500/20 text-blue-400">
+        <Sliders size={26} className="text-blue-400" />
+      </div>
+    ),
+  },
+  {
+    badgeBg: "bg-emerald-400 text-slate-950",
+    border: "border-emerald-500/50 hover:border-emerald-400",
+    glow: "shadow-[0_0_24px_rgba(16,185,129,0.18)]",
+    cardBg: "bg-gradient-to-b from-[#092b1f] via-[#071f16] to-[#05140f]",
+    icon: (
+      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-400">
+        <Trophy size={26} className="fill-emerald-400/20 text-emerald-400" />
+      </div>
+    ),
+  },
+];
 
 export default function BotTradeExample({ bot }: { bot: BotData }) {
   const { t, lang } = useI18n();
@@ -11,27 +59,63 @@ export default function BotTradeExample({ bot }: { bot: BotData }) {
   if (b.exampleTrade.length === 0) return null;
 
   return (
-    <div className="rounded-xl border border-gray-100 bg-white p-4 sm:p-6 md:p-8 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+    <div className="relative overflow-hidden rounded-2xl border border-slate-800 bg-[#070b16] p-5 sm:p-7 shadow-2xl">
+      {/* Header */}
       <div className="mb-6">
-        <h3 className="heading-md text-gray-900 dark:text-white">{c("botDetail", "exampleTitle", t("botDetail.exampleTitle"))}</h3>
-        <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">{c("botDetail", "exampleNote", t("botDetail.exampleNote"))}</p>
+        <h3 className="text-xl sm:text-2xl font-bold text-white">
+          {c("botDetail", "exampleTitle", t("botDetail.exampleTitle"))}
+        </h3>
+        <p className="mt-1 text-xs sm:text-sm text-slate-400">
+          {c("botDetail", "exampleNote", t("botDetail.exampleNote"))}
+        </p>
       </div>
-      <ol className="relative space-y-5 border-l-2 pl-6" style={{ borderColor: bot.colorDim }}>
-        {b.exampleTrade.map((s, i) => (
-          <li key={i} className="relative">
-            <span
-              className="absolute -left-[31px] top-0 flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold text-white"
-              style={{ background: bot.color === "#00FFB2" ? "#00c98d" : bot.color }}
-            >
-              {i + 1}
-            </span>
-            <div className="font-semibold text-gray-900 dark:text-white">{s.title}</div>
-            <p className="text-sm text-gray-500 dark:text-gray-400">{s.desc}</p>
-          </li>
-        ))}
-      </ol>
-      <div className="mt-6 flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500">
-        <ArrowRight size={14} />
+
+      {/* Visual Chain of Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-row lg:items-stretch gap-3 lg:gap-2">
+        {b.exampleTrade.map((step, idx) => {
+          const style = TRADE_STEP_STYLES[idx % TRADE_STEP_STYLES.length];
+          return (
+            <React.Fragment key={idx}>
+              <div
+                className={`relative flex-1 flex flex-col items-center text-center rounded-2xl border ${style.border} ${style.cardBg} ${style.glow} p-4 sm:p-5 transition-all duration-200 hover:scale-[1.02]`}
+              >
+                {/* Step number badge */}
+                <div
+                  className={`absolute top-3 left-3 flex h-6 w-6 items-center justify-center rounded-full font-bold text-xs ${style.badgeBg}`}
+                >
+                  {idx + 1}
+                </div>
+
+                {/* Graphical Icon */}
+                <div className="mt-2 mb-3 flex h-14 w-full items-center justify-center">
+                  {style.icon}
+                </div>
+
+                {/* Title */}
+                <h4 className="font-bold text-white text-sm sm:text-base mb-1.5 leading-snug">
+                  {step.title}
+                </h4>
+
+                {/* Description */}
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  {step.desc}
+                </p>
+              </div>
+
+              {/* Chevron separator for desktop row */}
+              {idx < b.exampleTrade.length - 1 && (
+                <div className="hidden lg:flex items-center justify-center text-slate-600 shrink-0 px-0.5">
+                  <ChevronRight size={22} className="stroke-[2.5]" />
+                </div>
+              )}
+            </React.Fragment>
+          );
+        })}
+      </div>
+
+      {/* Bottom note */}
+      <div className="mt-6 flex items-center gap-2 text-xs text-slate-400">
+        <ArrowRight size={14} className="shrink-0 text-slate-400" />
         <span>{c("botDetail", "examplePrinciple", t("botDetail.examplePrinciple"))}</span>
       </div>
     </div>

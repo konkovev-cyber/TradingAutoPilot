@@ -410,8 +410,10 @@ export default function BotDetailPage() {
               {/* 3. ШАГИ СТРАТЕГИИ */}
               {botText(bot, lang).howItWorks.length > 0 && (
                 <div>
-                  <h3 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mb-6">
-                    {c("botDetail", "howEarn", t("botDetail.howEarn"))}
+                  <h3 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mb-4">
+                    {bot.slug === "synchrobot"
+                      ? "Что делает робот:"
+                      : c("botDetail", "howEarn", t("botDetail.howEarn"))}
                   </h3>
                   <BotStrategySteps bot={bot} />
                 </div>
