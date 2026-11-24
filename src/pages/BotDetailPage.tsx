@@ -7,6 +7,7 @@ import Header from "@/components/Header";
 import FloatingContact from "@/components/FloatingContact";
 import { BotAvatar } from "@/components/bots/BotCard";
 import BotStrategySteps from "@/components/bots/BotStrategySteps";
+import BotCapabilities from "@/components/bots/BotCapabilities";
 import BotTradeExample from "@/components/bots/BotTradeExample";
 import BotVideo from "@/components/bots/BotVideo";
 import BotBacktest from "@/components/bots/BotBacktest";
@@ -418,6 +419,9 @@ export default function BotDetailPage() {
                   <BotStrategySteps bot={bot} />
                 </div>
               )}
+
+              {/* 3.1 ЧТО УМЕЕТ БОТ (ВОЗМОЖНОСТИ) */}
+              <BotCapabilities bot={bot} />
 
               {/* 4. ПРИМЕР СДЕЛКИ */}
               <div>
