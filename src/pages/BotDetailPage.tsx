@@ -5,7 +5,7 @@ import { ArrowLeft, Check, AlertTriangle, Share2, Send, ShieldCheck, Play, Trend
 import { useBots } from "@/lib/use-bots";
 import Header from "@/components/Header";
 import FloatingContact from "@/components/FloatingContact";
-import BotCard, { BotAvatar } from "@/components/bots/BotCard";
+import { BotAvatar } from "@/components/bots/BotCard";
 import BotStrategySteps from "@/components/bots/BotStrategySteps";
 import BotTradeExample from "@/components/bots/BotTradeExample";
 import BotVideo from "@/components/bots/BotVideo";
@@ -442,18 +442,6 @@ export default function BotDetailPage() {
                 <Link to="/#bots" className="btn-secondary inline-flex items-center justify-center gap-2 px-8 py-4 text-base w-full sm:w-auto">
                   <ArrowLeft size={16} /> {c("botDetail", "back", t("botDetail.back"))}
                 </Link>
-              </div>
-
-              {/* 8. ДРУГИЕ РОБОТЫ */}
-              <div>
-                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">{c("botDetail", "fits", t("botDetail.fits"))}</h3>
-                <div className="grid sm:grid-cols-2 gap-4">
-                  {bots
-                    .filter((b) => b.slug !== bot.slug)
-                    .map((b) => (
-                      <BotCard key={b.slug} bot={b} compact />
-                    ))}
-                </div>
               </div>
 
               {/* 10. FAQ */}
