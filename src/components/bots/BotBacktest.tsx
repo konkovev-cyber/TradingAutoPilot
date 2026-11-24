@@ -6,12 +6,15 @@ import {
   Calendar,
   ArrowUpRight,
   TrendingUp,
-  ShieldAlert,
+  Activity,
+  Layers,
+  ShieldCheck,
+  CheckCircle2,
 } from "lucide-react";
 import { type BotData } from "@/data/bots";
 import { useI18n } from "@/lib/i18n";
 
-// Exact backtest datasets from the user's real screenshots (60-day period: 21.09.2026 - 20.11.2026)
+// Exact backtest datasets from user's real screenshots (60-day period: 21.09.2026 - 20.11.2026)
 interface BacktestTier {
   deposit: number; // 200 | 500 | 1000
   depositLabel: string;
@@ -195,7 +198,7 @@ function buildCurve(startBal: number, topTick: number, bottomTick: number, maxDd
     "08.11", "10.11", "12.11", "14.11", "16.11", "18.11", "20.11"
   ];
 
-  // Precise fractional trajectory reconstructed from image
+  // Precise fractional trajectory reconstructed from screenshots
   const pattern = [
     { p: 0.00, frac: 0.08, dd: 0 },
     { p: 0.04, frac: 0.12, dd: -0.8 },
@@ -243,20 +246,21 @@ function buildCurve(startBal: number, topTick: number, bottomTick: number, maxDd
 export default function BotBacktest({ bot }: { bot: BotData }) {
   const { lang } = useI18n();
 
-  // Active deposit state: 200 | 500 | 1000 USDT (default 500 as in user's prompt screenshot)
-  const [selectedDeposit, setSelectedDeposit] = useState<number>(500);
+  // Active deposit state: 200 | 500 | 1000 USDT (default 1000)
+  const [selectedDeposit, setSelectedDeposit] = useState<number>(1000);
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
   const chartSvgRef = useRef<SVGSVGElement | null>(null);
 
   const currentData = useMemo(() => {
-    return BACKTEST_DATA[selectedDeposit] || BACKTEST_DATA[500];
+    return BACKTEST_DATA[selectedDeposit] || BACKTEST_DATA[1000];
   }, [selectedDeposit]);
 
-  // Coordinate dimensions for SVG
+  // Height calibrated to seamlessly match the 3 right boxes (Coins + Closures + InTrade)
+  // Eliminating empty space at the bottom
   const chartWidth = 720;
-  const equityHeight = 220;
-  const ddHeight = 70;
-  const padding = { top: 20, right: 24, bottom: 24, left: 48 };
+  const equityHeight = 290;
+  const ddHeight = 85;
+  const padding = { top: 22, right: 24, bottom: 26, left: 48 };
 
   const innerW = chartWidth - padding.left - padding.right;
   const innerH = equityHeight - padding.top - padding.bottom;
@@ -287,7 +291,7 @@ export default function BotBacktest({ bot }: { bot: BotData }) {
 
     // Drawdown curve coordinates
     const minDdVal = selectedDeposit === 1000 ? -26 : -21;
-    const ddInnerH = ddHeight - 16;
+    const ddInnerH = ddHeight - 18;
     const ddTop = 10;
 
     const mappedDd = pts.map((p, i) => {
@@ -340,8 +344,8 @@ export default function BotBacktest({ bot }: { bot: BotData }) {
 
   return (
     <section id="bot-backtests" className="mb-16 scroll-mt-24">
-      {/* Outer Card with dual theme styling (solid dark navy like in screenshot, or clean white in light) */}
-      <div className="relative overflow-hidden rounded-3xl border border-slate-200/90 bg-white dark:border-slate-800/90 dark:bg-[#0c0f1d] shadow-2xl p-5 sm:p-7 md:p-8 transition-colors duration-200">
+      {/* Outer Card with dual theme styling */}
+      <div className="relative overflow-hidden rounded-3xl border border-slate-200/90 bg-white dark:border-slate-800/90 dark:bg-[#0c0f1d] shadow-xl p-5 sm:p-7 md:p-8 transition-colors duration-200">
         
         {/* Glow ambient background in dark mode */}
         <div
@@ -349,7 +353,7 @@ export default function BotBacktest({ bot }: { bot: BotData }) {
           className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-emerald-500/10 blur-3xl dark:bg-emerald-500/5"
         />
 
-        {/* 1. Header with Title + "ПЕРИОД: 60 ДНЕЙ" Badge (Exact to screenshot) */}
+        {/* 1. Header with Title + "ПЕРИОД: 60 ДНЕЙ" Badge */}
         <div className="relative mb-6 flex flex-col md:flex-row md:items-start justify-between gap-4 border-b border-slate-200/80 dark:border-slate-800/80 pb-6">
           <div>
             <div className="flex items-center gap-3">
@@ -375,25 +379,25 @@ export default function BotBacktest({ bot }: { bot: BotData }) {
           </div>
         </div>
 
-        {/* 2. Slider & Selector: 200$ | 500$ | 1000$ */}
+        {/* 2. Slider & Selector: 200$ | 500$ | 1000$ (Clean spacing without text overlap) */}
         <div className="mb-6 rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-slate-50/90 dark:bg-[#12182b] p-4 sm:p-5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
-            <div className="flex items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 shrink-0">
                 <DollarSign size={20} />
               </div>
-              <div>
+              <div className="flex flex-wrap items-baseline gap-2">
                 <span className="text-sm font-bold text-slate-900 dark:text-white">
                   Размер депозита для бэктеста:
                 </span>
-                <span className="ml-2 text-xs font-mono text-emerald-600 dark:text-emerald-400 font-semibold">
+                <span className="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-md bg-emerald-500/10 dark:bg-emerald-500/20">
                   ${selectedDeposit} USDT
                 </span>
               </div>
             </div>
 
             {/* Quick Clickable Buttons for 200$, 500$, 1000$ */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 shrink-0">
               {[200, 500, 1000].map((val) => {
                 const isActive = selectedDeposit === val;
                 return (
@@ -437,19 +441,19 @@ export default function BotBacktest({ bot }: { bot: BotData }) {
             <div className="flex justify-between text-[11px] font-mono text-slate-500 dark:text-slate-400 mt-2 px-1">
               <span
                 onClick={() => setSelectedDeposit(200)}
-                className={`cursor-pointer transition-colors ${selectedDeposit === 200 ? "font-bold text-emerald-600 dark:text-emerald-400 underline decoration-2" : "hover:text-slate-300"}`}
+                className={`cursor-pointer transition-colors ${selectedDeposit === 200 ? "font-bold text-emerald-600 dark:text-emerald-400 underline decoration-2" : "hover:text-slate-700 dark:hover:text-slate-300"}`}
               >
                 $200
               </span>
               <span
                 onClick={() => setSelectedDeposit(500)}
-                className={`cursor-pointer transition-colors ${selectedDeposit === 500 ? "font-bold text-emerald-600 dark:text-emerald-400 underline decoration-2" : "hover:text-slate-300"}`}
+                className={`cursor-pointer transition-colors ${selectedDeposit === 500 ? "font-bold text-emerald-600 dark:text-emerald-400 underline decoration-2" : "hover:text-slate-700 dark:hover:text-slate-300"}`}
               >
                 $500
               </span>
               <span
                 onClick={() => setSelectedDeposit(1000)}
-                className={`cursor-pointer transition-colors ${selectedDeposit === 1000 ? "font-bold text-emerald-600 dark:text-emerald-400 underline decoration-2" : "hover:text-slate-300"}`}
+                className={`cursor-pointer transition-colors ${selectedDeposit === 1000 ? "font-bold text-emerald-600 dark:text-emerald-400 underline decoration-2" : "hover:text-slate-700 dark:hover:text-slate-300"}`}
               >
                 $1000
               </span>
@@ -457,14 +461,14 @@ export default function BotBacktest({ bot }: { bot: BotData }) {
           </div>
         </div>
 
-        {/* 3. Hero Profit & Metric Stats Section (Animated on deposit change) */}
+        {/* 3. Hero Profit & Metric Stats Section */}
         <AnimatePresence mode="wait">
           <motion.div
             key={selectedDeposit}
-            initial={{ opacity: 0.7, y: 3 }}
+            initial={{ opacity: 0.75, y: 2 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0.7 }}
-            transition={{ duration: 0.18 }}
+            exit={{ opacity: 0.75 }}
+            transition={{ duration: 0.15 }}
             className="mb-6"
           >
             <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
@@ -489,7 +493,7 @@ export default function BotBacktest({ bot }: { bot: BotData }) {
               </div>
             </div>
 
-            {/* 5 Compact Stats Cards (100% match screenshot) */}
+            {/* 5 Compact Stats Cards */}
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 sm:gap-3">
               {/* 1. Trades */}
               <div className="rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/80 dark:bg-[#12182b] p-3 text-center">
@@ -544,215 +548,231 @@ export default function BotBacktest({ bot }: { bot: BotData }) {
           </motion.div>
         </AnimatePresence>
 
-        {/* 4. Main Section: Left Chart Frame & Right Coins Breakdown */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {/* 4. Main Section: Left Chart Frame & Right Coins Breakdown (Balanced Heights, No Empty Void) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
           
-          {/* LEFT: Charts (Equity & Drawdown) */}
-          <div className="lg:col-span-7 flex flex-col gap-4">
-            <div className="rounded-2xl border border-slate-300 dark:border-slate-800 bg-[#090d16] p-4 sm:p-5 shadow-inner">
+          {/* LEFT: Charts (Equity & Drawdown) - Light in White Theme, Dark in Dark Theme */}
+          <div className="lg:col-span-7 flex flex-col justify-between h-full">
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-[#090d16] p-4 sm:p-5 shadow-sm flex flex-col justify-between h-full">
               
-              {/* Header inside Chart frame */}
-              <div className="flex items-center justify-between text-xs text-slate-400 font-medium mb-3">
-                <span className="text-slate-200 font-semibold">
-                  Баланс (с учётом плавающего результата открытых позиций)
-                </span>
-                <span className="text-[11px] font-mono text-emerald-400">
-                  {currentData.depositLabel} → {currentData.endBalance} USDT
-                </span>
-              </div>
+              <div>
+                {/* Header inside Chart frame */}
+                <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400 font-medium mb-3">
+                  <span className="text-slate-900 dark:text-slate-200 font-bold">
+                    Баланс (с учётом плавающего результата открытых позиций)
+                  </span>
+                  <span className="text-[11px] font-mono text-emerald-600 dark:text-emerald-400 font-bold">
+                    {currentData.depositLabel} → {currentData.endBalance} USDT
+                  </span>
+                </div>
 
-              {/* Main Equity SVG Canvas */}
-              <div className="relative w-full select-none">
-                <svg
-                  ref={chartSvgRef}
-                  viewBox={`0 0 ${chartWidth} ${equityHeight}`}
-                  className="w-full h-auto cursor-crosshair touch-none"
-                  onPointerMove={handlePointerMove}
-                  onPointerLeave={() => setHoverIndex(null)}
-                >
-                  <defs>
-                    <linearGradient id="backtestEquityGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#00FFB2" stopOpacity="0.35" />
-                      <stop offset="70%" stopColor="#00FFB2" stopOpacity="0.05" />
-                      <stop offset="100%" stopColor="#00FFB2" stopOpacity="0" />
-                    </linearGradient>
-                    <filter id="neonGlowBacktest" x="-20%" y="-20%" width="140%" height="140%">
-                      <feGaussianBlur stdDeviation="3" result="blur" />
-                      <feMerge>
-                        <feMergeNode in="blur" />
-                        <feMergeNode in="SourceGraphic" />
-                      </feMerge>
-                    </filter>
-                  </defs>
-
-                  {/* Horizontal Grid lines and Y labels (matching exact screenshot ticks) */}
-                  {currentData.yTicks.map((tick, idx) => {
-                    const y = padding.top + (idx / (currentData.yTicks.length - 1)) * innerH;
-                    return (
-                      <g key={tick}>
-                        <line
-                          x1={padding.left}
-                          y1={y}
-                          x2={chartWidth - padding.right}
-                          y2={y}
-                          stroke="rgba(255,255,255,0.07)"
-                          strokeDasharray={idx === currentData.yTicks.length - 1 ? undefined : "3 3"}
-                        />
-                        <text
-                          x={padding.left - 8}
-                          y={y + 3}
-                          textAnchor="end"
-                          className="fill-slate-500 font-mono text-[10px]"
-                        >
-                          {tick}
-                        </text>
-                      </g>
-                    );
-                  })}
-
-                  {/* Vertical Checkpoint line at 31.10 */}
-                  <line
-                    x1={checkpointX}
-                    y1={padding.top}
-                    x2={checkpointX}
-                    y2={equityHeight - padding.bottom}
-                    stroke="#F59E0B"
-                    strokeWidth="1.2"
-                    strokeDasharray="3 3"
-                  />
-                  <text
-                    x={checkpointX + 4}
-                    y={padding.top + 14}
-                    className="fill-amber-400 font-mono text-[9px] font-semibold"
+                {/* Main Equity SVG Canvas */}
+                <div className="relative w-full select-none">
+                  <svg
+                    ref={chartSvgRef}
+                    viewBox={`0 0 ${chartWidth} ${equityHeight}`}
+                    className="w-full h-auto cursor-crosshair touch-none"
+                    onPointerMove={handlePointerMove}
+                    onPointerLeave={() => setHoverIndex(null)}
                   >
-                    проверочный период →
-                  </text>
+                    <defs>
+                      {/* Light theme gradient */}
+                      <linearGradient id="backtestEquityGradLight" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#059669" stopOpacity="0.22" />
+                        <stop offset="70%" stopColor="#059669" stopOpacity="0.04" />
+                        <stop offset="100%" stopColor="#059669" stopOpacity="0" />
+                      </linearGradient>
 
-                  {/* Equity Area Fill */}
-                  <path d={equityAreaPath} fill="url(#backtestEquityGrad)" />
+                      {/* Dark theme gradient */}
+                      <linearGradient id="backtestEquityGradDark" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#00FFB2" stopOpacity="0.35" />
+                        <stop offset="70%" stopColor="#00FFB2" stopOpacity="0.05" />
+                        <stop offset="100%" stopColor="#00FFB2" stopOpacity="0" />
+                      </linearGradient>
 
-                  {/* Equity Main Line */}
-                  <path
-                    d={equityPath}
-                    fill="none"
-                    stroke="#00FFB2"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    filter="url(#neonGlowBacktest)"
-                  />
+                      <filter id="neonGlowBacktest" x="-20%" y="-20%" width="140%" height="140%">
+                        <feGaussianBlur stdDeviation="2.5" result="blur" />
+                        <feMerge>
+                          <feMergeNode in="blur" />
+                          <feMergeNode in="SourceGraphic" />
+                        </feMerge>
+                      </filter>
+                    </defs>
 
-                  {/* "старт" label at right baseline */}
-                  <text
-                    x={chartWidth - padding.right}
-                    y={equityHeight - padding.bottom - 4}
-                    textAnchor="end"
-                    className="fill-emerald-400 font-mono text-[9px]"
-                  >
-                    старт
-                  </text>
+                    {/* Horizontal Grid lines and Y labels (matching exact screenshot ticks) */}
+                    {currentData.yTicks.map((tick, idx) => {
+                      const y = padding.top + (idx / (currentData.yTicks.length - 1)) * innerH;
+                      return (
+                        <g key={tick}>
+                          <line
+                            x1={padding.left}
+                            y1={y}
+                            x2={chartWidth - padding.right}
+                            y2={y}
+                            className="stroke-slate-200/90 dark:stroke-white/[0.07]"
+                            strokeDasharray={idx === currentData.yTicks.length - 1 ? undefined : "3 3"}
+                          />
+                          <text
+                            x={padding.left - 8}
+                            y={y + 3}
+                            textAnchor="end"
+                            className="fill-slate-400 dark:fill-slate-500 font-mono text-[10px]"
+                          >
+                            {tick}
+                          </text>
+                        </g>
+                      );
+                    })}
 
-                  {/* Last End Point pulsing circle */}
-                  {coords.length > 0 && (
-                    <g>
-                      <circle
-                        cx={coords[coords.length - 1].x}
-                        cy={coords[coords.length - 1].y}
-                        r="5"
-                        fill="#00FFB2"
-                        stroke="#ffffff"
-                        strokeWidth="2"
-                      />
-                    </g>
-                  )}
-
-                  {/* X-axis date labels */}
-                  <text x={padding.left} y={equityHeight - 6} textAnchor="start" className="fill-slate-500 font-mono text-[10px]">
-                    21.09
-                  </text>
-                  <text x={padding.left + innerW * 0.33} y={equityHeight - 6} textAnchor="middle" className="fill-slate-500 font-mono text-[10px]">
-                    11.10
-                  </text>
-                  <text x={checkpointX} y={equityHeight - 6} textAnchor="middle" className="fill-amber-400 font-mono text-[10px]">
-                    31.10
-                  </text>
-                  <text x={chartWidth - padding.right} y={equityHeight - 6} textAnchor="end" className="fill-slate-500 font-mono text-[10px]">
-                    20.11
-                  </text>
-
-                  {/* Hover vertical crosshair & indicator */}
-                  {activeCoord && (
-                    <g>
-                      <line
-                        x1={activeCoord.x}
-                        y1={padding.top}
-                        x2={activeCoord.x}
-                        y2={equityHeight - padding.bottom}
-                        stroke="rgba(255, 255, 255, 0.4)"
-                        strokeWidth="1.2"
-                        strokeDasharray="2 2"
-                      />
-                      <circle
-                        cx={activeCoord.x}
-                        cy={activeCoord.y}
-                        r="5"
-                        fill="#00FFB2"
-                        stroke="#ffffff"
-                        strokeWidth="2"
-                      />
-                    </g>
-                  )}
-                </svg>
-
-                {/* Hover Tooltip overlay */}
-                <AnimatePresence>
-                  {activeCoord && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.95 }}
-                      transition={{ duration: 0.12 }}
-                      className="pointer-events-none absolute z-20 rounded-xl border border-slate-700 bg-slate-900/95 p-2.5 shadow-2xl backdrop-blur-md text-xs text-white"
-                      style={{
-                        left: `${Math.min(Math.max(12, (activeCoord.x / chartWidth) * 100), 80)}%`,
-                        top: `${Math.max(8, (activeCoord.y / equityHeight) * 100 - 35)}%`,
-                        transform: "translate(-50%, -100%)",
-                      }}
+                    {/* Vertical Checkpoint line at 31.10 */}
+                    <line
+                      x1={checkpointX}
+                      y1={padding.top}
+                      x2={checkpointX}
+                      y2={equityHeight - padding.bottom}
+                      className="stroke-amber-500 dark:stroke-amber-400"
+                      strokeWidth="1.2"
+                      strokeDasharray="3 3"
+                    />
+                    <text
+                      x={checkpointX + 4}
+                      y={padding.top + 14}
+                      className="fill-amber-600 dark:fill-amber-400 font-mono text-[9px] font-semibold"
                     >
-                      <div className="flex items-center gap-1.5 text-[10px] text-slate-400 mb-1">
-                        <Calendar size={11} />
-                        <span>Дата: {activeCoord.point.date}</span>
-                      </div>
-                      <div className="flex items-center justify-between gap-3 font-semibold">
-                        <span>Баланс:</span>
-                        <span className="font-mono text-emerald-400 font-bold">
-                          ${activeCoord.point.equity.toLocaleString()}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between gap-3 text-[11px] text-slate-300 mt-0.5">
-                        <span>Просадка:</span>
-                        <span className="font-mono text-rose-400">
-                          {activeCoord.point.dd}%
-                        </span>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                      проверочный период →
+                    </text>
+
+                    {/* Equity Area Fill (adapted for light and dark theme) */}
+                    <path
+                      d={equityAreaPath}
+                      className="fill-[url(#backtestEquityGradLight)] dark:fill-[url(#backtestEquityGradDark)]"
+                    />
+
+                    {/* Equity Main Line */}
+                    <path
+                      d={equityPath}
+                      fill="none"
+                      className="stroke-emerald-600 dark:stroke-[#00FFB2]"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      filter="url(#neonGlowBacktest)"
+                    />
+
+                    {/* "старт" label at right baseline */}
+                    <text
+                      x={chartWidth - padding.right}
+                      y={equityHeight - padding.bottom - 4}
+                      textAnchor="end"
+                      className="fill-emerald-600 dark:fill-emerald-400 font-mono text-[9px] font-semibold"
+                    >
+                      старт
+                    </text>
+
+                    {/* Last End Point circle */}
+                    {coords.length > 0 && (
+                      <g>
+                        <circle
+                          cx={coords[coords.length - 1].x}
+                          cy={coords[coords.length - 1].y}
+                          r="5"
+                          className="fill-emerald-600 dark:fill-[#00FFB2] stroke-white"
+                          strokeWidth="2"
+                        />
+                      </g>
+                    )}
+
+                    {/* X-axis date labels */}
+                    <text x={padding.left} y={equityHeight - 8} textAnchor="start" className="fill-slate-400 dark:fill-slate-500 font-mono text-[10px]">
+                      21.09
+                    </text>
+                    <text x={padding.left + innerW * 0.33} y={equityHeight - 8} textAnchor="middle" className="fill-slate-400 dark:fill-slate-500 font-mono text-[10px]">
+                      11.10
+                    </text>
+                    <text x={checkpointX} y={equityHeight - 8} textAnchor="middle" className="fill-amber-600 dark:fill-amber-400 font-mono text-[10px] font-bold">
+                      31.10
+                    </text>
+                    <text x={chartWidth - padding.right} y={equityHeight - 8} textAnchor="end" className="fill-slate-400 dark:fill-slate-500 font-mono text-[10px]">
+                      20.11
+                    </text>
+
+                    {/* Hover vertical crosshair & indicator */}
+                    {activeCoord && (
+                      <g>
+                        <line
+                          x1={activeCoord.x}
+                          y1={padding.top}
+                          x2={activeCoord.x}
+                          y2={equityHeight - padding.bottom}
+                          className="stroke-slate-400 dark:stroke-white/40"
+                          strokeWidth="1.2"
+                          strokeDasharray="2 2"
+                        />
+                        <circle
+                          cx={activeCoord.x}
+                          cy={activeCoord.y}
+                          r="5"
+                          className="fill-emerald-600 dark:fill-[#00FFB2] stroke-white"
+                          strokeWidth="2"
+                        />
+                      </g>
+                    )}
+                  </svg>
+
+                  {/* Hover Tooltip overlay */}
+                  <AnimatePresence>
+                    {activeCoord && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        transition={{ duration: 0.12 }}
+                        className="pointer-events-none absolute z-20 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/95 p-2.5 shadow-xl backdrop-blur-md text-xs text-slate-900 dark:text-white"
+                        style={{
+                          left: `${Math.min(Math.max(12, (activeCoord.x / chartWidth) * 100), 80)}%`,
+                          top: `${Math.max(8, (activeCoord.y / equityHeight) * 100 - 35)}%`,
+                          transform: "translate(-50%, -100%)",
+                        }}
+                      >
+                        <div className="flex items-center gap-1.5 text-[10px] text-slate-500 dark:text-slate-400 mb-1">
+                          <Calendar size={11} />
+                          <span>Дата: {activeCoord.point.date}</span>
+                        </div>
+                        <div className="flex items-center justify-between gap-3 font-semibold">
+                          <span>Баланс:</span>
+                          <span className="font-mono text-emerald-600 dark:text-emerald-400 font-bold">
+                            ${activeCoord.point.equity.toLocaleString()}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between gap-3 text-[11px] text-slate-500 dark:text-slate-300 mt-0.5">
+                          <span>Просадка:</span>
+                          <span className="font-mono text-rose-500 font-bold">
+                            {activeCoord.point.dd}%
+                          </span>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               </div>
 
-              {/* Sub-Chart: Drawdown curve */}
-              <div className="mt-4 pt-3 border-t border-slate-800">
-                <div className="flex items-center justify-between text-[11px] font-mono text-slate-400 mb-1">
+              {/* Sub-Chart: Drawdown curve (with light mode gradient support) */}
+              <div className="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800">
+                <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 dark:text-slate-400 mb-1">
                   <span>
-                    Просадка от максимума · максимум <span className="text-rose-400 font-bold">{currentData.drawdownMax}</span>
+                    Просадка от максимума · максимум <span className="text-rose-500 font-bold">{currentData.drawdownMax}</span>
                   </span>
                   <span>{currentData.drawdownScale}</span>
                 </div>
 
-                <div className="relative w-full h-[70px]">
+                <div className="relative w-full h-[85px]">
                   <svg viewBox={`0 0 ${chartWidth} ${ddHeight}`} className="w-full h-full">
                     <defs>
-                      <linearGradient id="backtestDdGrad" x1="0" y1="0" x2="0" y2="1">
+                      <linearGradient id="backtestDdGradLight" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#F43F5E" stopOpacity="0.25" />
+                        <stop offset="100%" stopColor="#F43F5E" stopOpacity="0.03" />
+                      </linearGradient>
+                      <linearGradient id="backtestDdGradDark" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="0%" stopColor="#F43F5E" stopOpacity="0.4" />
                         <stop offset="100%" stopColor="#F43F5E" stopOpacity="0.1" />
                       </linearGradient>
@@ -764,9 +784,9 @@ export default function BotBacktest({ bot }: { bot: BotData }) {
                       y1={10}
                       x2={chartWidth - padding.right}
                       y2={10}
-                      stroke="rgba(255,255,255,0.12)"
+                      className="stroke-slate-200 dark:stroke-white/[0.12]"
                     />
-                    <text x={padding.left - 6} y={13} textAnchor="end" className="fill-slate-500 font-mono text-[9px]">
+                    <text x={padding.left - 6} y={13} textAnchor="end" className="fill-slate-400 dark:fill-slate-500 font-mono text-[9px]">
                       0%
                     </text>
 
@@ -776,10 +796,10 @@ export default function BotBacktest({ bot }: { bot: BotData }) {
                       y1={ddHeight - 6}
                       x2={chartWidth - padding.right}
                       y2={ddHeight - 6}
-                      stroke="rgba(255,255,255,0.06)"
+                      className="stroke-slate-200 dark:stroke-white/[0.06]"
                       strokeDasharray="2 2"
                     />
-                    <text x={padding.left - 6} y={ddHeight - 4} textAnchor="end" className="fill-slate-500 font-mono text-[9px]">
+                    <text x={padding.left - 6} y={ddHeight - 4} textAnchor="end" className="fill-slate-400 dark:fill-slate-500 font-mono text-[9px]">
                       {currentData.drawdownScale}
                     </text>
 
@@ -789,25 +809,41 @@ export default function BotBacktest({ bot }: { bot: BotData }) {
                       y1={10}
                       x2={checkpointX}
                       y2={ddHeight - 6}
-                      stroke="#F59E0B"
+                      className="stroke-amber-500 dark:stroke-amber-400"
                       strokeWidth="1"
                       strokeDasharray="2 2"
                     />
 
                     {/* Drawdown Area & Line */}
-                    <path d={ddAreaPath} fill="url(#backtestDdGrad)" />
+                    <path
+                      d={ddAreaPath}
+                      className="fill-[url(#backtestDdGradLight)] dark:fill-[url(#backtestDdGradDark)]"
+                    />
                     <path d={ddPath} fill="none" stroke="#F43F5E" strokeWidth="1.5" strokeLinecap="round" />
                   </svg>
                 </div>
               </div>
+
+              {/* Micro-Features Bottom Bar (Harmonizes height and fills all empty space) */}
+              <div className="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-500 dark:text-slate-400">
+                <div className="flex items-center gap-1.5">
+                  <CheckCircle2 size={13} className="text-emerald-500" />
+                  <span>Комиссии биржи и фандинг учтены</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <ShieldCheck size={13} className="text-emerald-500" />
+                  <span>Автоматический Take Profit и трейлинг</span>
+                </div>
+              </div>
+
             </div>
           </div>
 
-          {/* RIGHT: Coins in test (20) & Trade Closures */}
-          <div className="lg:col-span-5 flex flex-col gap-4">
+          {/* RIGHT: Coins in test (20) & Trade Closures (Perfect matching height) */}
+          <div className="lg:col-span-5 flex flex-col justify-between gap-4 h-full">
             
             {/* Box 1: Монеты в тесте (20) */}
-            <div className="rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-slate-50/80 dark:bg-[#12182b] p-4 sm:p-5">
+            <div className="rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-slate-50/80 dark:bg-[#12182b] p-4 sm:p-5 flex-1">
               <div className="flex items-center justify-between mb-3 border-b border-slate-200/80 dark:border-slate-800 pb-2">
                 <span className="text-sm font-bold text-slate-900 dark:text-white">
                   Монеты в тесте (20)
@@ -818,7 +854,7 @@ export default function BotBacktest({ bot }: { bot: BotData }) {
               </div>
 
               {/* 2-column coin list */}
-              <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs font-mono">
+              <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs font-mono">
                 {currentData.coins.map((c, i) => (
                   <div key={i} className="flex items-center justify-between py-0.5 border-b border-slate-200/40 dark:border-slate-800/40">
                     <div className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300 truncate">
