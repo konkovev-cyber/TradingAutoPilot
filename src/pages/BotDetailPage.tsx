@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Check, AlertTriangle, Share2, Send, ShieldCheck, Play, TrendingUp, Sparkles, Activity } from "lucide-react";
+import { ArrowLeft, Check, AlertTriangle, Share2, Send, ShieldCheck, Play, TrendingUp, Sparkles, Activity, Users } from "lucide-react";
 import { useBots } from "@/lib/use-bots";
 import Header from "@/components/Header";
 import FloatingContact from "@/components/FloatingContact";
@@ -442,6 +442,45 @@ export default function BotDetailPage() {
                 <Link to="/#bots" className="btn-secondary inline-flex items-center justify-center gap-2 px-8 py-4 text-base w-full sm:w-auto">
                   <ArrowLeft size={16} /> {c("botDetail", "back", t("botDetail.back"))}
                 </Link>
+              </div>
+
+              {/* 8. TELEGRAM КАНАЛ И ЧАТ */}
+              <div className="relative overflow-hidden rounded-3xl border border-sky-500/30 bg-gradient-to-br from-sky-500/5 via-white to-blue-500/5 dark:from-sky-950/30 dark:via-[#0c1424] dark:to-blue-950/30 p-6 sm:p-8 shadow-sm">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                  <div className="space-y-2 max-w-xl">
+                    <div className="inline-flex items-center gap-2 rounded-full bg-sky-500/10 px-3 py-1 text-xs font-bold text-sky-600 dark:text-sky-400">
+                      <Send size={13} />
+                      <span>Сообщество TradingAutoPilot</span>
+                    </div>
+                    <h3 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">
+                      Подписывайтесь в наш Telegram канал и Чат
+                    </h3>
+                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
+                      Свежие сигналы, статистика сделок, анонсы обновлений и обсуждение стратегий.
+                    </p>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
+                    <a
+                      href="https://t.me/trading_onautopilot"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-2.5 rounded-2xl bg-sky-500 hover:bg-sky-400 text-white font-bold px-6 py-3.5 text-sm shadow-md shadow-sky-500/20 transition-all hover:scale-[1.02]"
+                    >
+                      <Send size={16} />
+                      <span>Telegram-канал</span>
+                    </a>
+                    <a
+                      href="https://t.me/+HrPBnj6gM0JmMWMy"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-2.5 rounded-2xl border border-sky-500/40 bg-white dark:bg-slate-800/90 hover:bg-sky-50 dark:hover:bg-slate-800 text-sky-600 dark:text-sky-300 font-bold px-6 py-3.5 text-sm shadow-sm transition-all hover:scale-[1.02]"
+                    >
+                      <Users size={16} />
+                      <span>Чат сообщества</span>
+                    </a>
+                  </div>
+                </div>
               </div>
 
               {/* 10. FAQ */}
