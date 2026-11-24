@@ -1,24 +1,19 @@
 import React, { useState, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  TrendingUp,
-  Percent,
-  ShieldCheck,
-  Activity,
-  Layers,
   DollarSign,
   Info,
   Calendar,
   ArrowUpRight,
-  ChevronRight,
+  TrendingUp,
+  ShieldAlert,
 } from "lucide-react";
 import { type BotData } from "@/data/bots";
 import { useI18n } from "@/lib/i18n";
-import { useContent } from "@/lib/site-content";
 
-// Backtest dataset strictly matching the 3 real backtests (60-day period: 21.09.2026 - 20.11.2026)
+// Exact backtest datasets from the user's real screenshots (60-day period: 21.09.2026 - 20.11.2026)
 interface BacktestTier {
-  deposit: number; // 200, 500, 1000
+  deposit: number; // 200 | 500 | 1000
   depositLabel: string;
   profitUsdt: string;
   profitPercent: string;
@@ -40,7 +35,7 @@ interface BacktestTier {
   openPositions: { pair: string; side: "LONG" | "SHORT"; avg: number; status: string }[];
   // 20 coins with profit
   coins: { pair: string; pnl: string }[];
-  // Equity curve data points (60 days)
+  // Precise curve morphology
   equityPoints: { day: number; date: string; equity: number; dd: number }[];
 }
 
@@ -91,7 +86,7 @@ const BACKTEST_DATA: Record<number, BacktestTier> = {
       { pair: "SKY/USDT", pnl: "+63.07" },
       { pair: "PIPPIN/USDT", pnl: "+59.53" },
     ],
-    equityPoints: generateCurve(1000, 2987.19, -24.5),
+    equityPoints: buildCurve(1000, 2964, 774, -24.5),
   },
   500: {
     deposit: 500,
@@ -137,7 +132,7 @@ const BACKTEST_DATA: Record<number, BacktestTier> = {
       { pair: "PIEVERSE/USDT", pnl: "+20.68" },
       { pair: "PIPPIN/USDT", pnl: "+19.02" },
     ],
-    equityPoints: generateCurve(500, 1454.18, -20.8),
+    equityPoints: buildCurve(500, 1335, 422, -20.8),
   },
   200: {
     deposit: 200,
@@ -183,24 +178,15 @@ const BACKTEST_DATA: Record<number, BacktestTier> = {
       { pair: "PIEVERSE/USDT", pnl: "+8.27" },
       { pair: "PIPPIN/USDT", pnl: "+7.61" },
     ],
-    equityPoints: generateCurve(200, 581.64, -20.8),
+    equityPoints: buildCurve(200, 534, 169, -20.8),
   },
 };
 
-// Generates smooth curve matching the exact visual morphology of the screenshot
-function generateCurve(startBal: number, endBal: number, maxDd: number) {
-  // Shape profile normalized from 0 to 1 over 60 days
-  // Key points based on screenshot:
-  // Day 0 (21.09): start
-  // Day 20 (11.10): strong climb (~55% of gain)
-  // Day 38 (28.10): peak 1 (~85% of gain)
-  // Day 41 (31.10): checkpoint "проверочный период" & pullback (drawdown dip ~ -20% to -24%)
-  // Day 50 (09.11): rebound
-  // Day 54 (13.11): small correction
-  // Day 60 (20.11): all-time high close at endBal
+// Generates smooth curve matching the exact visual morphology of the backtest screenshots
+function buildCurve(startBal: number, topTick: number, bottomTick: number, maxDd: number) {
   const points: { day: number; date: string; equity: number; dd: number }[] = [];
   const totalDays = 60;
-  const gain = endBal - startBal;
+  const spread = topTick - bottomTick;
 
   const dates = [
     "21.09", "23.09", "25.09", "27.09", "29.09", "01.10", "03.10", "05.10",
@@ -209,38 +195,40 @@ function generateCurve(startBal: number, endBal: number, maxDd: number) {
     "08.11", "10.11", "12.11", "14.11", "16.11", "18.11", "20.11"
   ];
 
-  // Pattern steps matching the jagged crypto equity curve
+  // Precise fractional trajectory reconstructed from image
   const pattern = [
-    { p: 0.00, eqFrac: 0.00, dd: 0 },
-    { p: 0.05, eqFrac: 0.06, dd: -1.2 },
-    { p: 0.10, eqFrac: 0.14, dd: -2.1 },
-    { p: 0.15, eqFrac: 0.22, dd: -1.5 },
-    { p: 0.20, eqFrac: 0.31, dd: -3.8 },
-    { p: 0.25, eqFrac: 0.38, dd: -2.0 },
-    { p: 0.30, eqFrac: 0.49, dd: -4.5 },
-    { p: 0.35, eqFrac: 0.58, dd: -2.2 },
-    { p: 0.40, eqFrac: 0.65, dd: -14.0 }, // dip around 11.10
-    { p: 0.45, eqFrac: 0.62, dd: -16.5 },
-    { p: 0.50, eqFrac: 0.74, dd: -4.0 },
-    { p: 0.55, eqFrac: 0.83, dd: -2.5 },
-    { p: 0.60, eqFrac: 0.89, dd: -1.8 },
-    { p: 0.65, eqFrac: 0.94, dd: -1.0 }, // 28.10 local peak
-    { p: 0.68, eqFrac: 0.82, dd: -12.4 },
-    { p: 0.70, eqFrac: 0.73, dd: maxDd }, // 31.10 checkpoint line deep pullback
-    { p: 0.73, eqFrac: 0.68, dd: maxDd * 0.95 },
-    { p: 0.76, eqFrac: 0.72, dd: -18.2 },
-    { p: 0.80, eqFrac: 0.79, dd: -11.5 },
-    { p: 0.84, eqFrac: 0.85, dd: -6.4 },
-    { p: 0.88, eqFrac: 0.82, dd: -15.1 }, // mid Nov dip
-    { p: 0.92, eqFrac: 0.89, dd: -4.2 },
-    { p: 0.96, eqFrac: 0.96, dd: -1.5 },
-    { p: 1.00, eqFrac: 1.00, dd: 0 },
+    { p: 0.00, frac: 0.08, dd: 0 },
+    { p: 0.04, frac: 0.12, dd: -0.8 },
+    { p: 0.08, frac: 0.18, dd: -1.5 },
+    { p: 0.12, frac: 0.24, dd: -2.0 },
+    { p: 0.16, frac: 0.32, dd: -1.2 },
+    { p: 0.21, frac: 0.39, dd: -3.5 },
+    { p: 0.26, frac: 0.44, dd: -2.1 },
+    { p: 0.30, frac: 0.52, dd: -4.0 },
+    { p: 0.34, frac: 0.59, dd: -1.8 },
+    { p: 0.38, frac: 0.63, dd: -7.5 },
+    { p: 0.41, frac: 0.56, dd: -14.2 }, // dip around 11.10
+    { p: 0.45, frac: 0.67, dd: -5.2 },
+    { p: 0.50, frac: 0.74, dd: -3.1 },
+    { p: 0.55, frac: 0.81, dd: -2.0 },
+    { p: 0.61, frac: 0.87, dd: -1.4 },
+    { p: 0.66, frac: 0.94, dd: -0.6 }, // local peak before checkpoint
+    { p: 0.69, frac: 0.79, dd: -12.8 },
+    { p: 0.71, frac: 0.68, dd: maxDd }, // 31.10 checkpoint vertical line
+    { p: 0.74, frac: 0.64, dd: maxDd * 0.96 },
+    { p: 0.78, frac: 0.71, dd: -16.4 },
+    { p: 0.82, frac: 0.78, dd: -9.8 },
+    { p: 0.86, frac: 0.85, dd: -5.1 },
+    { p: 0.89, frac: 0.80, dd: -13.9 }, // mid-November dip
+    { p: 0.93, frac: 0.88, dd: -4.0 },
+    { p: 0.97, frac: 0.96, dd: -1.2 },
+    { p: 1.00, frac: 0.98, dd: 0 },
   ];
 
   for (let i = 0; i < pattern.length; i++) {
     const pt = pattern[i];
     const dateIdx = Math.min(Math.floor(pt.p * (dates.length - 1)), dates.length - 1);
-    const equityVal = Math.round((startBal + gain * pt.eqFrac) * 100) / 100;
+    const equityVal = Math.round((bottomTick + spread * pt.frac) * 100) / 100;
     points.push({
       day: Math.round(pt.p * totalDays),
       date: dates[dateIdx],
@@ -254,15 +242,14 @@ function generateCurve(startBal: number, endBal: number, maxDd: number) {
 
 export default function BotBacktest({ bot }: { bot: BotData }) {
   const { lang } = useI18n();
-  const c = useContent();
 
-  // Allowed deposits: 200, 500, 1000 USDT
-  const [selectedDeposit, setSelectedDeposit] = useState<number>(1000);
+  // Active deposit state: 200 | 500 | 1000 USDT (default 500 as in user's prompt screenshot)
+  const [selectedDeposit, setSelectedDeposit] = useState<number>(500);
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
   const chartSvgRef = useRef<SVGSVGElement | null>(null);
 
   const currentData = useMemo(() => {
-    return BACKTEST_DATA[selectedDeposit] || BACKTEST_DATA[1000];
+    return BACKTEST_DATA[selectedDeposit] || BACKTEST_DATA[500];
   }, [selectedDeposit]);
 
   // Coordinate dimensions for SVG
@@ -274,11 +261,11 @@ export default function BotBacktest({ bot }: { bot: BotData }) {
   const innerW = chartWidth - padding.left - padding.right;
   const innerH = equityHeight - padding.top - padding.bottom;
 
-  // Compute SVG coordinates for equity curve
+  // Compute SVG coordinates for equity curve & drawdown
   const { equityPath, equityAreaPath, ddPath, ddAreaPath, coords } = useMemo(() => {
     const pts = currentData.equityPoints;
-    const minEq = currentData.yTicks[currentData.yTicks.length - 1] * 0.96;
-    const maxEq = currentData.yTicks[0] * 1.03;
+    const minEq = currentData.yTicks[currentData.yTicks.length - 1] * 0.98;
+    const maxEq = currentData.yTicks[0] * 1.02;
 
     const mappedCoords = pts.map((p, i) => {
       const x = padding.left + (i / (pts.length - 1)) * innerW;
@@ -305,7 +292,6 @@ export default function BotBacktest({ bot }: { bot: BotData }) {
 
     const mappedDd = pts.map((p, i) => {
       const x = padding.left + (i / (pts.length - 1)) * innerW;
-      // p.dd is 0 or negative
       const ratio = Math.abs(p.dd) / Math.abs(minDdVal);
       const y = ddTop + Math.min(ratio, 1) * ddInnerH;
       return { x, y, dd: p.dd };
@@ -330,8 +316,8 @@ export default function BotBacktest({ bot }: { bot: BotData }) {
     };
   }, [currentData, selectedDeposit, innerW, innerH]);
 
-  // Checkpoint line at 31.10 (around 70% of the chart width)
-  const checkpointX = padding.left + innerW * 0.70;
+  // Checkpoint line at 31.10 (71% of chart width)
+  const checkpointX = padding.left + innerW * 0.71;
 
   const handlePointerMove = (e: React.PointerEvent<SVGSVGElement>) => {
     if (!chartSvgRef.current || coords.length === 0) return;
@@ -354,8 +340,8 @@ export default function BotBacktest({ bot }: { bot: BotData }) {
 
   return (
     <section id="bot-backtests" className="mb-16 scroll-mt-24">
-      {/* Outer Card with Light/Dark support */}
-      <div className="relative overflow-hidden rounded-3xl border border-slate-200/90 bg-white dark:border-slate-800 dark:bg-[#0c111e] shadow-xl p-4 sm:p-7 md:p-8 transition-colors duration-200">
+      {/* Outer Card with dual theme styling (solid dark navy like in screenshot, or clean white in light) */}
+      <div className="relative overflow-hidden rounded-3xl border border-slate-200/90 bg-white dark:border-slate-800/90 dark:bg-[#0c0f1d] shadow-2xl p-5 sm:p-7 md:p-8 transition-colors duration-200">
         
         {/* Glow ambient background in dark mode */}
         <div
@@ -363,22 +349,22 @@ export default function BotBacktest({ bot }: { bot: BotData }) {
           className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-emerald-500/10 blur-3xl dark:bg-emerald-500/5"
         />
 
-        {/* 1. Header with Title + "ПЕРИОД: 60 ДНЕЙ" Badge */}
-        <div className="relative mb-6 flex flex-col md:flex-row md:items-start justify-between gap-4 border-b border-slate-200 dark:border-slate-800/80 pb-6">
+        {/* 1. Header with Title + "ПЕРИОД: 60 ДНЕЙ" Badge (Exact to screenshot) */}
+        <div className="relative mb-6 flex flex-col md:flex-row md:items-start justify-between gap-4 border-b border-slate-200/80 dark:border-slate-800/80 pb-6">
           <div>
             <div className="flex items-center gap-3">
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                 SynchroTrade Bot — бэктест
               </h2>
             </div>
-            <p className="mt-1.5 text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-medium">
+            <p className="mt-1.5 text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium">
               Автоподбор · Bybit · REAL #3 · старт {currentData.depositLabel} USDT · позиций одновременно: 3 · проскальзывание ×1
             </p>
           </div>
 
           {/* Right badge: ПЕРИОД: 60 ДНЕЙ */}
           <div className="flex flex-col md:items-end shrink-0">
-            <div className="inline-flex items-center gap-2 rounded-full border-2 border-amber-500/80 dark:border-amber-400/90 bg-amber-500/10 dark:bg-amber-400/10 px-5 py-2 shadow-sm">
+            <div className="inline-flex items-center gap-2 rounded-full border-2 border-amber-500/70 dark:border-amber-400/80 bg-amber-500/10 dark:bg-amber-400/10 px-5 py-2 shadow-sm">
               <span className="text-xs sm:text-sm font-black tracking-wider text-amber-700 dark:text-amber-300 uppercase">
                 ПЕРИОД: 60 ДНЕЙ
               </span>
@@ -389,37 +375,38 @@ export default function BotBacktest({ bot }: { bot: BotData }) {
           </div>
         </div>
 
-        {/* 2. Interactive Deposit Selector: 200$ | 500$ | 1000$ */}
-        <div className="mb-6 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/90 dark:bg-[#121829] p-4 sm:p-5">
+        {/* 2. Slider & Selector: 200$ | 500$ | 1000$ */}
+        <div className="mb-6 rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-slate-50/90 dark:bg-[#12182b] p-4 sm:p-5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
             <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
-                <DollarSign size={18} />
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
+                <DollarSign size={20} />
               </div>
               <div>
                 <span className="text-sm font-bold text-slate-900 dark:text-white">
                   Размер депозита для бэктеста:
                 </span>
-                <span className="ml-2 text-xs text-slate-500 dark:text-slate-400">
-                  (переключает реальные результаты бэктеста)
+                <span className="ml-2 text-xs font-mono text-emerald-600 dark:text-emerald-400 font-semibold">
+                  ${selectedDeposit} USDT
                 </span>
               </div>
             </div>
 
-            {/* Deposit Pill Buttons */}
+            {/* Quick Clickable Buttons for 200$, 500$, 1000$ */}
             <div className="flex items-center gap-2">
               {[200, 500, 1000].map((val) => {
                 const isActive = selectedDeposit === val;
                 return (
                   <button
                     key={val}
+                    type="button"
                     onClick={() => {
                       setSelectedDeposit(val);
                       setHoverIndex(null);
                     }}
-                    className={`relative rounded-xl px-4 py-1.5 text-xs sm:text-sm font-extrabold transition-all duration-200 ${
+                    className={`relative rounded-xl px-4 py-1.5 text-xs sm:text-sm font-extrabold transition-all duration-200 cursor-pointer ${
                       isActive
-                        ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/30 ring-2 ring-emerald-500/20"
+                        ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/30 scale-105"
                         : "bg-white dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-emerald-500/50"
                     }`}
                   >
@@ -430,8 +417,8 @@ export default function BotBacktest({ bot }: { bot: BotData }) {
             </div>
           </div>
 
-          {/* Interactive Range Slider snapping to 200, 500, 1000 */}
-          <div className="relative pt-2">
+          {/* Range Slider snapping to 200, 500, 1000 */}
+          <div className="relative pt-1 px-1">
             <input
               type="range"
               min={200}
@@ -445,98 +432,122 @@ export default function BotBacktest({ bot }: { bot: BotData }) {
                 else setSelectedDeposit(1000);
                 setHoverIndex(null);
               }}
-              className="w-full h-2.5 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+              className="w-full h-3 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
             />
-            <div className="flex justify-between text-[11px] font-mono text-slate-500 dark:text-slate-400 mt-1.5 px-1">
-              <span className={selectedDeposit === 200 ? "font-bold text-emerald-600 dark:text-emerald-400" : ""}>$200 (микро)</span>
-              <span className={selectedDeposit === 500 ? "font-bold text-emerald-600 dark:text-emerald-400" : ""}>$500 (стандарт)</span>
-              <span className={selectedDeposit === 1000 ? "font-bold text-emerald-600 dark:text-emerald-400" : ""}>$1000 (профи)</span>
+            <div className="flex justify-between text-[11px] font-mono text-slate-500 dark:text-slate-400 mt-2 px-1">
+              <span
+                onClick={() => setSelectedDeposit(200)}
+                className={`cursor-pointer transition-colors ${selectedDeposit === 200 ? "font-bold text-emerald-600 dark:text-emerald-400 underline decoration-2" : "hover:text-slate-300"}`}
+              >
+                $200
+              </span>
+              <span
+                onClick={() => setSelectedDeposit(500)}
+                className={`cursor-pointer transition-colors ${selectedDeposit === 500 ? "font-bold text-emerald-600 dark:text-emerald-400 underline decoration-2" : "hover:text-slate-300"}`}
+              >
+                $500
+              </span>
+              <span
+                onClick={() => setSelectedDeposit(1000)}
+                className={`cursor-pointer transition-colors ${selectedDeposit === 1000 ? "font-bold text-emerald-600 dark:text-emerald-400 underline decoration-2" : "hover:text-slate-300"}`}
+              >
+                $1000
+              </span>
             </div>
           </div>
         </div>
 
-        {/* 3. Hero Profit & Metric Stats Section */}
-        <div className="mb-6">
-          <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
-            ПРИБЫЛЬ ПО РЕЗУЛЬТАТАМ ТЕСТА
-          </div>
-          
-          <div className="flex flex-wrap items-baseline gap-3 sm:gap-6 mb-2">
-            <span className="text-3xl sm:text-4xl md:text-5xl font-black text-emerald-600 dark:text-emerald-400 tracking-tight font-mono">
-              {currentData.profitUsdt}
-            </span>
-            <span className="text-2xl sm:text-3xl font-extrabold text-emerald-500 dark:text-emerald-400 font-mono">
-              {currentData.profitPercent}
-            </span>
-          </div>
-
-          <div className="flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400 mb-4 pb-3 border-b border-slate-200/80 dark:border-slate-800">
-            <div>
-              Баланс: <span className="font-mono font-bold text-slate-900 dark:text-white">{currentData.startBalance} → {currentData.endBalance} USDT</span>
+        {/* 3. Hero Profit & Metric Stats Section (Animated on deposit change) */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={selectedDeposit}
+            initial={{ opacity: 0.7, y: 3 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0.7 }}
+            transition={{ duration: 0.18 }}
+            className="mb-6"
+          >
+            <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
+              ПРИБЫЛЬ ПО РЕЗУЛЬТАТАМ ТЕСТА
             </div>
-            <div className="text-slate-500 dark:text-slate-400 italic">
-              ещё в сделке: {currentData.stillInTradeCount} поз. (в итог не входят)
+            
+            <div className="flex flex-wrap items-baseline gap-4 sm:gap-8 mb-2">
+              <span className="text-3xl sm:text-4xl md:text-5xl font-black text-emerald-600 dark:text-emerald-400 tracking-tight font-mono">
+                {currentData.profitUsdt}
+              </span>
+              <span className="text-2xl sm:text-3xl font-extrabold text-emerald-500 dark:text-emerald-400 font-mono">
+                {currentData.profitPercent}
+              </span>
             </div>
-          </div>
 
-          {/* 5 Compact Stats Cards */}
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 sm:gap-3">
-            {/* 1. Trades */}
-            <div className="rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/80 dark:bg-[#121829] p-3 text-center">
-              <div className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white font-mono">
-                {currentData.tradesCount}
+            <div className="flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400 mb-4 pb-3 border-b border-slate-200/80 dark:border-slate-800">
+              <div>
+                Баланс: <span className="font-mono font-bold text-slate-900 dark:text-white">{currentData.startBalance} → {currentData.endBalance} USDT</span>
               </div>
-              <div className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
-                сделок
+              <div className="text-slate-500 dark:text-slate-400 italic">
+                ещё в сделке: {currentData.stillInTradeCount} поз. (в итог не входят)
               </div>
             </div>
 
-            {/* 2. Win rate */}
-            <div className="rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/80 dark:bg-[#121829] p-3 text-center">
-              <div className="text-lg sm:text-xl font-extrabold text-emerald-600 dark:text-emerald-400 font-mono">
-                {currentData.winRate}
+            {/* 5 Compact Stats Cards (100% match screenshot) */}
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 sm:gap-3">
+              {/* 1. Trades */}
+              <div className="rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/80 dark:bg-[#12182b] p-3 text-center">
+                <div className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white font-mono">
+                  {currentData.tradesCount}
+                </div>
+                <div className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                  сделок
+                </div>
               </div>
-              <div className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
-                в плюс
+
+              {/* 2. Win rate */}
+              <div className="rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/80 dark:bg-[#12182b] p-3 text-center">
+                <div className="text-lg sm:text-xl font-extrabold text-emerald-600 dark:text-emerald-400 font-mono">
+                  {currentData.winRate}
+                </div>
+                <div className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                  в плюс
+                </div>
+              </div>
+
+              {/* 3. Profit Factor */}
+              <div className="rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/80 dark:bg-[#12182b] p-3 text-center">
+                <div className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white font-mono">
+                  {currentData.profitFactor}
+                </div>
+                <div className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                  профит-фактор
+                </div>
+              </div>
+
+              {/* 4. Max Drawdown */}
+              <div className="rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/80 dark:bg-[#12182b] p-3 text-center">
+                <div className="text-lg sm:text-xl font-extrabold text-rose-500 font-mono">
+                  {currentData.maxDrawdown}
+                </div>
+                <div className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                  макс. просадка
+                </div>
+              </div>
+
+              {/* 5. Commissions */}
+              <div className="col-span-2 sm:col-span-1 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/80 dark:bg-[#12182b] p-3 text-center">
+                <div className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white font-mono">
+                  {currentData.commissions}
+                </div>
+                <div className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                  комиссии, USDT
+                </div>
               </div>
             </div>
+          </motion.div>
+        </AnimatePresence>
 
-            {/* 3. Profit Factor */}
-            <div className="rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/80 dark:bg-[#121829] p-3 text-center">
-              <div className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white font-mono">
-                {currentData.profitFactor}
-              </div>
-              <div className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
-                профит-фактор
-              </div>
-            </div>
-
-            {/* 4. Max Drawdown */}
-            <div className="rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/80 dark:bg-[#121829] p-3 text-center">
-              <div className="text-lg sm:text-xl font-extrabold text-rose-500 font-mono">
-                {currentData.maxDrawdown}
-              </div>
-              <div className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
-                макс. просадка
-              </div>
-            </div>
-
-            {/* 5. Commissions */}
-            <div className="col-span-2 sm:col-span-1 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/80 dark:bg-[#121829] p-3 text-center">
-              <div className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white font-mono">
-                {currentData.commissions}
-              </div>
-              <div className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
-                комиссии, USDT
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* 4. Main Two-Column Section: Charts (Left) & Coins / Trades Breakdown (Right) */}
+        {/* 4. Main Section: Left Chart Frame & Right Coins Breakdown */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           
-          {/* LEFT: Charts (Equity & Drawdown) in Sleek Terminal Frame */}
+          {/* LEFT: Charts (Equity & Drawdown) */}
           <div className="lg:col-span-7 flex flex-col gap-4">
             <div className="rounded-2xl border border-slate-300 dark:border-slate-800 bg-[#090d16] p-4 sm:p-5 shadow-inner">
               
@@ -574,7 +585,7 @@ export default function BotBacktest({ bot }: { bot: BotData }) {
                     </filter>
                   </defs>
 
-                  {/* Horizontal Grid lines and Y labels */}
+                  {/* Horizontal Grid lines and Y labels (matching exact screenshot ticks) */}
                   {currentData.yTicks.map((tick, idx) => {
                     const y = padding.top + (idx / (currentData.yTicks.length - 1)) * innerH;
                     return (
@@ -796,7 +807,7 @@ export default function BotBacktest({ bot }: { bot: BotData }) {
           <div className="lg:col-span-5 flex flex-col gap-4">
             
             {/* Box 1: Монеты в тесте (20) */}
-            <div className="rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-slate-50/80 dark:bg-[#121829] p-4 sm:p-5">
+            <div className="rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-slate-50/80 dark:bg-[#12182b] p-4 sm:p-5">
               <div className="flex items-center justify-between mb-3 border-b border-slate-200/80 dark:border-slate-800 pb-2">
                 <span className="text-sm font-bold text-slate-900 dark:text-white">
                   Монеты в тесте (20)
@@ -823,7 +834,7 @@ export default function BotBacktest({ bot }: { bot: BotData }) {
             </div>
 
             {/* Box 2: Как закрывались сделки */}
-            <div className="rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-slate-50/80 dark:bg-[#121829] p-4">
+            <div className="rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-slate-50/80 dark:bg-[#12182b] p-4">
               <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
                 Как закрывались сделки
               </div>
