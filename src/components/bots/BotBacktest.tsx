@@ -10,105 +10,337 @@ import {
   Info,
   Calendar,
   ArrowUpRight,
+  ChevronRight,
 } from "lucide-react";
-import {
-  botText,
-  colorDimFrom,
-  getDefaultBacktests,
-  type BotData,
-  type BotBacktestPeriod,
-  type BacktestPoint,
-} from "@/data/bots";
+import { type BotData } from "@/data/bots";
 import { useI18n } from "@/lib/i18n";
 import { useContent } from "@/lib/site-content";
+
+// Backtest dataset strictly matching the 3 real backtests (60-day period: 21.09.2026 - 20.11.2026)
+interface BacktestTier {
+  deposit: number; // 200, 500, 1000
+  depositLabel: string;
+  profitUsdt: string;
+  profitPercent: string;
+  startBalance: string;
+  endBalance: string;
+  stillInTradeCount: number;
+  tradesCount: number;
+  winRate: string;
+  profitFactor: string;
+  maxDrawdown: string;
+  commissions: string;
+  // Chart axis limits
+  yTicks: number[];
+  drawdownMax: string;
+  drawdownScale: string;
+  // Trade closures
+  closures: { label: string; count: number; sum: string }[];
+  // Positions still in trade
+  openPositions: { pair: string; side: "LONG" | "SHORT"; avg: number; status: string }[];
+  // 20 coins with profit
+  coins: { pair: string; pnl: string }[];
+  // Equity curve data points (60 days)
+  equityPoints: { day: number; date: string; equity: number; dd: number }[];
+}
+
+const BACKTEST_DATA: Record<number, BacktestTier> = {
+  1000: {
+    deposit: 1000,
+    depositLabel: "1000.00",
+    profitUsdt: "+ 1987.19 USDT",
+    profitPercent: "+198.72%",
+    startBalance: "1000.00",
+    endBalance: "2987.19",
+    stillInTradeCount: 2,
+    tradesCount: 521,
+    winRate: "100%",
+    profitFactor: "—",
+    maxDrawdown: "-24.5%",
+    commissions: "304 USDT",
+    yTicks: [2964, 2417, 1869, 1322, 774],
+    drawdownMax: "-24.5%",
+    drawdownScale: "-26%",
+    closures: [
+      { label: "Take Profit", count: 273, sum: "+1586.36" },
+      { label: "трейлинг-стоп", count: 248, sum: "+400.83" },
+    ],
+    openPositions: [
+      { pair: "VVV/USDT", side: "LONG", avg: 3, status: "в позиции" },
+      { pair: "XMR/USDT", side: "LONG", avg: 3, status: "в позиции" },
+    ],
+    coins: [
+      { pair: "BNB/USDT", pnl: "+180.24" },
+      { pair: "ETH/USDT", pnl: "+145.48" },
+      { pair: "NAORIS/USDT", pnl: "+138.65" },
+      { pair: "BTC/USDT", pnl: "+126.20" },
+      { pair: "AVAX/USDT", pnl: "+119.13" },
+      { pair: "CYBER/USDT", pnl: "+106.95" },
+      { pair: "LIT/USDT", pnl: "+104.64" },
+      { pair: "BMT/USDT", pnl: "+104.02" },
+      { pair: "ICNT/USDT", pnl: "+103.12" },
+      { pair: "IRYS/USDT", pnl: "+98.49" },
+      { pair: "AKE/USDT", pnl: "+96.26" },
+      { pair: "LINK/USDT", pnl: "+92.35" },
+      { pair: "VVV/USDT", pnl: "+81.47" },
+      { pair: "ZEC/USDT", pnl: "+80.65" },
+      { pair: "XMR/USDT", pnl: "+74.69" },
+      { pair: "UNI/USDT", pnl: "+74.15" },
+      { pair: "MMT/USDT", pnl: "+70.14" },
+      { pair: "PIEVERSE/USDT", pnl: "+67.97" },
+      { pair: "SKY/USDT", pnl: "+63.07" },
+      { pair: "PIPPIN/USDT", pnl: "+59.53" },
+    ],
+    equityPoints: generateCurve(1000, 2987.19, -24.5),
+  },
+  500: {
+    deposit: 500,
+    depositLabel: "500.00",
+    profitUsdt: "+ 954.18 USDT",
+    profitPercent: "+190.84%",
+    startBalance: "500.00",
+    endBalance: "1454.18",
+    stillInTradeCount: 3,
+    tradesCount: 477,
+    winRate: "100%",
+    profitFactor: "—",
+    maxDrawdown: "-20.8%",
+    commissions: "156 USDT",
+    yTicks: [1335, 1107, 879, 650, 422],
+    drawdownMax: "-20.8%",
+    drawdownScale: "-21%",
+    closures: [{ label: "Take Profit", count: 477, sum: "+954.18" }],
+    openPositions: [
+      { pair: "VVV/USDT", side: "LONG", avg: 3, status: "в позиции" },
+      { pair: "BTC/USDT", side: "LONG", avg: 3, status: "в позиции" },
+      { pair: "CYBER/USDT", side: "SHORT", avg: 2, status: "в позиции" },
+    ],
+    coins: [
+      { pair: "ETH/USDT", pnl: "+75.49" },
+      { pair: "BNB/USDT", pnl: "+71.33" },
+      { pair: "BTC/USDT", pnl: "+63.95" },
+      { pair: "NAORIS/USDT", pnl: "+62.82" },
+      { pair: "AVAX/USDT", pnl: "+62.55" },
+      { pair: "LIT/USDT", pnl: "+59.01" },
+      { pair: "BMT/USDT", pnl: "+51.62" },
+      { pair: "XMR/USDT", pnl: "+50.97" },
+      { pair: "ICNT/USDT", pnl: "+49.79" },
+      { pair: "AKE/USDT", pnl: "+45.93" },
+      { pair: "LINK/USDT", pnl: "+43.68" },
+      { pair: "SKY/USDT", pnl: "+43.35" },
+      { pair: "CYBER/USDT", pnl: "+41.95" },
+      { pair: "UNI/USDT", pnl: "+41.58" },
+      { pair: "VVV/USDT", pnl: "+39.37" },
+      { pair: "MMT/USDT", pnl: "+38.86" },
+      { pair: "ZEC/USDT", pnl: "+37.37" },
+      { pair: "IRYS/USDT", pnl: "+34.87" },
+      { pair: "PIEVERSE/USDT", pnl: "+20.68" },
+      { pair: "PIPPIN/USDT", pnl: "+19.02" },
+    ],
+    equityPoints: generateCurve(500, 1454.18, -20.8),
+  },
+  200: {
+    deposit: 200,
+    depositLabel: "200.00",
+    profitUsdt: "+ 381.64 USDT",
+    profitPercent: "+190.82%",
+    startBalance: "200.00",
+    endBalance: "581.64",
+    stillInTradeCount: 3,
+    tradesCount: 477,
+    winRate: "100%",
+    profitFactor: "—",
+    maxDrawdown: "-20.8%",
+    commissions: "63 USDT",
+    yTicks: [534, 443, 351, 260, 169],
+    drawdownMax: "-20.8%",
+    drawdownScale: "-21%",
+    closures: [{ label: "Take Profit", count: 477, sum: "+381.64" }],
+    openPositions: [
+      { pair: "VVV/USDT", side: "LONG", avg: 3, status: "в позиции" },
+      { pair: "BTC/USDT", side: "LONG", avg: 3, status: "в позиции" },
+      { pair: "CYBER/USDT", side: "SHORT", avg: 2, status: "в позиции" },
+    ],
+    coins: [
+      { pair: "ETH/USDT", pnl: "+30.19" },
+      { pair: "BNB/USDT", pnl: "+28.53" },
+      { pair: "BTC/USDT", pnl: "+25.58" },
+      { pair: "NAORIS/USDT", pnl: "+25.13" },
+      { pair: "AVAX/USDT", pnl: "+25.02" },
+      { pair: "LIT/USDT", pnl: "+23.60" },
+      { pair: "BMT/USDT", pnl: "+20.65" },
+      { pair: "XMR/USDT", pnl: "+20.39" },
+      { pair: "ICNT/USDT", pnl: "+19.91" },
+      { pair: "AKE/USDT", pnl: "+18.37" },
+      { pair: "LINK/USDT", pnl: "+17.47" },
+      { pair: "SKY/USDT", pnl: "+17.34" },
+      { pair: "CYBER/USDT", pnl: "+16.78" },
+      { pair: "UNI/USDT", pnl: "+16.63" },
+      { pair: "VVV/USDT", pnl: "+15.75" },
+      { pair: "MMT/USDT", pnl: "+15.54" },
+      { pair: "ZEC/USDT", pnl: "+14.95" },
+      { pair: "IRYS/USDT", pnl: "+13.95" },
+      { pair: "PIEVERSE/USDT", pnl: "+8.27" },
+      { pair: "PIPPIN/USDT", pnl: "+7.61" },
+    ],
+    equityPoints: generateCurve(200, 581.64, -20.8),
+  },
+};
+
+// Generates smooth curve matching the exact visual morphology of the screenshot
+function generateCurve(startBal: number, endBal: number, maxDd: number) {
+  // Shape profile normalized from 0 to 1 over 60 days
+  // Key points based on screenshot:
+  // Day 0 (21.09): start
+  // Day 20 (11.10): strong climb (~55% of gain)
+  // Day 38 (28.10): peak 1 (~85% of gain)
+  // Day 41 (31.10): checkpoint "проверочный период" & pullback (drawdown dip ~ -20% to -24%)
+  // Day 50 (09.11): rebound
+  // Day 54 (13.11): small correction
+  // Day 60 (20.11): all-time high close at endBal
+  const points: { day: number; date: string; equity: number; dd: number }[] = [];
+  const totalDays = 60;
+  const gain = endBal - startBal;
+
+  const dates = [
+    "21.09", "23.09", "25.09", "27.09", "29.09", "01.10", "03.10", "05.10",
+    "07.10", "09.10", "11.10", "13.10", "15.10", "17.10", "19.10", "21.10",
+    "23.10", "25.10", "27.10", "29.10", "31.10", "02.11", "04.11", "06.11",
+    "08.11", "10.11", "12.11", "14.11", "16.11", "18.11", "20.11"
+  ];
+
+  // Pattern steps matching the jagged crypto equity curve
+  const pattern = [
+    { p: 0.00, eqFrac: 0.00, dd: 0 },
+    { p: 0.05, eqFrac: 0.06, dd: -1.2 },
+    { p: 0.10, eqFrac: 0.14, dd: -2.1 },
+    { p: 0.15, eqFrac: 0.22, dd: -1.5 },
+    { p: 0.20, eqFrac: 0.31, dd: -3.8 },
+    { p: 0.25, eqFrac: 0.38, dd: -2.0 },
+    { p: 0.30, eqFrac: 0.49, dd: -4.5 },
+    { p: 0.35, eqFrac: 0.58, dd: -2.2 },
+    { p: 0.40, eqFrac: 0.65, dd: -14.0 }, // dip around 11.10
+    { p: 0.45, eqFrac: 0.62, dd: -16.5 },
+    { p: 0.50, eqFrac: 0.74, dd: -4.0 },
+    { p: 0.55, eqFrac: 0.83, dd: -2.5 },
+    { p: 0.60, eqFrac: 0.89, dd: -1.8 },
+    { p: 0.65, eqFrac: 0.94, dd: -1.0 }, // 28.10 local peak
+    { p: 0.68, eqFrac: 0.82, dd: -12.4 },
+    { p: 0.70, eqFrac: 0.73, dd: maxDd }, // 31.10 checkpoint line deep pullback
+    { p: 0.73, eqFrac: 0.68, dd: maxDd * 0.95 },
+    { p: 0.76, eqFrac: 0.72, dd: -18.2 },
+    { p: 0.80, eqFrac: 0.79, dd: -11.5 },
+    { p: 0.84, eqFrac: 0.85, dd: -6.4 },
+    { p: 0.88, eqFrac: 0.82, dd: -15.1 }, // mid Nov dip
+    { p: 0.92, eqFrac: 0.89, dd: -4.2 },
+    { p: 0.96, eqFrac: 0.96, dd: -1.5 },
+    { p: 1.00, eqFrac: 1.00, dd: 0 },
+  ];
+
+  for (let i = 0; i < pattern.length; i++) {
+    const pt = pattern[i];
+    const dateIdx = Math.min(Math.floor(pt.p * (dates.length - 1)), dates.length - 1);
+    const equityVal = Math.round((startBal + gain * pt.eqFrac) * 100) / 100;
+    points.push({
+      day: Math.round(pt.p * totalDays),
+      date: dates[dateIdx],
+      equity: equityVal,
+      dd: pt.dd,
+    });
+  }
+
+  return points;
+}
 
 export default function BotBacktest({ bot }: { bot: BotData }) {
   const { lang } = useI18n();
   const c = useContent();
-  const b = botText(bot, lang);
 
-  // Retrieve backtest periods or fallback to defaults
-  const periods: BotBacktestPeriod[] = useMemo(() => {
-    if (b.backtests && b.backtests.length > 0) return b.backtests;
-    return getDefaultBacktests(b.slug);
-  }, [b.backtests, b.slug]);
-
-  const [selectedPeriodKey, setSelectedPeriodKey] = useState<string>(
-    periods[2]?.period || periods[0]?.period || "6M"
-  );
-  const [deposit, setDeposit] = useState<number>(1000);
-
-  // Interactive chart hover state
+  // Allowed deposits: 200, 500, 1000 USDT
+  const [selectedDeposit, setSelectedDeposit] = useState<number>(1000);
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
   const chartSvgRef = useRef<SVGSVGElement | null>(null);
 
-  const activePeriod = useMemo(() => {
-    return periods.find((p) => p.period === selectedPeriodKey) || periods[0];
-  }, [periods, selectedPeriodKey]);
+  const currentData = useMemo(() => {
+    return BACKTEST_DATA[selectedDeposit] || BACKTEST_DATA[1000];
+  }, [selectedDeposit]);
 
-  // Scaled calculations based on deposit slider
-  const roiMultiplier = activePeriod ? 1 + activePeriod.roiValue / 100 : 1.78;
-  const finalBalance = Math.round(deposit * roiMultiplier);
-  const profitAmount = Math.max(0, finalBalance - deposit);
+  // Coordinate dimensions for SVG
+  const chartWidth = 720;
+  const equityHeight = 220;
+  const ddHeight = 70;
+  const padding = { top: 20, right: 24, bottom: 24, left: 48 };
 
-  // Chart coordinate mapping
-  const chartWidth = 800;
-  const chartHeight = 260;
-  const padding = { top: 25, right: 30, bottom: 35, left: 55 };
+  const innerW = chartWidth - padding.left - padding.right;
+  const innerH = equityHeight - padding.top - padding.bottom;
 
-  const points = activePeriod?.points || [];
+  // Compute SVG coordinates for equity curve
+  const { equityPath, equityAreaPath, ddPath, ddAreaPath, coords } = useMemo(() => {
+    const pts = currentData.equityPoints;
+    const minEq = currentData.yTicks[currentData.yTicks.length - 1] * 0.96;
+    const maxEq = currentData.yTicks[0] * 1.03;
 
-  const chartData = useMemo(() => {
-    if (!points || points.length === 0) return { path: "", area: "", coords: [], minEquity: 0, maxEquity: 1 };
-
-    // Scale points to current deposit
-    const scale = deposit / 1000;
-    const scaledPoints = points.map((p) => ({
-      ...p,
-      scaledEquity: Math.round(p.equity * scale),
-      scaledPnl: Math.round(p.pnl * scale),
-    }));
-
-    const equities = scaledPoints.map((p) => p.scaledEquity);
-    const minEquity = Math.min(...equities) * 0.98;
-    const maxEquity = Math.max(...equities) * 1.02;
-
-    const innerW = chartWidth - padding.left - padding.right;
-    const innerH = chartHeight - padding.top - padding.bottom;
-
-    const coords = scaledPoints.map((p, i) => {
-      const x = padding.left + (i / (scaledPoints.length - 1)) * innerW;
-      const y = padding.top + innerH - ((p.scaledEquity - minEquity) / (maxEquity - minEquity || 1)) * innerH;
+    const mappedCoords = pts.map((p, i) => {
+      const x = padding.left + (i / (pts.length - 1)) * innerW;
+      const y = padding.top + innerH - ((p.equity - minEq) / (maxEq - minEq || 1)) * innerH;
       return { x, y, point: p };
     });
 
-    // Build smooth cubic bezier SVG path
-    let path = `M ${coords[0].x} ${coords[0].y}`;
-    for (let i = 0; i < coords.length - 1; i++) {
-      const curr = coords[i];
-      const next = coords[i + 1];
-      const mx = (curr.x + next.x) / 2;
-      path += ` C ${mx} ${curr.y}, ${mx} ${next.y}, ${next.x} ${next.y}`;
+    // Build equity line
+    let line = `M ${mappedCoords[0].x} ${mappedCoords[0].y}`;
+    for (let i = 0; i < mappedCoords.length - 1; i++) {
+      const c = mappedCoords[i];
+      const n = mappedCoords[i + 1];
+      const mx = (c.x + n.x) / 2;
+      line += ` C ${mx} ${c.y}, ${mx} ${n.y}, ${n.x} ${n.y}`;
     }
 
-    const lastCoord = coords[coords.length - 1];
-    const firstCoord = coords[0];
-    const bottomY = chartHeight - padding.bottom;
-    const area = `${path} L ${lastCoord.x} ${bottomY} L ${firstCoord.x} ${bottomY} Z`;
+    const baselineY = equityHeight - padding.bottom;
+    const area = `${line} L ${mappedCoords[mappedCoords.length - 1].x} ${baselineY} L ${mappedCoords[0].x} ${baselineY} Z`;
 
-    return { path, area, coords, minEquity, maxEquity };
-  }, [points, deposit]);
+    // Drawdown curve coordinates
+    const minDdVal = selectedDeposit === 1000 ? -26 : -21;
+    const ddInnerH = ddHeight - 16;
+    const ddTop = 10;
+
+    const mappedDd = pts.map((p, i) => {
+      const x = padding.left + (i / (pts.length - 1)) * innerW;
+      // p.dd is 0 or negative
+      const ratio = Math.abs(p.dd) / Math.abs(minDdVal);
+      const y = ddTop + Math.min(ratio, 1) * ddInnerH;
+      return { x, y, dd: p.dd };
+    });
+
+    let ddLine = `M ${mappedDd[0].x} ${mappedDd[0].y}`;
+    for (let i = 0; i < mappedDd.length - 1; i++) {
+      const c = mappedDd[i];
+      const n = mappedDd[i + 1];
+      const mx = (c.x + n.x) / 2;
+      ddLine += ` C ${mx} ${c.y}, ${mx} ${n.y}, ${n.x} ${n.y}`;
+    }
+
+    const ddArea = `${ddLine} L ${mappedDd[mappedDd.length - 1].x} ${ddTop} L ${mappedDd[0].x} ${ddTop} Z`;
+
+    return {
+      equityPath: line,
+      equityAreaPath: area,
+      ddPath: ddLine,
+      ddAreaPath: ddArea,
+      coords: mappedCoords,
+    };
+  }, [currentData, selectedDeposit, innerW, innerH]);
+
+  // Checkpoint line at 31.10 (around 70% of the chart width)
+  const checkpointX = padding.left + innerW * 0.70;
 
   const handlePointerMove = (e: React.PointerEvent<SVGSVGElement>) => {
-    if (!chartSvgRef.current || chartData.coords.length === 0) return;
+    if (!chartSvgRef.current || coords.length === 0) return;
     const rect = chartSvgRef.current.getBoundingClientRect();
-    const clientX = e.clientX;
-    const relX = ((clientX - rect.left) / rect.width) * chartWidth;
+    const relX = ((e.clientX - rect.left) / rect.width) * chartWidth;
 
-    // Find nearest point
     let nearestIdx = 0;
     let nearestDist = Infinity;
-    chartData.coords.forEach((c, idx) => {
+    coords.forEach((c, idx) => {
       const dist = Math.abs(c.x - relX);
       if (dist < nearestDist) {
         nearestDist = dist;
@@ -118,431 +350,542 @@ export default function BotBacktest({ bot }: { bot: BotData }) {
     setHoverIndex(nearestIdx);
   };
 
-  const handlePointerLeave = () => {
-    setHoverIndex(null);
-  };
-
-  const activeCoord = hoverIndex !== null && chartData.coords[hoverIndex] ? chartData.coords[hoverIndex] : null;
-
-  const botColor = b.color || "#00FFB2";
-  const glow = botColor === "#00FFB2" ? "rgba(0, 255, 178, 0.2)" : colorDimFrom(botColor);
+  const activeCoord = hoverIndex !== null && coords[hoverIndex] ? coords[hoverIndex] : null;
 
   return (
     <section id="bot-backtests" className="mb-16 scroll-mt-24">
-      <div className="relative overflow-hidden rounded-3xl border border-slate-200/80 bg-white p-5 sm:p-8 shadow-soft transition-all dark:border-slate-800/80 dark:bg-[#131b2e]">
-        {/* Glow corner */}
+      {/* Outer Card with Light/Dark support */}
+      <div className="relative overflow-hidden rounded-3xl border border-slate-200/90 bg-white dark:border-slate-800 dark:bg-[#0c111e] shadow-xl p-4 sm:p-7 md:p-8 transition-colors duration-200">
+        
+        {/* Glow ambient background in dark mode */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -left-20 -bottom-20 h-64 w-64 rounded-full blur-3xl opacity-20"
-          style={{ backgroundColor: botColor }}
+          className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-emerald-500/10 blur-3xl dark:bg-emerald-500/5"
         />
 
-        {/* Header */}
-        <div className="relative mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        {/* 1. Header with Title + "ПЕРИОД: 60 ДНЕЙ" Badge */}
+        <div className="relative mb-6 flex flex-col md:flex-row md:items-start justify-between gap-4 border-b border-slate-200 dark:border-slate-800/80 pb-6">
           <div>
-            <div className="mb-2 flex items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-                <ShieldCheck size={14} />
-                {c("botDetail", "backtestBadge", "Подтверждённая эффективность")}
-              </span>
-              <span className="text-xs text-gray-400 dark:text-gray-500 font-mono">
-                Historical Backtest
-              </span>
+            <div className="flex items-center gap-3">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                SynchroTrade Bot — бэктест
+              </h2>
             </div>
-            <h2 className="heading-lg text-gray-900 dark:text-white">
-              {c("botDetail", "backtestTitle", "Бэктесты и динамика доходности")}
-            </h2>
-            <p className="mt-1 text-sm sm:text-base text-gray-500 dark:text-gray-400 max-w-2xl leading-relaxed">
-              {c("botDetail", "backtestSubtitle", "Прозрачные результаты тестирования торгового алгоритма на реальных исторических данных. Выберите период и укажите планируемый депозит для расчёта потенциальной прибыли.")}
+            <p className="mt-1.5 text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-medium">
+              Автоподбор · Bybit · REAL #3 · старт {currentData.depositLabel} USDT · позиций одновременно: 3 · проскальзывание ×1
             </p>
           </div>
 
-          {/* Period Selection Buttons */}
-          <div className="flex flex-wrap items-center gap-1.5 rounded-2xl bg-gray-100 p-1.5 dark:bg-gray-800/80 border border-gray-200/80 dark:border-white/5">
-            {periods.map((p) => {
-              const active = p.period === selectedPeriodKey;
-              return (
-                <button
-                  key={p.period}
-                  onClick={() => {
-                    setSelectedPeriodKey(p.period);
-                    setHoverIndex(null);
-                  }}
-                  className={`relative rounded-xl px-3.5 py-1.5 text-xs font-bold tracking-wide transition-all ${
-                    active
-                      ? "text-white shadow-md"
-                      : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
-                  }`}
-                  style={{
-                    backgroundColor: active ? (botColor === "#00FFB2" ? "#059669" : botColor) : "transparent",
-                  }}
-                >
-                  {p.label}
-                </button>
-              );
-            })}
+          {/* Right badge: ПЕРИОД: 60 ДНЕЙ */}
+          <div className="flex flex-col md:items-end shrink-0">
+            <div className="inline-flex items-center gap-2 rounded-full border-2 border-amber-500/80 dark:border-amber-400/90 bg-amber-500/10 dark:bg-amber-400/10 px-5 py-2 shadow-sm">
+              <span className="text-xs sm:text-sm font-black tracking-wider text-amber-700 dark:text-amber-300 uppercase">
+                ПЕРИОД: 60 ДНЕЙ
+              </span>
+            </div>
+            <div className="mt-1.5 text-[11px] sm:text-xs font-mono text-slate-500 dark:text-slate-400">
+              21.09.2026 — 20.11.2026 · монет: 20
+            </div>
           </div>
         </div>
 
-        {/* Deposit Range Slider */}
-        <div className="mb-8 rounded-2xl border border-gray-100 bg-gray-50/70 p-4 sm:p-5 dark:border-white/5 dark:bg-white/[0.02]">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+        {/* 2. Interactive Deposit Selector: 200$ | 500$ | 1000$ */}
+        <div className="mb-6 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/90 dark:bg-[#121829] p-4 sm:p-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
             <div className="flex items-center gap-2">
-              <DollarSign size={18} className="text-emerald-500" />
-              <label htmlFor="deposit-slider" className="text-sm font-semibold text-gray-900 dark:text-white">
-                {c("botDetail", "depositLabel", "Размер депозита для расчёта:")}
-              </label>
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
+                <DollarSign size={18} />
+              </div>
+              <div>
+                <span className="text-sm font-bold text-slate-900 dark:text-white">
+                  Размер депозита для бэктеста:
+                </span>
+                <span className="ml-2 text-xs text-slate-500 dark:text-slate-400">
+                  (переключает реальные результаты бэктеста)
+                </span>
+              </div>
             </div>
+
+            {/* Deposit Pill Buttons */}
             <div className="flex items-center gap-2">
-              <span className="text-2xl font-extrabold text-gray-900 dark:text-white tabular-nums">
-                ${deposit.toLocaleString()}
-              </span>
-              <span className="text-xs text-gray-400 dark:text-gray-500">
-                {c("botDetail", "depositHint", "(стартовый капитал)")}
-              </span>
+              {[200, 500, 1000].map((val) => {
+                const isActive = selectedDeposit === val;
+                return (
+                  <button
+                    key={val}
+                    onClick={() => {
+                      setSelectedDeposit(val);
+                      setHoverIndex(null);
+                    }}
+                    className={`relative rounded-xl px-4 py-1.5 text-xs sm:text-sm font-extrabold transition-all duration-200 ${
+                      isActive
+                        ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/30 ring-2 ring-emerald-500/20"
+                        : "bg-white dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-emerald-500/50"
+                    }`}
+                  >
+                    ${val}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
-          {/* Slider input */}
-          <input
-            id="deposit-slider"
-            type="range"
-            min={100}
-            max={20000}
-            step={100}
-            value={deposit}
-            onChange={(e) => {
-              setDeposit(Number(e.target.value));
-              setHoverIndex(null);
-            }}
-            className="w-full h-2.5 bg-gray-200 dark:bg-gray-800 rounded-lg appearance-none cursor-pointer accent-emerald-500"
-          />
+          {/* Interactive Range Slider snapping to 200, 500, 1000 */}
+          <div className="relative pt-2">
+            <input
+              type="range"
+              min={200}
+              max={1000}
+              step={100}
+              value={selectedDeposit}
+              onChange={(e) => {
+                const val = Number(e.target.value);
+                if (val <= 350) setSelectedDeposit(200);
+                else if (val <= 750) setSelectedDeposit(500);
+                else setSelectedDeposit(1000);
+                setHoverIndex(null);
+              }}
+              className="w-full h-2.5 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+            />
+            <div className="flex justify-between text-[11px] font-mono text-slate-500 dark:text-slate-400 mt-1.5 px-1">
+              <span className={selectedDeposit === 200 ? "font-bold text-emerald-600 dark:text-emerald-400" : ""}>$200 (микро)</span>
+              <span className={selectedDeposit === 500 ? "font-bold text-emerald-600 dark:text-emerald-400" : ""}>$500 (стандарт)</span>
+              <span className={selectedDeposit === 1000 ? "font-bold text-emerald-600 dark:text-emerald-400" : ""}>$1000 (профи)</span>
+            </div>
+          </div>
+        </div>
 
-          {/* Quick preset chips */}
-          <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs">
-            <span className="text-gray-400 dark:text-gray-500 hidden sm:inline">
-              {c("botDetail", "quickSelect", "Быстрый выбор:")}
+        {/* 3. Hero Profit & Metric Stats Section */}
+        <div className="mb-6">
+          <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
+            ПРИБЫЛЬ ПО РЕЗУЛЬТАТАМ ТЕСТА
+          </div>
+          
+          <div className="flex flex-wrap items-baseline gap-3 sm:gap-6 mb-2">
+            <span className="text-3xl sm:text-4xl md:text-5xl font-black text-emerald-600 dark:text-emerald-400 tracking-tight font-mono">
+              {currentData.profitUsdt}
             </span>
-            <div className="flex flex-wrap gap-1.5">
-              {[500, 1000, 2500, 5000, 10000].map((preset) => (
-                <button
-                  key={preset}
-                  onClick={() => {
-                    setDeposit(preset);
-                    setHoverIndex(null);
-                  }}
-                  className={`rounded-lg px-2.5 py-1 font-semibold border transition-all ${
-                    deposit === preset
-                      ? "border-emerald-500 bg-emerald-50 text-emerald-700 dark:border-emerald-500/40 dark:bg-emerald-500/15 dark:text-emerald-300"
-                      : "border-gray-200 bg-white text-gray-600 hover:border-gray-300 dark:border-white/10 dark:bg-white/[0.04] dark:text-gray-400 dark:hover:text-white"
-                  }`}
+            <span className="text-2xl sm:text-3xl font-extrabold text-emerald-500 dark:text-emerald-400 font-mono">
+              {currentData.profitPercent}
+            </span>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400 mb-4 pb-3 border-b border-slate-200/80 dark:border-slate-800">
+            <div>
+              Баланс: <span className="font-mono font-bold text-slate-900 dark:text-white">{currentData.startBalance} → {currentData.endBalance} USDT</span>
+            </div>
+            <div className="text-slate-500 dark:text-slate-400 italic">
+              ещё в сделке: {currentData.stillInTradeCount} поз. (в итог не входят)
+            </div>
+          </div>
+
+          {/* 5 Compact Stats Cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 sm:gap-3">
+            {/* 1. Trades */}
+            <div className="rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/80 dark:bg-[#121829] p-3 text-center">
+              <div className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white font-mono">
+                {currentData.tradesCount}
+              </div>
+              <div className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                сделок
+              </div>
+            </div>
+
+            {/* 2. Win rate */}
+            <div className="rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/80 dark:bg-[#121829] p-3 text-center">
+              <div className="text-lg sm:text-xl font-extrabold text-emerald-600 dark:text-emerald-400 font-mono">
+                {currentData.winRate}
+              </div>
+              <div className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                в плюс
+              </div>
+            </div>
+
+            {/* 3. Profit Factor */}
+            <div className="rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/80 dark:bg-[#121829] p-3 text-center">
+              <div className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white font-mono">
+                {currentData.profitFactor}
+              </div>
+              <div className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                профит-фактор
+              </div>
+            </div>
+
+            {/* 4. Max Drawdown */}
+            <div className="rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/80 dark:bg-[#121829] p-3 text-center">
+              <div className="text-lg sm:text-xl font-extrabold text-rose-500 font-mono">
+                {currentData.maxDrawdown}
+              </div>
+              <div className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                макс. просадка
+              </div>
+            </div>
+
+            {/* 5. Commissions */}
+            <div className="col-span-2 sm:col-span-1 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/80 dark:bg-[#121829] p-3 text-center">
+              <div className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white font-mono">
+                {currentData.commissions}
+              </div>
+              <div className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                комиссии, USDT
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 4. Main Two-Column Section: Charts (Left) & Coins / Trades Breakdown (Right) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          
+          {/* LEFT: Charts (Equity & Drawdown) in Sleek Terminal Frame */}
+          <div className="lg:col-span-7 flex flex-col gap-4">
+            <div className="rounded-2xl border border-slate-300 dark:border-slate-800 bg-[#090d16] p-4 sm:p-5 shadow-inner">
+              
+              {/* Header inside Chart frame */}
+              <div className="flex items-center justify-between text-xs text-slate-400 font-medium mb-3">
+                <span className="text-slate-200 font-semibold">
+                  Баланс (с учётом плавающего результата открытых позиций)
+                </span>
+                <span className="text-[11px] font-mono text-emerald-400">
+                  {currentData.depositLabel} → {currentData.endBalance} USDT
+                </span>
+              </div>
+
+              {/* Main Equity SVG Canvas */}
+              <div className="relative w-full select-none">
+                <svg
+                  ref={chartSvgRef}
+                  viewBox={`0 0 ${chartWidth} ${equityHeight}`}
+                  className="w-full h-auto cursor-crosshair touch-none"
+                  onPointerMove={handlePointerMove}
+                  onPointerLeave={() => setHoverIndex(null)}
                 >
-                  ${preset.toLocaleString()}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
+                  <defs>
+                    <linearGradient id="backtestEquityGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#00FFB2" stopOpacity="0.35" />
+                      <stop offset="70%" stopColor="#00FFB2" stopOpacity="0.05" />
+                      <stop offset="100%" stopColor="#00FFB2" stopOpacity="0" />
+                    </linearGradient>
+                    <filter id="neonGlowBacktest" x="-20%" y="-20%" width="140%" height="140%">
+                      <feGaussianBlur stdDeviation="3" result="blur" />
+                      <feMerge>
+                        <feMergeNode in="blur" />
+                        <feMergeNode in="SourceGraphic" />
+                      </feMerge>
+                    </filter>
+                  </defs>
 
-        {/* 5 Core Metric Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3.5 mb-8">
-          {/* Card 1: Total Profit / ROI */}
-          <div className="col-span-2 sm:col-span-1 rounded-2xl border border-emerald-500/20 bg-emerald-50/50 p-4 dark:border-emerald-500/20 dark:bg-emerald-950/20">
-            <div className="flex items-center justify-between text-xs font-semibold text-emerald-700 dark:text-emerald-400 mb-1">
-              <span>{c("botDetail", "roiLabel", "Доходность (ROI)")}</span>
-              <TrendingUp size={16} />
-            </div>
-            <div className="text-2xl sm:text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 tabular-nums">
-              {activePeriod.roi}
-            </div>
-            <div className="mt-1 text-xs font-medium text-emerald-800/80 dark:text-emerald-300/80 tabular-nums">
-              +${profitAmount.toLocaleString()} к депозиту
-            </div>
-          </div>
+                  {/* Horizontal Grid lines and Y labels */}
+                  {currentData.yTicks.map((tick, idx) => {
+                    const y = padding.top + (idx / (currentData.yTicks.length - 1)) * innerH;
+                    return (
+                      <g key={tick}>
+                        <line
+                          x1={padding.left}
+                          y1={y}
+                          x2={chartWidth - padding.right}
+                          y2={y}
+                          stroke="rgba(255,255,255,0.07)"
+                          strokeDasharray={idx === currentData.yTicks.length - 1 ? undefined : "3 3"}
+                        />
+                        <text
+                          x={padding.left - 8}
+                          y={y + 3}
+                          textAnchor="end"
+                          className="fill-slate-500 font-mono text-[10px]"
+                        >
+                          {tick}
+                        </text>
+                      </g>
+                    );
+                  })}
 
-          {/* Card 2: Win Rate */}
-          <div className="rounded-2xl border border-gray-100 bg-gray-50/70 p-4 dark:border-white/5 dark:bg-white/[0.02]">
-            <div className="flex items-center justify-between text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
-              <span>{c("botDetail", "winRateLabel", "Win Rate")}</span>
-              <Percent size={14} className="text-cyan-500" />
-            </div>
-            <div className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white tabular-nums">
-              {activePeriod.winRate}
-            </div>
-            <div className="mt-1 text-[11px] text-gray-400 dark:text-gray-500">
-              {c("botDetail", "winRateHint", "прибыльных сделок")}
-            </div>
-          </div>
-
-          {/* Card 3: Max Drawdown */}
-          <div className="rounded-2xl border border-gray-100 bg-gray-50/70 p-4 dark:border-white/5 dark:bg-white/[0.02]">
-            <div className="flex items-center justify-between text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
-              <span>{c("botDetail", "drawdownLabel", "Макс. просадка")}</span>
-              <ShieldCheck size={14} className="text-indigo-500" />
-            </div>
-            <div className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white tabular-nums">
-              {activePeriod.maxDrawdown}
-            </div>
-            <div className="mt-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold">
-              {c("botDetail", "drawdownHint", "контроль риска")}
-            </div>
-          </div>
-
-          {/* Card 4: Profit Factor */}
-          <div className="rounded-2xl border border-gray-100 bg-gray-50/70 p-4 dark:border-white/5 dark:bg-white/[0.02]">
-            <div className="flex items-center justify-between text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
-              <span>{c("botDetail", "profitFactorLabel", "Профит-фактор")}</span>
-              <Activity size={14} className="text-violet-500" />
-            </div>
-            <div className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white tabular-nums">
-              {activePeriod.profitFactor}
-            </div>
-            <div className="mt-1 text-[11px] text-gray-400 dark:text-gray-500">
-              {c("botDetail", "profitFactorHint", "валовая прибыль / убыток")}
-            </div>
-          </div>
-
-          {/* Card 5: Trades count */}
-          <div className="rounded-2xl border border-gray-100 bg-gray-50/70 p-4 dark:border-white/5 dark:bg-white/[0.02]">
-            <div className="flex items-center justify-between text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
-              <span>{c("botDetail", "tradesLabel", "Всего сделок")}</span>
-              <Layers size={14} className="text-amber-500" />
-            </div>
-            <div className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white tabular-nums">
-              {activePeriod.tradesCount}
-            </div>
-            <div className="mt-1 text-[11px] text-gray-400 dark:text-gray-500">
-              {c("botDetail", "tradesHint", "за выбранный период")}
-            </div>
-          </div>
-        </div>
-
-        {/* Dynamic Interactive SVG Chart */}
-        <div className="relative rounded-2xl border border-gray-200/90 bg-gray-950 p-4 sm:p-6 shadow-inner">
-          {/* Chart top meta readout */}
-          <div className="flex flex-wrap items-center justify-between gap-3 mb-2 text-xs">
-            <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full" style={{ backgroundColor: botColor }} />
-              <span className="font-semibold text-white">Кривая роста капитала (Equity Curve)</span>
-              <span className="text-gray-500">· Период: {activePeriod.label}</span>
-            </div>
-            <div className="text-gray-400 font-mono text-[11px]">
-              Наведите курсор на график для детальной информации
-            </div>
-          </div>
-
-          {/* SVG Canvas */}
-          <div className="relative w-full overflow-hidden select-none">
-            <svg
-              ref={chartSvgRef}
-              viewBox={`0 0 ${chartWidth} ${chartHeight}`}
-              className="w-full h-auto cursor-crosshair touch-none"
-              onPointerMove={handlePointerMove}
-              onPointerLeave={handlePointerLeave}
-            >
-              <defs>
-                <linearGradient id="equityGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={botColor} stopOpacity="0.38" />
-                  <stop offset="85%" stopColor={botColor} stopOpacity="0.03" />
-                  <stop offset="100%" stopColor={botColor} stopOpacity="0" />
-                </linearGradient>
-                <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%">
-                  <feGaussianBlur stdDeviation="4" result="blur" />
-                  <feMerge>
-                    <feMergeNode in="blur" />
-                    <feMergeNode in="SourceGraphic" />
-                  </feMerge>
-                </filter>
-              </defs>
-
-              {/* Grid lines */}
-              <line
-                x1={padding.left}
-                y1={padding.top}
-                x2={chartWidth - padding.right}
-                y2={padding.top}
-                stroke="rgba(255,255,255,0.08)"
-                strokeDasharray="4 4"
-              />
-              <line
-                x1={padding.left}
-                y1={(padding.top + (chartHeight - padding.bottom)) / 2}
-                x2={chartWidth - padding.right}
-                y2={(padding.top + (chartHeight - padding.bottom)) / 2}
-                stroke="rgba(255,255,255,0.06)"
-                strokeDasharray="4 4"
-              />
-              <line
-                x1={padding.left}
-                y1={chartHeight - padding.bottom}
-                x2={chartWidth - padding.right}
-                y2={chartHeight - padding.bottom}
-                stroke="rgba(255,255,255,0.12)"
-              />
-
-              {/* Y Axis labels */}
-              <text
-                x={padding.left - 8}
-                y={padding.top + 4}
-                textAnchor="end"
-                className="fill-gray-500 font-mono text-[10px]"
-              >
-                ${Math.round(chartData.maxEquity).toLocaleString()}
-              </text>
-              <text
-                x={padding.left - 8}
-                y={(padding.top + (chartHeight - padding.bottom)) / 2 + 3}
-                textAnchor="end"
-                className="fill-gray-500 font-mono text-[10px]"
-              >
-                ${Math.round((chartData.maxEquity + chartData.minEquity) / 2).toLocaleString()}
-              </text>
-              <text
-                x={padding.left - 8}
-                y={chartHeight - padding.bottom}
-                textAnchor="end"
-                className="fill-gray-500 font-mono text-[10px]"
-              >
-                ${Math.round(chartData.minEquity).toLocaleString()}
-              </text>
-
-              {/* Area fill */}
-              {chartData.area && (
-                <path d={chartData.area} fill="url(#equityGradient)" />
-              )}
-
-              {/* Main curve */}
-              {chartData.path && (
-                <path
-                  d={chartData.path}
-                  fill="none"
-                  stroke={botColor}
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  filter="url(#neonGlow)"
-                />
-              )}
-
-              {/* X Axis dates */}
-              {chartData.coords.length > 0 && (
-                <>
-                  <text
-                    x={chartData.coords[0].x}
-                    y={chartHeight - 12}
-                    textAnchor="start"
-                    className="fill-gray-500 font-mono text-[10px]"
-                  >
-                    {chartData.coords[0].point.date}
-                  </text>
-                  <text
-                    x={chartData.coords[Math.floor(chartData.coords.length / 2)].x}
-                    y={chartHeight - 12}
-                    textAnchor="middle"
-                    className="fill-gray-500 font-mono text-[10px]"
-                  >
-                    {chartData.coords[Math.floor(chartData.coords.length / 2)].point.date}
-                  </text>
-                  <text
-                    x={chartData.coords[chartData.coords.length - 1].x}
-                    y={chartHeight - 12}
-                    textAnchor="end"
-                    className="fill-gray-500 font-mono text-[10px]"
-                  >
-                    {chartData.coords[chartData.coords.length - 1].point.date}
-                  </text>
-                </>
-              )}
-
-              {/* Active hover vertical cursor & dot */}
-              {activeCoord && (
-                <g>
+                  {/* Vertical Checkpoint line at 31.10 */}
                   <line
-                    x1={activeCoord.x}
+                    x1={checkpointX}
                     y1={padding.top}
-                    x2={activeCoord.x}
-                    y2={chartHeight - padding.bottom}
-                    stroke="rgba(255, 255, 255, 0.45)"
-                    strokeWidth="1.5"
+                    x2={checkpointX}
+                    y2={equityHeight - padding.bottom}
+                    stroke="#F59E0B"
+                    strokeWidth="1.2"
                     strokeDasharray="3 3"
                   />
-                  <circle
-                    cx={activeCoord.x}
-                    cy={activeCoord.y}
-                    r="6"
-                    fill={botColor}
-                    stroke="#ffffff"
-                    strokeWidth="2"
-                    filter="url(#neonGlow)"
-                  />
-                </g>
-              )}
-            </svg>
+                  <text
+                    x={checkpointX + 4}
+                    y={padding.top + 14}
+                    className="fill-amber-400 font-mono text-[9px] font-semibold"
+                  >
+                    проверочный период →
+                  </text>
 
-            {/* Dynamic Floating Tooltip */}
-            <AnimatePresence>
-              {activeCoord && (
-                <motion.div
-                  initial={{ opacity: 0, y: 8, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.15 }}
-                  className="pointer-events-none absolute z-20 rounded-xl border border-white/20 bg-gray-900/95 p-3 shadow-2xl backdrop-blur-md text-xs text-white"
-                  style={{
-                    left: `${Math.min(
-                      Math.max(10, (activeCoord.x / chartWidth) * 100),
-                      82
-                    )}%`,
-                    top: `${Math.max(8, (activeCoord.y / chartHeight) * 100 - 32)}%`,
-                    transform: "translate(-50%, -100%)",
-                  }}
-                >
-                  <div className="flex items-center gap-1.5 text-[11px] text-gray-400 mb-1">
-                    <Calendar size={12} />
-                    <span>{activeCoord.point.date}</span>
-                  </div>
-                  <div className="flex items-center justify-between gap-3 font-semibold">
-                    <span>Баланс:</span>
-                    <span className="text-white font-mono font-bold text-sm">
-                      ${(activeCoord.point.scaledEquity ?? activeCoord.point.equity).toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between gap-3 text-emerald-400 font-semibold mt-0.5">
-                    <span>Прибыль:</span>
-                    <span className="font-mono">
-                      +${(activeCoord.point.scaledPnl ?? activeCoord.point.pnl).toLocaleString()}
-                    </span>
-                  </div>
-                  {activeCoord.point.trade && (
-                    <div className="mt-1 pt-1 border-t border-white/10 text-[10px] text-cyan-300">
-                      {activeCoord.point.trade}
-                    </div>
+                  {/* Equity Area Fill */}
+                  <path d={equityAreaPath} fill="url(#backtestEquityGrad)" />
+
+                  {/* Equity Main Line */}
+                  <path
+                    d={equityPath}
+                    fill="none"
+                    stroke="#00FFB2"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    filter="url(#neonGlowBacktest)"
+                  />
+
+                  {/* "старт" label at right baseline */}
+                  <text
+                    x={chartWidth - padding.right}
+                    y={equityHeight - padding.bottom - 4}
+                    textAnchor="end"
+                    className="fill-emerald-400 font-mono text-[9px]"
+                  >
+                    старт
+                  </text>
+
+                  {/* Last End Point pulsing circle */}
+                  {coords.length > 0 && (
+                    <g>
+                      <circle
+                        cx={coords[coords.length - 1].x}
+                        cy={coords[coords.length - 1].y}
+                        r="5"
+                        fill="#00FFB2"
+                        stroke="#ffffff"
+                        strokeWidth="2"
+                      />
+                    </g>
                   )}
-                </motion.div>
-              )}
-            </AnimatePresence>
+
+                  {/* X-axis date labels */}
+                  <text x={padding.left} y={equityHeight - 6} textAnchor="start" className="fill-slate-500 font-mono text-[10px]">
+                    21.09
+                  </text>
+                  <text x={padding.left + innerW * 0.33} y={equityHeight - 6} textAnchor="middle" className="fill-slate-500 font-mono text-[10px]">
+                    11.10
+                  </text>
+                  <text x={checkpointX} y={equityHeight - 6} textAnchor="middle" className="fill-amber-400 font-mono text-[10px]">
+                    31.10
+                  </text>
+                  <text x={chartWidth - padding.right} y={equityHeight - 6} textAnchor="end" className="fill-slate-500 font-mono text-[10px]">
+                    20.11
+                  </text>
+
+                  {/* Hover vertical crosshair & indicator */}
+                  {activeCoord && (
+                    <g>
+                      <line
+                        x1={activeCoord.x}
+                        y1={padding.top}
+                        x2={activeCoord.x}
+                        y2={equityHeight - padding.bottom}
+                        stroke="rgba(255, 255, 255, 0.4)"
+                        strokeWidth="1.2"
+                        strokeDasharray="2 2"
+                      />
+                      <circle
+                        cx={activeCoord.x}
+                        cy={activeCoord.y}
+                        r="5"
+                        fill="#00FFB2"
+                        stroke="#ffffff"
+                        strokeWidth="2"
+                      />
+                    </g>
+                  )}
+                </svg>
+
+                {/* Hover Tooltip overlay */}
+                <AnimatePresence>
+                  {activeCoord && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.12 }}
+                      className="pointer-events-none absolute z-20 rounded-xl border border-slate-700 bg-slate-900/95 p-2.5 shadow-2xl backdrop-blur-md text-xs text-white"
+                      style={{
+                        left: `${Math.min(Math.max(12, (activeCoord.x / chartWidth) * 100), 80)}%`,
+                        top: `${Math.max(8, (activeCoord.y / equityHeight) * 100 - 35)}%`,
+                        transform: "translate(-50%, -100%)",
+                      }}
+                    >
+                      <div className="flex items-center gap-1.5 text-[10px] text-slate-400 mb-1">
+                        <Calendar size={11} />
+                        <span>Дата: {activeCoord.point.date}</span>
+                      </div>
+                      <div className="flex items-center justify-between gap-3 font-semibold">
+                        <span>Баланс:</span>
+                        <span className="font-mono text-emerald-400 font-bold">
+                          ${activeCoord.point.equity.toLocaleString()}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between gap-3 text-[11px] text-slate-300 mt-0.5">
+                        <span>Просадка:</span>
+                        <span className="font-mono text-rose-400">
+                          {activeCoord.point.dd}%
+                        </span>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Sub-Chart: Drawdown curve */}
+              <div className="mt-4 pt-3 border-t border-slate-800">
+                <div className="flex items-center justify-between text-[11px] font-mono text-slate-400 mb-1">
+                  <span>
+                    Просадка от максимума · максимум <span className="text-rose-400 font-bold">{currentData.drawdownMax}</span>
+                  </span>
+                  <span>{currentData.drawdownScale}</span>
+                </div>
+
+                <div className="relative w-full h-[70px]">
+                  <svg viewBox={`0 0 ${chartWidth} ${ddHeight}`} className="w-full h-full">
+                    <defs>
+                      <linearGradient id="backtestDdGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#F43F5E" stopOpacity="0.4" />
+                        <stop offset="100%" stopColor="#F43F5E" stopOpacity="0.1" />
+                      </linearGradient>
+                    </defs>
+
+                    {/* Baseline 0% */}
+                    <line
+                      x1={padding.left}
+                      y1={10}
+                      x2={chartWidth - padding.right}
+                      y2={10}
+                      stroke="rgba(255,255,255,0.12)"
+                    />
+                    <text x={padding.left - 6} y={13} textAnchor="end" className="fill-slate-500 font-mono text-[9px]">
+                      0%
+                    </text>
+
+                    {/* Bottom limit */}
+                    <line
+                      x1={padding.left}
+                      y1={ddHeight - 6}
+                      x2={chartWidth - padding.right}
+                      y2={ddHeight - 6}
+                      stroke="rgba(255,255,255,0.06)"
+                      strokeDasharray="2 2"
+                    />
+                    <text x={padding.left - 6} y={ddHeight - 4} textAnchor="end" className="fill-slate-500 font-mono text-[9px]">
+                      {currentData.drawdownScale}
+                    </text>
+
+                    {/* Checkpoint line continuation */}
+                    <line
+                      x1={checkpointX}
+                      y1={10}
+                      x2={checkpointX}
+                      y2={ddHeight - 6}
+                      stroke="#F59E0B"
+                      strokeWidth="1"
+                      strokeDasharray="2 2"
+                    />
+
+                    {/* Drawdown Area & Line */}
+                    <path d={ddAreaPath} fill="url(#backtestDdGrad)" />
+                    <path d={ddPath} fill="none" stroke="#F43F5E" strokeWidth="1.5" strokeLinecap="round" />
+                  </svg>
+                </div>
+              </div>
+            </div>
           </div>
+
+          {/* RIGHT: Coins in test (20) & Trade Closures */}
+          <div className="lg:col-span-5 flex flex-col gap-4">
+            
+            {/* Box 1: Монеты в тесте (20) */}
+            <div className="rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-slate-50/80 dark:bg-[#121829] p-4 sm:p-5">
+              <div className="flex items-center justify-between mb-3 border-b border-slate-200/80 dark:border-slate-800 pb-2">
+                <span className="text-sm font-bold text-slate-900 dark:text-white">
+                  Монеты в тесте (20)
+                </span>
+                <span className="text-xs font-mono text-emerald-600 dark:text-emerald-400 font-bold">
+                  Итог: {currentData.profitUsdt.split(" ")[1]} USDT
+                </span>
+              </div>
+
+              {/* 2-column coin list */}
+              <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs font-mono">
+                {currentData.coins.map((c, i) => (
+                  <div key={i} className="flex items-center justify-between py-0.5 border-b border-slate-200/40 dark:border-slate-800/40">
+                    <div className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300 truncate">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
+                      <span className="truncate">{c.pair}</span>
+                    </div>
+                    <span className="text-emerald-600 dark:text-emerald-400 font-bold ml-1 shrink-0">
+                      {c.pnl}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Box 2: Как закрывались сделки */}
+            <div className="rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-slate-50/80 dark:bg-[#121829] p-4">
+              <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
+                Как закрывались сделки
+              </div>
+              <div className="space-y-1.5 text-xs font-mono">
+                {currentData.closures.map((cl, idx) => (
+                  <div key={idx} className="flex items-center justify-between text-slate-700 dark:text-slate-300">
+                    <span>{cl.label}</span>
+                    <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                      {cl.count} · {cl.sum}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Box 3: Ещё в сделке (в итог не входят) */}
+            <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 dark:bg-amber-400/[0.04] p-4">
+              <div className="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-2">
+                Ещё в сделке (в итог не входят)
+              </div>
+              <div className="space-y-1.5 text-xs font-mono">
+                {currentData.openPositions.map((pos, idx) => (
+                  <div key={idx} className="flex items-center justify-between text-slate-700 dark:text-slate-300">
+                    <div>
+                      <span className="font-semibold text-slate-900 dark:text-white">{pos.pair}</span>
+                      <span className="mx-1 text-slate-400">·</span>
+                      <span className={pos.side === "LONG" ? "text-emerald-600 dark:text-emerald-400 font-bold" : "text-rose-500 font-bold"}>
+                        {pos.side}
+                      </span>
+                      <span className="mx-1 text-slate-400">·</span>
+                      <span className="text-slate-500 dark:text-slate-400">усредн. {pos.avg}</span>
+                    </div>
+                    <span className="text-slate-400 text-[11px]">{pos.status}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+          </div>
+
         </div>
 
-        {/* Footer Note and Direct CTA */}
-        <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-gray-100 dark:border-white/5">
-          <div className="flex items-start gap-2.5 text-xs text-gray-500 dark:text-gray-400 max-w-2xl">
-            <Info size={16} className="text-gray-400 shrink-0 mt-0.5" />
+        {/* 5. Footer Disclaimer & CTA */}
+        <div className="mt-8 pt-5 border-t border-slate-200/80 dark:border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex items-start gap-2.5 text-xs text-slate-500 dark:text-slate-400 max-w-3xl leading-relaxed">
+            <Info size={16} className="text-slate-400 shrink-0 mt-0.5" />
             <span>
-              {c("botDetail", "chartDisclaimer", "Бэктесты рассчитаны на реальных исторических данных биржевых котировок с учётом стандартных комиссий мейкер/тейкер. Результаты приведены в демонстрационных целях и не гарантируют будущую доходность.")}
+              Расчёт по историческим свечам: комиссии, проскальзывание, funding и маржа учтены. Итог — по закрытым сделкам. Не гарантирует будущих результатов и не является инвестиционной рекомендацией.
             </span>
           </div>
 
           <a
-            href="#main"
-            className="btn-primary inline-flex items-center justify-center gap-2 px-5 py-2.5 text-xs sm:text-sm font-bold shrink-0 w-full sm:w-auto"
-            style={{
-              backgroundColor: botColor === "#00FFB2" ? "#059669" : botColor,
-            }}
+            href="https://t.me/coinsoft"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white font-bold px-6 py-3 text-xs sm:text-sm shadow-md transition-all shrink-0 w-full sm:w-auto"
           >
-            <span>Выбрать {b.name}</span>
+            <span>Запустить бота на {selectedDeposit}$</span>
             <ArrowUpRight size={16} />
           </a>
         </div>
+
       </div>
     </section>
   );

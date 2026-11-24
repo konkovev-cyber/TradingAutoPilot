@@ -41,13 +41,13 @@ export default function BotDetailPage() {
     path: bot ? `/bots/${bot.slug}` : undefined,
     jsonLd: bot
       ? {
-          "@context": "https://schema.org",
-          "@type": "SoftwareApplication",
-          "name": botText(bot, lang).name,
-          "description": bot?.metaDescription || botText(bot, lang).shortDesc,
-          "applicationCategory": "FinanceApplication",
-          "operatingSystem": "Web",
-        }
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": botText(bot, lang).name,
+        "description": bot?.metaDescription || botText(bot, lang).shortDesc,
+        "applicationCategory": "FinanceApplication",
+        "operatingSystem": "Web",
+      }
       : undefined,
   });
 
@@ -104,7 +104,7 @@ export default function BotDetailPage() {
             />
 
             <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-              
+
               {/* Верхняя панель: Навигация слева + Статус и Поделиться справа */}
               <div className="flex flex-wrap items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-200/70 dark:border-white/[0.06]">
                 <div className="flex items-center gap-3 text-xs sm:text-sm">
@@ -141,7 +141,7 @@ export default function BotDetailPage() {
 
               {/* Сетка Hero: ДВЕ СИММЕТРИЧНЫЕ КОЛОНКИ 50/50 */}
               <div className="grid lg:grid-cols-12 gap-8 items-stretch">
-                
+
                 {/* ── ЛЕВАЯ КОЛОНКА (Инфо + Доходность + Действия) ── */}
                 <div className="lg:col-span-6 flex flex-col justify-between space-y-5">
                   <div className="space-y-4">
