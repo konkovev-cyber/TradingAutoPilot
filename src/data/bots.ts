@@ -17,6 +17,7 @@ export interface BotText {
   features: string[];
   howItWorks: BotStep[];
   exampleTrade: BotStep[];
+  capabilities?: BotStep[];
 }
 
 export interface BotReturn { period: string; value: string }
@@ -58,6 +59,7 @@ export interface BotData extends Omit<BotText, "features" | "howItWorks" | "exam
   features: string[];
   howItWorks: BotStep[];
   exampleTrade: BotStep[];
+  capabilities?: BotStep[];
   returns: BotReturn[];
   i18n?: { ru?: Partial<BotText>; en?: Partial<BotText> };
   metaTitle?: string;
@@ -299,12 +301,28 @@ export function botText(bot: BotData, lang: Lang): BotData {
   const isSynchro = bot.slug === "synchrobot" || bot.slug === "synchro-bot" || (bot as any).id === "synchrobot";
   const synchroRuDesc = "SynchroTrade Bot — это робот для автоматической торговли бессрочными USDT-фьючерсами на биржах Bybit, OKX и BingX. Робот имеет уникально разработанный алгоритм и удобный интерфейс настроек. Вы управляете им прямо в Telegram: нажимаете кнопки в чате с ботом. Ничего устанавливать на компьютер или телефон не нужно, робот торгует на сервере круглосуточно, даже когда Telegram закрыт. Робот в режиме реального времени отслеживает изменения объёмов по заданным торговым парам и выявляет потенциальные точки входа для открытий сделок в Long или Short и далее ведет каждую сделку. Весь торговый процесс полностью автономный.";
 
-  let shortDesc = ov.shortDesc || bot.shortDesc;
-  let fullDesc = ov.fullDesc || bot.fullDesc;
+  let shortDesc = ov.shortDesc || bot.shortDesc || "";
+  let fullDesc = ov.fullDesc || bot.fullDesc || "";
   if (isSynchro && lang === "ru") {
-    shortDesc = synchroRuDesc;
-    fullDesc = synchroRuDesc;
+    if (!fullDesc || fullDesc.includes("интеллектуальный криптотрейдинговый бот")) {
+      fullDesc = synchroRuDesc;
+    }
+    if (!shortDesc || shortDesc.includes("Интеллектуальный криптотрейдинговый бот")) {
+      shortDesc = synchroRuDesc;
+    }
   }
+
+  const defaultCapabilities: BotStep[] = [
+    { title: "3 биржи и до 5 аккаунтов", desc: "Bybit, OKX, BingX. До 5 аккаунтов одновременно: demo и реальные" },
+    { title: "Гибкий выбор монет", desc: "Списком или вручную с индивидуальной настройкой каждой пары" },
+    { title: "Закрытие в 1 клик", desc: "Мгновенное закрытие позиции по любой монете одной кнопкой" },
+    { title: "Статистика и журнал", desc: "Открытые позиции, история сделок, PnL и «живой» журнал работы" },
+    { title: "Надёжные уведомления", desc: "Отчёты в Telegram не теряются даже при временном обрыве связи" }
+  ];
+
+  const botCapabilities = (bot.capabilities && bot.capabilities.length > 0)
+    ? bot.capabilities
+    : (isSynchro ? defaultCapabilities : []);
 
   return {
     ...bot,
@@ -322,6 +340,7 @@ export function botText(bot: BotData, lang: Lang): BotData {
     features: ov.features && ov.features.length > 0 ? ov.features : bot.features,
     howItWorks: ov.howItWorks && ov.howItWorks.length > 0 ? ov.howItWorks : bot.howItWorks,
     exampleTrade: ov.exampleTrade && ov.exampleTrade.length > 0 ? ov.exampleTrade : bot.exampleTrade,
+    capabilities: botCapabilities,
   };
 }
 

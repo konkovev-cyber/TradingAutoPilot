@@ -114,6 +114,7 @@ async function initDb() {
         ALTER TABLE bots ADD COLUMN IF NOT EXISTS video_title TEXT;
         ALTER TABLE bots ADD COLUMN IF NOT EXISTS video_desc TEXT;
         ALTER TABLE bots ADD COLUMN IF NOT EXISTS backtests JSONB;
+        ALTER TABLE bots ADD COLUMN IF NOT EXISTS capabilities JSONB;
         ALTER TABLE bots ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
 
         CREATE TABLE IF NOT EXISTS site_content (
@@ -177,13 +178,15 @@ async function initDb() {
             AND (video_url IS NULL OR video_url = '');
         `);
 
-        // Migration: sync synchrobot text and 5 how_it_works steps
+        // Migration: sync synchrobot text, features, how_it_works, capabilities
         await client.query(`
           UPDATE bots SET 
             short_desc = $1,
             full_desc = $2,
             badge = $3,
-            how_it_works = $4
+            how_it_works = $4,
+            features = $5,
+            capabilities = $6
           WHERE (slug = 'synchrobot' OR slug = 'synchro-bot' OR id = 'synchrobot');
         `, [
           'SynchroTrade Bot — это робот для автоматической торговли бессрочными USDT-фьючерсами на биржах Bybit, OKX и BingX. Робот имеет уникально разработанный алгоритм и удобный интерфейс настроек. Вы управляете им прямо в Telegram: нажимаете кнопки в чате с ботом. Ничего устанавливать на компьютер или телефон не нужно, робот торгует на сервере круглосуточно, даже когда Telegram закрыт. Робот в режиме реального времени отслеживает изменения объёмов по заданным торговым парам и выявляет потенциальные точки входа для открытий сделок в Long или Short и далее ведет каждую сделку. Весь торговый процесс полностью автономный.',
@@ -195,6 +198,20 @@ async function initDb() {
             { title: 'Вход с защитой', desc: 'Открывает позицию и сразу ставит на бирже стоп-лосс и тейк-профит' },
             { title: 'Ведёт позицию', desc: 'Следит за ценой, подтягивает трейлинг-стоп, соблюдает ваши лимиты' },
             { title: 'Закрывает и сообщает', desc: 'Фиксирует прибыль или ограничивает убыток и присылает отчёт' }
+          ]),
+          JSON.stringify([
+            'работать с тремя биржами и подключать несколько аккаунтов (до 5), в том числе demo и реальный;',
+            'выбирать монеты списком или вводить вручную и настраивать каждую монету отдельно;',
+            'мгновенно закрывать позицию по одной монете одной кнопкой;',
+            'показывать открытые позиции, историю сделок, статистику и «живой» журнал работы;',
+            'надёжно доставлять уведомления — они не теряются, даже если на время пропала связь.'
+          ]),
+          JSON.stringify([
+            { title: '3 биржи и до 5 аккаунтов', desc: 'Bybit, OKX, BingX. До 5 аккаунтов одновременно: demo и реальные' },
+            { title: 'Гибкий выбор монет', desc: 'Списком или вручную с индивидуальной настройкой каждой пары' },
+            { title: 'Закрытие в 1 клик', desc: 'Мгновенное закрытие позиции по любой монете одной кнопкой' },
+            { title: 'Статистика и журнал', desc: 'Открытые позиции, история сделок, PnL и «живой» журнал работы' },
+            { title: 'Надёжные уведомления', desc: 'Отчёты в Telegram не теряются даже при временном обрыве связи' }
           ])
         ]);
       } catch (e) {
@@ -676,6 +693,7 @@ app.get('/api/bots', async (req, res) => {
           fullDesc: r.full_desc || '',
           how_it_works: r.how_it_works || [],
           example_trade: r.example_trade || [],
+          capabilities: r.capabilities || [],
           features: r.features || [],
           returns: r.returns || [],
           backtests: r.backtests || [],
@@ -786,7 +804,8 @@ app.patch('/api/bots/:id', async (req, res) => {
           video_url = COALESCE($30, video_url),
           video_title = COALESCE($31, video_title),
           video_desc = COALESCE($32, video_desc),
-          backtests = COALESCE($33::jsonb, backtests)
+          backtests = COALESCE($33::jsonb, backtests),
+          capabilities = COALESCE($34::jsonb, capabilities)
         WHERE id = $1 OR slug = $1
         RETURNING *;
       `, [
@@ -814,6 +833,7 @@ app.patch('/api/bots/:id', async (req, res) => {
         bot.video_title !== undefined ? (bot.video_title || bot.videoTitle) : null,
         bot.video_desc !== undefined ? (bot.video_desc || bot.videoDesc) : null,
         bot.backtests ? JSON.stringify(bot.backtests) : null,
+        bot.capabilities ? JSON.stringify(bot.capabilities) : null,
       ]);
 
       if (q.rows.length > 0) {

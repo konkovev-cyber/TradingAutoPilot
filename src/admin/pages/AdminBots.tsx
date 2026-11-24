@@ -33,6 +33,7 @@ interface Bot {
   returns?: Json;
   how_it_works?: Json;
   example_trade?: Json;
+  capabilities?: Json;
   i18n?: Json;
   position?: number;
   meta_title?: string;
@@ -90,8 +91,9 @@ export default function AdminBots() {
     returns: ReturnRow[];
     how: StepRow[];
     example: StepRow[];
+    capabilities: StepRow[];
     en: { features: string[]; how: StepRow[]; example: StepRow[] };
-  }>({ features: [], returns: [], how: [], example: [], en: { features: [], how: [], example: [] } });
+  }>({ features: [], returns: [], how: [], example: [], capabilities: [], en: { features: [], how: [], example: [] } });
 
   const [i18n, setI18n] = useState<Record<string, any>>({});
 
@@ -147,6 +149,17 @@ export default function AdminBots() {
       example: Array.isArray(bot.example_trade)
         ? bot.example_trade.map((s: Json) => ({ title: String(s?.title ?? ""), desc: String(s?.desc ?? "") }))
         : [],
+      capabilities: Array.isArray(bot.capabilities)
+        ? bot.capabilities.map((s: Json) => ({ title: String(s?.title ?? ""), desc: String(s?.desc ?? "") }))
+        : (bot.slug === "synchrobot" || (bot as any).id === "synchrobot"
+            ? [
+                { title: "3 биржи и до 5 аккаунтов", desc: "Bybit, OKX, BingX. До 5 аккаунтов одновременно: demo и реальные" },
+                { title: "Гибкий выбор монет", desc: "Списком или вручную с индивидуальной настройкой каждой пары" },
+                { title: "Закрытие в 1 клик", desc: "Мгновенное закрытие позиции по любой монете одной кнопкой" },
+                { title: "Статистика и журнал", desc: "Открытые позиции, история сделок, PnL и «живой» журнал работы" },
+                { title: "Надёжные уведомления", desc: "Отчёты в Telegram не теряются даже при временном обрыве связи" }
+              ]
+            : []),
       en: {
         features: Array.isArray(en.features) ? en.features.map(String) : [],
         how: Array.isArray(en.how_it_works ?? en.howItWorks)
@@ -257,6 +270,7 @@ export default function AdminBots() {
       returns: extra.returns.filter((r) => r.period.trim() !== "" || r.value.trim() !== ""),
       how_it_works: extra.how.filter((s) => s.title.trim() !== "" || s.desc.trim() !== ""),
       example_trade: extra.example.filter((s) => s.title.trim() !== "" || s.desc.trim() !== ""),
+      capabilities: extra.capabilities.filter((s) => s.title.trim() !== "" || s.desc.trim() !== ""),
       i18n: buildI18n(i18n),
       suitable_for: bot.suitable_for?.trim() ? bot.suitable_for : "",
       exchanges: bot.exchanges?.trim() ? bot.exchanges : "",
@@ -362,10 +376,11 @@ export default function AdminBots() {
     { id: "video", label: "Видео (YouTube)" },
     { id: "backtests", label: "Бэктесты и графики" },
     { id: "desc", label: "Описание" },
-    { id: "features", label: "Особенности" },
-    { id: "returns", label: "Доходность" },
-    { id: "how", label: "Как работает" },
+    { id: "features", label: "Что умеет (пункты)" },
+    { id: "capabilities", label: "Что умеет (карточки)" },
+    { id: "how", label: "Что делает (шаги)" },
     { id: "example", label: "Пример сделки" },
+    { id: "returns", label: "Доходность" },
     { id: "seo", label: "SEO" },
     { id: "en", label: "EN версия" },
   ];
@@ -968,7 +983,14 @@ export default function AdminBots() {
           {/* ТАБ: Как работает */}
           {activeTab === "how" && (
             <div className="space-y-4">
-              {stepsEditor("Как работает (шаги)", extra.how, (rows) => setExtra({ ...extra, how: rows }), "Добавить шаг")}
+              {stepsEditor("Что делает бот (шаги на сайте)", extra.how, (rows) => setExtra({ ...extra, how: rows }), "Добавить шаг")}
+            </div>
+          )}
+
+          {/* ТАБ: Что умеет бот (карточки) */}
+          {activeTab === "capabilities" && (
+            <div className="space-y-4">
+              {stepsEditor("Карточки «Что умеет бот» (до 5 шт.)", extra.capabilities, (rows) => setExtra({ ...extra, capabilities: rows }), "Добавить карточку")}
             </div>
           )}
 

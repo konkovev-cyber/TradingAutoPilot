@@ -1,6 +1,15 @@
 import React from "react";
 import { Layers, Coins, MousePointerClick, LineChart, BellRing, ChevronRight } from "lucide-react";
-import { type BotData } from "@/data/bots";
+import { useI18n } from "@/lib/i18n";
+import { botText, type BotData } from "@/data/bots";
+
+const DEFAULT_BULLETS = [
+  "работать с тремя биржами и подключать несколько аккаунтов (до 5), в том числе demo и реальный;",
+  "выбирать монеты списком или вводить вручную и настраивать каждую монету отдельно;",
+  "мгновенно закрывать позицию по одной монете одной кнопкой;",
+  "показывать открытые позиции, историю сделок, статистику и «живой» журнал работы;",
+  "надёжно доставлять уведомления — они не теряются, даже если на время пропала связь.",
+];
 
 const CAPABILITY_CARDS = [
   {
@@ -76,9 +85,24 @@ const CAPABILITY_CARDS = [
 ];
 
 export default function BotCapabilities({ bot }: { bot: BotData }) {
+  const { lang } = useI18n();
+  const b = botText(bot, lang);
   const isSynchro = bot.slug === "synchrobot" || bot.slug === "synchro-bot";
 
   if (!isSynchro) return null;
+
+  // Use dynamic features from admin panel if available, else fallback
+  const bullets = b.features && b.features.length > 0 ? b.features : DEFAULT_BULLETS;
+
+  // Use dynamic capabilities from admin panel if available, else fallback
+  const cards = (bot.capabilities && bot.capabilities.length > 0)
+    ? bot.capabilities.map((c, i) => ({
+        ...CAPABILITY_CARDS[i % CAPABILITY_CARDS.length],
+        num: i + 1,
+        title: c.title,
+        desc: c.desc,
+      }))
+    : CAPABILITY_CARDS;
 
   return (
     <div className="space-y-6">
@@ -87,43 +111,19 @@ export default function BotCapabilities({ bot }: { bot: BotData }) {
           Что умеет бот:
         </h3>
         <ul className="space-y-2 text-sm sm:text-base text-slate-700 dark:text-slate-300">
-          <li className="flex items-start gap-2.5">
-            <span className="text-slate-400 font-bold">•</span>
-            <span>
-              работать с тремя биржами и подключать <strong>несколько аккаунтов</strong> (до 5), в том числе demo и реальный;
-            </span>
-          </li>
-          <li className="flex items-start gap-2.5">
-            <span className="text-slate-400 font-bold">•</span>
-            <span>
-              выбирать монеты списком или вводить вручную и настраивать каждую монету отдельно;
-            </span>
-          </li>
-          <li className="flex items-start gap-2.5">
-            <span className="text-slate-400 font-bold">•</span>
-            <span>
-              мгновенно закрывать позицию по одной монете одной кнопкой;
-            </span>
-          </li>
-          <li className="flex items-start gap-2.5">
-            <span className="text-slate-400 font-bold">•</span>
-            <span>
-              показывать открытые позиции, историю сделок, статистику и «живой» журнал работы;
-            </span>
-          </li>
-          <li className="flex items-start gap-2.5">
-            <span className="text-slate-400 font-bold">•</span>
-            <span>
-              надёжно доставлять уведомления — они не теряются, даже если на время пропала связь.
-            </span>
-          </li>
+          {bullets.map((bullet, idx) => (
+            <li key={idx} className="flex items-start gap-2.5">
+              <span className="text-slate-400 font-bold">•</span>
+              <span>{bullet}</span>
+            </li>
+          ))}
         </ul>
       </div>
 
       {/* Visual Chain Banner with Light & Dark Theme Support */}
       <div className="relative overflow-hidden rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/70 dark:bg-[#070b16] p-4 sm:p-6 shadow-sm dark:shadow-2xl transition-colors">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:flex lg:flex-row lg:items-stretch gap-3 lg:gap-2">
-          {CAPABILITY_CARDS.map((card, idx) => (
+          {cards.map((card, idx) => (
             <React.Fragment key={idx}>
               <div
                 className={`relative flex-1 flex flex-col items-center text-center rounded-2xl border ${card.border} ${card.cardBg} ${card.glow} p-4 sm:p-5 transition-all duration-200 hover:scale-[1.02]`}
@@ -152,7 +152,7 @@ export default function BotCapabilities({ bot }: { bot: BotData }) {
               </div>
 
               {/* Chevron separator for desktop row */}
-              {idx < CAPABILITY_CARDS.length - 1 && (
+              {idx < cards.length - 1 && (
                 <div className="hidden lg:flex items-center justify-center text-slate-400 dark:text-slate-600 shrink-0 px-0.5">
                   <ChevronRight size={22} className="stroke-[2.5]" />
                 </div>

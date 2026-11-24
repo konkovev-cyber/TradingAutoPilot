@@ -128,6 +128,7 @@ function toBotData(row: Json): BotData {
     badge: colPair.badge.ru || stat?.badge || "",
     howItWorks: normalizeSteps(row?.how_it_works).length > 0 ? normalizeSteps(row?.how_it_works) : (stat?.howItWorks ?? []),
     exampleTrade: normalizeSteps(row?.example_trade).length > 0 ? normalizeSteps(row?.example_trade) : (stat?.exampleTrade ?? []),
+    capabilities: normalizeSteps(row?.capabilities).length > 0 ? normalizeSteps(row?.capabilities) : (stat?.capabilities ?? []),
     features:
       Array.isArray(row?.features) && row.features.length > 0
         ? row.features.map(String)

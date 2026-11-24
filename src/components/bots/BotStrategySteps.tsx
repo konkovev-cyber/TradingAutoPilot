@@ -96,15 +96,15 @@ export default function BotStrategySteps({ bot }: { bot: BotData }) {
   const b = botText(bot, lang);
 
   const isSynchro = bot.slug === "synchrobot" || bot.slug === "synchro-bot";
-  const steps = isSynchro ? SYNCHRO_STEPS : b.howItWorks.map((s, i) => ({
+  const sourceSteps = (b.howItWorks && b.howItWorks.length > 0)
+    ? b.howItWorks
+    : (isSynchro ? SYNCHRO_STEPS : []);
+
+  const steps = sourceSteps.map((s, i) => ({
+    ...SYNCHRO_STEPS[i % SYNCHRO_STEPS.length],
     num: i + 1,
     title: s.title,
     desc: s.desc,
-    badgeBg: SYNCHRO_STEPS[i % SYNCHRO_STEPS.length].badgeBg,
-    border: SYNCHRO_STEPS[i % SYNCHRO_STEPS.length].border,
-    glow: SYNCHRO_STEPS[i % SYNCHRO_STEPS.length].glow,
-    cardBg: SYNCHRO_STEPS[i % SYNCHRO_STEPS.length].cardBg,
-    icon: SYNCHRO_STEPS[i % SYNCHRO_STEPS.length].icon,
   }));
 
   if (steps.length === 0) return null;
