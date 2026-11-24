@@ -296,12 +296,22 @@ export function botText(bot: BotData, lang: Lang): BotData {
       : "BTC/USDT, ETH/USDT, SOL/USDT, XAUT/USDT, LTC/USDT and many other pairs. The bot is capable of trading any assets available on the exchange";
   }
 
+  const isSynchro = bot.slug === "synchrobot" || bot.slug === "synchro-bot" || (bot as any).id === "synchrobot";
+  const synchroRuDesc = "SynchroTrade Bot — это робот для автоматической торговли бессрочными USDT-фьючерсами на биржах Bybit, OKX и BingX. Робот имеет уникально разработанный алгоритм и удобный интерфейс настроек. Вы управляете им прямо в Telegram: нажимаете кнопки в чате с ботом. Ничего устанавливать на компьютер или телефон не нужно, робот торгует на сервере круглосуточно, даже когда Telegram закрыт. Робот в режиме реального времени отслеживает изменения объёмов по заданным торговым парам и выявляет потенциальные точки входа для открытий сделок в Long или Short и далее ведет каждую сделку. Весь торговый процесс полностью автономный.";
+
+  let shortDesc = ov.shortDesc || bot.shortDesc;
+  let fullDesc = ov.fullDesc || bot.fullDesc;
+  if (isSynchro && lang === "ru") {
+    shortDesc = synchroRuDesc;
+    fullDesc = synchroRuDesc;
+  }
+
   return {
     ...bot,
     name: ov.name || bot.name,
     slogan: ov.slogan || bot.slogan,
-    shortDesc: ov.shortDesc || bot.shortDesc,
-    fullDesc: ov.fullDesc || bot.fullDesc,
+    shortDesc,
+    fullDesc,
     badge: (ov.badge ?? "").trim() || bot.badge,
     market: ov.market || bot.market,
     strategy: ov.strategy || bot.strategy,
