@@ -1,15 +1,9 @@
 import React, { useState, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  DollarSign,
-  Info,
   Calendar,
   ArrowUpRight,
-  TrendingUp,
-  Activity,
-  Layers,
-  ShieldCheck,
-  CheckCircle2,
+  Info,
 } from "lucide-react";
 import { type BotData } from "@/data/bots";
 import { useI18n } from "@/lib/i18n";
@@ -22,7 +16,6 @@ interface BacktestTier {
   profitPercent: string;
   startBalance: string;
   endBalance: string;
-  stillInTradeCount: number;
   tradesCount: number;
   winRate: string;
   profitFactor: string;
@@ -34,8 +27,6 @@ interface BacktestTier {
   drawdownScale: string;
   // Trade closures
   closures: { label: string; count: number; sum: string }[];
-  // Positions still in trade
-  openPositions: { pair: string; side: "LONG" | "SHORT"; avg: number; status: string }[];
   // 20 coins with profit
   coins: { pair: string; pnl: string }[];
   // Precise curve morphology
@@ -50,7 +41,6 @@ const BACKTEST_DATA: Record<number, BacktestTier> = {
     profitPercent: "+198.72%",
     startBalance: "1000.00",
     endBalance: "2987.19",
-    stillInTradeCount: 2,
     tradesCount: 521,
     winRate: "100%",
     profitFactor: "—",
@@ -62,10 +52,6 @@ const BACKTEST_DATA: Record<number, BacktestTier> = {
     closures: [
       { label: "Take Profit", count: 273, sum: "+1586.36" },
       { label: "трейлинг-стоп", count: 248, sum: "+400.83" },
-    ],
-    openPositions: [
-      { pair: "VVV/USDT", side: "LONG", avg: 3, status: "в позиции" },
-      { pair: "XMR/USDT", side: "LONG", avg: 3, status: "в позиции" },
     ],
     coins: [
       { pair: "BNB/USDT", pnl: "+180.24" },
@@ -98,7 +84,6 @@ const BACKTEST_DATA: Record<number, BacktestTier> = {
     profitPercent: "+190.84%",
     startBalance: "500.00",
     endBalance: "1454.18",
-    stillInTradeCount: 3,
     tradesCount: 477,
     winRate: "100%",
     profitFactor: "—",
@@ -108,11 +93,6 @@ const BACKTEST_DATA: Record<number, BacktestTier> = {
     drawdownMax: "-20.8%",
     drawdownScale: "-21%",
     closures: [{ label: "Take Profit", count: 477, sum: "+954.18" }],
-    openPositions: [
-      { pair: "VVV/USDT", side: "LONG", avg: 3, status: "в позиции" },
-      { pair: "BTC/USDT", side: "LONG", avg: 3, status: "в позиции" },
-      { pair: "CYBER/USDT", side: "SHORT", avg: 2, status: "в позиции" },
-    ],
     coins: [
       { pair: "ETH/USDT", pnl: "+75.49" },
       { pair: "BNB/USDT", pnl: "+71.33" },
@@ -144,7 +124,6 @@ const BACKTEST_DATA: Record<number, BacktestTier> = {
     profitPercent: "+190.82%",
     startBalance: "200.00",
     endBalance: "581.64",
-    stillInTradeCount: 3,
     tradesCount: 477,
     winRate: "100%",
     profitFactor: "—",
@@ -154,11 +133,6 @@ const BACKTEST_DATA: Record<number, BacktestTier> = {
     drawdownMax: "-20.8%",
     drawdownScale: "-21%",
     closures: [{ label: "Take Profit", count: 477, sum: "+381.64" }],
-    openPositions: [
-      { pair: "VVV/USDT", side: "LONG", avg: 3, status: "в позиции" },
-      { pair: "BTC/USDT", side: "LONG", avg: 3, status: "в позиции" },
-      { pair: "CYBER/USDT", side: "SHORT", avg: 2, status: "в позиции" },
-    ],
     coins: [
       { pair: "ETH/USDT", pnl: "+30.19" },
       { pair: "BNB/USDT", pnl: "+28.53" },
@@ -255,12 +229,11 @@ export default function BotBacktest({ bot }: { bot: BotData }) {
     return BACKTEST_DATA[selectedDeposit] || BACKTEST_DATA[1000];
   }, [selectedDeposit]);
 
-  // Height calibrated to seamlessly match the 3 right boxes (Coins + Closures + InTrade)
-  // Eliminating empty space at the bottom
+  // Proportions calibrated to match the right column without open trades
   const chartWidth = 720;
-  const equityHeight = 290;
-  const ddHeight = 85;
-  const padding = { top: 22, right: 24, bottom: 26, left: 48 };
+  const equityHeight = 240;
+  const ddHeight = 72;
+  const padding = { top: 20, right: 24, bottom: 24, left: 48 };
 
   const innerW = chartWidth - padding.left - padding.right;
   const innerH = equityHeight - padding.top - padding.bottom;
@@ -291,7 +264,7 @@ export default function BotBacktest({ bot }: { bot: BotData }) {
 
     // Drawdown curve coordinates
     const minDdVal = selectedDeposit === 1000 ? -26 : -21;
-    const ddInnerH = ddHeight - 18;
+    const ddInnerH = ddHeight - 16;
     const ddTop = 10;
 
     const mappedDd = pts.map((p, i) => {
@@ -353,14 +326,39 @@ export default function BotBacktest({ bot }: { bot: BotData }) {
           className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-emerald-500/10 blur-3xl dark:bg-emerald-500/5"
         />
 
-        {/* 1. Header with Title + "ПЕРИОД: 60 ДНЕЙ" Badge */}
+        {/* 1. Header with Title + Clean Deposit Switcher + "ПЕРИОД: 60 ДНЕЙ" Badge */}
         <div className="relative mb-6 flex flex-col md:flex-row md:items-start justify-between gap-4 border-b border-slate-200/80 dark:border-slate-800/80 pb-6">
           <div>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3">
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                 SynchroTrade Bot — бэктест
               </h2>
+
+              {/* Minimal Clean Switcher (200$ | 500$ | 1000$) — no heavy calculator UI */}
+              <div className="inline-flex items-center rounded-xl bg-slate-100 dark:bg-slate-800/90 p-1 border border-slate-200/80 dark:border-slate-700/80">
+                {[200, 500, 1000].map((val) => {
+                  const isActive = selectedDeposit === val;
+                  return (
+                    <button
+                      key={val}
+                      type="button"
+                      onClick={() => {
+                        setSelectedDeposit(val);
+                        setHoverIndex(null);
+                      }}
+                      className={`rounded-lg px-3 py-1 text-xs font-extrabold transition-all duration-150 cursor-pointer ${
+                        isActive
+                          ? "bg-emerald-500 text-white shadow-sm"
+                          : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                      }`}
+                    >
+                      ${val}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
+
             <p className="mt-1.5 text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium">
               Автоподбор · Bybit · REAL #3 · старт {currentData.depositLabel} USDT · позиций одновременно: 3 · проскальзывание ×1
             </p>
@@ -379,95 +377,13 @@ export default function BotBacktest({ bot }: { bot: BotData }) {
           </div>
         </div>
 
-        {/* 2. Slider & Selector: 200$ | 500$ | 1000$ (Clean spacing without text overlap) */}
-        <div className="mb-6 rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-slate-50/90 dark:bg-[#12182b] p-4 sm:p-5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
-            <div className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 shrink-0">
-                <DollarSign size={20} />
-              </div>
-              <div className="flex flex-wrap items-baseline gap-2">
-                <span className="text-sm font-bold text-slate-900 dark:text-white">
-                  Размер депозита для бэктеста:
-                </span>
-                <span className="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-md bg-emerald-500/10 dark:bg-emerald-500/20">
-                  ${selectedDeposit} USDT
-                </span>
-              </div>
-            </div>
-
-            {/* Quick Clickable Buttons for 200$, 500$, 1000$ */}
-            <div className="flex items-center gap-2 shrink-0">
-              {[200, 500, 1000].map((val) => {
-                const isActive = selectedDeposit === val;
-                return (
-                  <button
-                    key={val}
-                    type="button"
-                    onClick={() => {
-                      setSelectedDeposit(val);
-                      setHoverIndex(null);
-                    }}
-                    className={`relative rounded-xl px-4 py-1.5 text-xs sm:text-sm font-extrabold transition-all duration-200 cursor-pointer ${
-                      isActive
-                        ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/30 scale-105"
-                        : "bg-white dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-emerald-500/50"
-                    }`}
-                  >
-                    ${val}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Range Slider snapping to 200, 500, 1000 */}
-          <div className="relative pt-1 px-1">
-            <input
-              type="range"
-              min={200}
-              max={1000}
-              step={100}
-              value={selectedDeposit}
-              onChange={(e) => {
-                const val = Number(e.target.value);
-                if (val <= 350) setSelectedDeposit(200);
-                else if (val <= 750) setSelectedDeposit(500);
-                else setSelectedDeposit(1000);
-                setHoverIndex(null);
-              }}
-              className="w-full h-3 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
-            />
-            <div className="flex justify-between text-[11px] font-mono text-slate-500 dark:text-slate-400 mt-2 px-1">
-              <span
-                onClick={() => setSelectedDeposit(200)}
-                className={`cursor-pointer transition-colors ${selectedDeposit === 200 ? "font-bold text-emerald-600 dark:text-emerald-400 underline decoration-2" : "hover:text-slate-700 dark:hover:text-slate-300"}`}
-              >
-                $200
-              </span>
-              <span
-                onClick={() => setSelectedDeposit(500)}
-                className={`cursor-pointer transition-colors ${selectedDeposit === 500 ? "font-bold text-emerald-600 dark:text-emerald-400 underline decoration-2" : "hover:text-slate-700 dark:hover:text-slate-300"}`}
-              >
-                $500
-              </span>
-              <span
-                onClick={() => setSelectedDeposit(1000)}
-                className={`cursor-pointer transition-colors ${selectedDeposit === 1000 ? "font-bold text-emerald-600 dark:text-emerald-400 underline decoration-2" : "hover:text-slate-700 dark:hover:text-slate-300"}`}
-              >
-                $1000
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* 3. Hero Profit & Metric Stats Section */}
+        {/* 2. Hero Profit & Metric Stats Section */}
         <AnimatePresence mode="wait">
           <motion.div
             key={selectedDeposit}
-            initial={{ opacity: 0.75, y: 2 }}
+            initial={{ opacity: 0.8, y: 2 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0.75 }}
+            exit={{ opacity: 0.8 }}
             transition={{ duration: 0.15 }}
             className="mb-6"
           >
@@ -487,9 +403,6 @@ export default function BotBacktest({ bot }: { bot: BotData }) {
             <div className="flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400 mb-4 pb-3 border-b border-slate-200/80 dark:border-slate-800">
               <div>
                 Баланс: <span className="font-mono font-bold text-slate-900 dark:text-white">{currentData.startBalance} → {currentData.endBalance} USDT</span>
-              </div>
-              <div className="text-slate-500 dark:text-slate-400 italic">
-                ещё в сделке: {currentData.stillInTradeCount} поз. (в итог не входят)
               </div>
             </div>
 
@@ -548,10 +461,10 @@ export default function BotBacktest({ bot }: { bot: BotData }) {
           </motion.div>
         </AnimatePresence>
 
-        {/* 4. Main Section: Left Chart Frame & Right Coins Breakdown (Balanced Heights, No Empty Void) */}
+        {/* 3. Main Section: Left Chart Frame & Right Coins Breakdown */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
           
-          {/* LEFT: Charts (Equity & Drawdown) - Light in White Theme, Dark in Dark Theme */}
+          {/* LEFT: Charts (Equity & Drawdown) */}
           <div className="lg:col-span-7 flex flex-col justify-between h-full">
             <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-[#090d16] p-4 sm:p-5 shadow-sm flex flex-col justify-between h-full">
               
@@ -559,7 +472,7 @@ export default function BotBacktest({ bot }: { bot: BotData }) {
                 {/* Header inside Chart frame */}
                 <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400 font-medium mb-3">
                   <span className="text-slate-900 dark:text-slate-200 font-bold">
-                    Баланс (с учётом плавающего результата открытых позиций)
+                    Баланс (с учётом закрытых сделок)
                   </span>
                   <span className="text-[11px] font-mono text-emerald-600 dark:text-emerald-400 font-bold">
                     {currentData.depositLabel} → {currentData.endBalance} USDT
@@ -642,7 +555,7 @@ export default function BotBacktest({ bot }: { bot: BotData }) {
                       проверочный период →
                     </text>
 
-                    {/* Equity Area Fill (adapted for light and dark theme) */}
+                    {/* Equity Area Fill */}
                     <path
                       d={equityAreaPath}
                       className="fill-[url(#backtestEquityGradLight)] dark:fill-[url(#backtestEquityGradDark)]"
@@ -756,7 +669,7 @@ export default function BotBacktest({ bot }: { bot: BotData }) {
                 </div>
               </div>
 
-              {/* Sub-Chart: Drawdown curve (with light mode gradient support) */}
+              {/* Sub-Chart: Drawdown curve */}
               <div className="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800">
                 <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 dark:text-slate-400 mb-1">
                   <span>
@@ -765,7 +678,7 @@ export default function BotBacktest({ bot }: { bot: BotData }) {
                   <span>{currentData.drawdownScale}</span>
                 </div>
 
-                <div className="relative w-full h-[85px]">
+                <div className="relative w-full h-[72px]">
                   <svg viewBox={`0 0 ${chartWidth} ${ddHeight}`} className="w-full h-full">
                     <defs>
                       <linearGradient id="backtestDdGradLight" x1="0" y1="0" x2="0" y2="1">
@@ -824,22 +737,10 @@ export default function BotBacktest({ bot }: { bot: BotData }) {
                 </div>
               </div>
 
-              {/* Micro-Features Bottom Bar (Harmonizes height and fills all empty space) */}
-              <div className="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-500 dark:text-slate-400">
-                <div className="flex items-center gap-1.5">
-                  <CheckCircle2 size={13} className="text-emerald-500" />
-                  <span>Комиссии биржи и фандинг учтены</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <ShieldCheck size={13} className="text-emerald-500" />
-                  <span>Автоматический Take Profit и трейлинг</span>
-                </div>
-              </div>
-
             </div>
           </div>
 
-          {/* RIGHT: Coins in test (20) & Trade Closures (Perfect matching height) */}
+          {/* RIGHT: Coins in test (20) & Trade Closures (No Open Trades as per Stanislav) */}
           <div className="lg:col-span-5 flex flex-col justify-between gap-4 h-full">
             
             {/* Box 1: Монеты в тесте (20) */}
@@ -886,39 +787,16 @@ export default function BotBacktest({ bot }: { bot: BotData }) {
               </div>
             </div>
 
-            {/* Box 3: Ещё в сделке (в итог не входят) */}
-            <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 dark:bg-amber-400/[0.04] p-4">
-              <div className="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-2">
-                Ещё в сделке (в итог не входят)
-              </div>
-              <div className="space-y-1.5 text-xs font-mono">
-                {currentData.openPositions.map((pos, idx) => (
-                  <div key={idx} className="flex items-center justify-between text-slate-700 dark:text-slate-300">
-                    <div>
-                      <span className="font-semibold text-slate-900 dark:text-white">{pos.pair}</span>
-                      <span className="mx-1 text-slate-400">·</span>
-                      <span className={pos.side === "LONG" ? "text-emerald-600 dark:text-emerald-400 font-bold" : "text-rose-500 font-bold"}>
-                        {pos.side}
-                      </span>
-                      <span className="mx-1 text-slate-400">·</span>
-                      <span className="text-slate-500 dark:text-slate-400">усредн. {pos.avg}</span>
-                    </div>
-                    <span className="text-slate-400 text-[11px]">{pos.status}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
           </div>
 
         </div>
 
-        {/* 5. Footer Disclaimer & CTA */}
+        {/* 4. Footer Disclaimer & CTA — EXACT DISCLAIMER requested by Stanislav */}
         <div className="mt-8 pt-5 border-t border-slate-200/80 dark:border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-start gap-2.5 text-xs text-slate-500 dark:text-slate-400 max-w-3xl leading-relaxed">
-            <Info size={16} className="text-slate-400 shrink-0 mt-0.5" />
-            <span>
-              Расчёт по историческим свечам: комиссии, проскальзывание, funding и маржа учтены. Итог — по закрытым сделкам. Не гарантирует будущих результатов и не является инвестиционной рекомендацией.
+            <Info size={16} className="text-amber-500 shrink-0 mt-0.5" />
+            <span className="font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">
+              ПРОЦЕНТЫ ДОХОДНОСТИ И ПРОЦЕНТ ПРОСАДКИ МОЖЕТ ОТЛИЧАТЬСЯ В ЗАВИСИМОСТИ ОТ ВЫБРАННЫХ ПАРАМЕТРОВ
             </span>
           </div>
 
