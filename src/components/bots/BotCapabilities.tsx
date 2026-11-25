@@ -91,9 +91,6 @@ export default function BotCapabilities({ bot }: { bot: BotData }) {
 
   if (!isSynchro) return null;
 
-  // Use dynamic features from admin panel if available, else fallback
-  const bullets = b.features && b.features.length > 0 ? b.features : DEFAULT_BULLETS;
-
   // Use dynamic capabilities from admin panel if available, else fallback
   const cards = (bot.capabilities && bot.capabilities.length > 0)
     ? bot.capabilities.map((c, i) => ({
@@ -105,19 +102,11 @@ export default function BotCapabilities({ bot }: { bot: BotData }) {
     : CAPABILITY_CARDS;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div>
-        <h3 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mb-4">
-          Что умеет бот:
+        <h3 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
+          Что еще умеет бот
         </h3>
-        <ul className="space-y-2 text-sm sm:text-base text-slate-700 dark:text-slate-300">
-          {bullets.map((bullet, idx) => (
-            <li key={idx} className="flex items-start gap-2.5">
-              <span className="text-slate-400 font-bold">•</span>
-              <span>{bullet}</span>
-            </li>
-          ))}
-        </ul>
       </div>
 
       {/* Visual Chain Banner with Light & Dark Theme Support */}

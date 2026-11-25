@@ -59,9 +59,9 @@ export default function BotTradeExample({ bot }: { bot: BotData }) {
   if (b.exampleTrade.length === 0) return null;
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/70 dark:bg-[#070b16] p-5 sm:p-7 shadow-sm dark:shadow-2xl transition-colors">
-      {/* Header */}
-      <div className="mb-6">
+    <div className="space-y-4">
+      {/* Header outside container */}
+      <div>
         <h3 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
           {c("botDetail", "exampleTitle", t("botDetail.exampleTitle"))}
         </h3>
@@ -70,8 +70,9 @@ export default function BotTradeExample({ bot }: { bot: BotData }) {
         </p>
       </div>
 
-      {/* Visual Chain of Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-row lg:items-stretch gap-3 lg:gap-2">
+      <div className="relative overflow-hidden rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/70 dark:bg-[#070b16] p-4 sm:p-6 shadow-sm dark:shadow-2xl transition-colors">
+        {/* Visual Chain of Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-row lg:items-stretch gap-3 lg:gap-2">
         {b.exampleTrade.map((step, idx) => {
           const style = TRADE_STEP_STYLES[idx % TRADE_STEP_STYLES.length];
           return (
@@ -117,6 +118,7 @@ export default function BotTradeExample({ bot }: { bot: BotData }) {
       <div className="mt-6 flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
         <ArrowRight size={14} className="shrink-0 text-slate-400 dark:text-slate-500" />
         <span>{c("botDetail", "examplePrinciple", t("botDetail.examplePrinciple"))}</span>
+      </div>
       </div>
     </div>
   );
